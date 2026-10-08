@@ -7,14 +7,16 @@ Serves the front-end web UI and provides:
 3. /api/admin/all - Full list of all stored profiles across all companies.
 4. /api/admin/export/csv - Download all stored profiles as CSV.
 5. /api/admin/export/json - Download all stored profiles as JSON.
+6. /api/admin/upload-batch - Upload a CSV of company names / domains and batch extract & store!
 """
 
 import csv
 import io
 import json
 import os
-from typing import Optional
-from fastapi import FastAPI, Query
+import re
+from typing import List, Optional
+from fastapi import FastAPI, File, Query, UploadFile
 from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -76,7 +78,6 @@ async def get_all_records():
         d["id"] = doc.id
         records.append(d)
     
-    # Sort by company then name
     records.sort(key=lambda x: (x.get("company_name", "").lower(), x.get("group", ""), x.get("name", "")))
     return {
         "total_records": len(records),
@@ -154,6 +155,91 @@ async def export_all_json():
         media_type="application/json",
         headers={"Content-Disposition": "attachment; filename=all-leadership-intel-data.json"},
     )
+
+
+@app.post("/api/admin/upload-batch")
+async def upload_batch_csv(file: UploadFile = File(...)):
+    """Receives an uploaded CSV file of companies/domains, parses items, checks if already extracted,
+
+    and runs extraction, logo generation, and Firestore storage for any new ones.
+    """
+    contents = await file.read()
+    try:
+        text = contents.decode("utf-8")
+    except UnicodeDecodeError:
+        text = contents.decode("latin1", errors="ignore")
+
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if not lines:
+        return {"status": "error", "message": "Uploaded file is empty"}
+
+    # Determine items from CSV rows
+    raw_reader = csv.reader(lines)
+    items_to_process = []
+    for row in raw_reader:
+        if not row:
+            continue
+        val = row[0].strip()
+        # Skip header rows if present
+        if val.lower() in ["company", "company_name", "domain", "url", "name", "website"]:
+            continue
+        if val and val not in items_to_process:
+            items_to_process.append(val)
+
+    if not items_to_process:
+        return {"status": "error", "message": "No valid company names or domains found in CSV."}
+
+    # Retrieve existing companies to avoid duplicate scraping
+    db = get_db()
+    existing_docs = list(db.collection(COLLECTION_NAME).stream())
+    existing_companies = set()
+    for d in existing_docs:
+        c = d.to_dict().get("company_name", "")
+        if c:
+            existing_companies.add(c.lower())
+        u = d.to_dict().get("company_url", "")
+        if u:
+            existing_companies.add(u.lower())
+
+    results = []
+    for item in items_to_process:
+        item_lower = item.lower()
+        # Check if already present
+        already_exists = any(item_lower in ec or ec in item_lower for ec in existing_companies)
+        if already_exists:
+            results.append({
+                "query": item,
+                "status": "already_indexed",
+                "message": f"'{item}' is already collected in Firestore.",
+            })
+            continue
+
+        # Run extraction & storage
+        try:
+            res = discover_and_save_company(item)
+            results.append({
+                "query": item,
+                "status": "success",
+                "company_name": res.get("company_name"),
+                "profiles_saved": res.get("total_results", 0),
+                "logo_url": res.get("company_logo", ""),
+            })
+            if res.get("company_name"):
+                existing_companies.add(res["company_name"].lower())
+        except Exception as e:
+            results.append({
+                "query": item,
+                "status": "failed",
+                "error": str(e),
+            })
+
+    total_added = sum(r.get("profiles_saved", 0) for r in results if r.get("status") == "success")
+    return {
+        "status": "completed",
+        "total_requested": len(items_to_process),
+        "total_new_profiles_added": total_added,
+        "details": results,
+    }
 
 
 @app.get("/api/search")
