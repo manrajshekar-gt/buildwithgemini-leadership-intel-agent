@@ -62,12 +62,18 @@ async def list_companies():
                 "logo_url": d.get("logo_url") or "",
                 "company_url": d.get("company_url") or "",
                 "company_twitter_handle": d.get("company_twitter_handle") or "N/A",
+                "key_partners": d.get("key_partners") or [],
+                "key_competitors": d.get("key_competitors") or [],
             }
         elif comp:
             if not companies[comp]["logo_url"] and d.get("logo_url"):
                 companies[comp]["logo_url"] = d.get("logo_url")
             if companies[comp]["company_twitter_handle"] == "N/A" and d.get("company_twitter_handle"):
                 companies[comp]["company_twitter_handle"] = d.get("company_twitter_handle")
+            if not companies[comp]["key_partners"] and d.get("key_partners"):
+                companies[comp]["key_partners"] = d.get("key_partners")
+            if not companies[comp]["key_competitors"] and d.get("key_competitors"):
+                companies[comp]["key_competitors"] = d.get("key_competitors")
     return list(companies.values())
 
 
@@ -104,7 +110,10 @@ async def export_all_csv():
     output = io.StringIO()
     fieldnames = [
         "Company",
+        "Company URL",
         "Company Twitter",
+        "Key Partners",
+        "Key Competitors",
         "Name",
         "Title",
         "Group",
@@ -115,7 +124,6 @@ async def export_all_csv():
         "Committee",
         "Independent",
         "Tenure (Years)",
-        "Company URL",
         "Bio",
     ]
     writer = csv.DictWriter(output, fieldnames=fieldnames)
@@ -125,9 +133,18 @@ async def export_all_csv():
         tweets_list = r.get("recent_tweets") or []
         tweets_str = " | ".join(tweets_list) if isinstance(tweets_list, list) else str(tweets_list)
 
+        partners_list = r.get("key_partners") or []
+        partners_str = " | ".join(f"{p.get('name')} ({p.get('website')})" for p in partners_list if isinstance(p, dict)) if partners_list else "N/A"
+
+        competitors_list = r.get("key_competitors") or []
+        competitors_str = " | ".join(f"{c.get('name')} ({c.get('website')})" for c in competitors_list if isinstance(c, dict)) if competitors_list else "N/A"
+
         writer.writerow({
             "Company": r.get("company_name", ""),
+            "Company URL": r.get("company_url") or "",
             "Company Twitter": r.get("company_twitter_handle") or "N/A",
+            "Key Partners": partners_str,
+            "Key Competitors": competitors_str,
             "Name": r.get("name", ""),
             "Title": r.get("title", ""),
             "Group": r.get("group", ""),
@@ -138,7 +155,6 @@ async def export_all_csv():
             "Committee": r.get("committee") or "N/A",
             "Independent": "Yes" if r.get("is_independent") else "No",
             "Tenure (Years)": r.get("tenure_years") if r.get("tenure_years") is not None else "N/A",
-            "Company URL": r.get("company_url") or "",
             "Bio": r.get("bio") or "",
         })
 
@@ -264,6 +280,8 @@ async def search_leadership(q: str = Query(..., min_length=1)):
     company_url_found = ""
     company_twitter_found = ""
     company_recent_tweets_found = []
+    key_partners_found = []
+    key_competitors_found = []
 
     for doc in docs:
         d = doc.to_dict()
@@ -294,6 +312,10 @@ async def search_leadership(q: str = Query(..., min_length=1)):
                 company_twitter_found = d.get("company_twitter_handle")
             if not company_recent_tweets_found and d.get("company_recent_tweets"):
                 company_recent_tweets_found = d.get("company_recent_tweets")
+            if not key_partners_found and d.get("key_partners"):
+                key_partners_found = d.get("key_partners")
+            if not key_competitors_found and d.get("key_competitors"):
+                key_competitors_found = d.get("key_competitors")
 
             group = d.get("group", "Executive Management")
             if "board" in group.lower():
@@ -315,6 +337,8 @@ async def search_leadership(q: str = Query(..., min_length=1)):
         "company_url": company_url_found,
         "company_twitter_handle": company_twitter_found or "N/A",
         "company_recent_tweets": company_recent_tweets_found or [],
+        "key_partners": key_partners_found or [],
+        "key_competitors": key_competitors_found or [],
         "total_results": total_results,
         "executives": executives,
         "board_of_directors": board_members,

@@ -21,7 +21,6 @@
       --badge-exec-text: #1d4ed8;
       --badge-board-bg: #f5f3ff;
       --badge-board-text: #6d28d9;
-      --twitter-blue: #0f1419;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -185,7 +184,7 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 1.75rem 2rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -259,6 +258,72 @@
       text-transform: uppercase;
       font-weight: 600;
       color: var(--text-muted);
+    }
+
+    /* Organization Ecosystem Cards (Partners & Competitors) */
+    .ecosystem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .eco-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .eco-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .eco-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0;
+      border-bottom: 1px dashed #f1f5f9;
+    }
+    .eco-item:last-child {
+      border-bottom: none;
+    }
+    .eco-item-left {
+      display: flex;
+      flex-direction: column;
+    }
+    .eco-item-name {
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #0f172a;
+    }
+    .eco-item-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+    .eco-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      background: #f1f5f9;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .eco-link-btn:hover {
+      background: #e2e8f0;
     }
 
     /* Company Recent Tweets Box */
@@ -491,8 +556,8 @@
 <div class="container">
   <!-- Search Hero -->
   <div class="hero">
-    <h1>Executive & Board Intelligence</h1>
-    <p>Search any company to discover executive leadership, board members, verified emails, X/Twitter handles, and recent posts.</p>
+    <h1>Executive & Strategic Intelligence</h1>
+    <p>Search any company to discover executive leadership, board members, key partners, market competitors, X handles, and recent posts.</p>
     
     <div class="search-box-wrapper">
       <form id="search-form" class="search-bar">
@@ -518,7 +583,7 @@
   <!-- Loading State -->
   <div class="spinner-container" id="spinner">
     <div class="spinner"></div>
-    <p style="color: var(--text-muted); font-weight: 500;">Researching company, extracting leadership, and retrieving X handles...</p>
+    <p style="color: var(--text-muted); font-weight: 500;">Researching organization, key partners, competitors, and leadership...</p>
   </div>
 
   <!-- Results Section -->
@@ -538,6 +603,27 @@
       <div class="stats-badge">
         <div class="count" id="banner-count">0</div>
         <div class="lbl">Profiles Listed</div>
+      </div>
+    </div>
+
+    <!-- Organization Ecosystem: Partners & Competitors -->
+    <div class="ecosystem-grid" id="ecosystem-section" style="display:none;">
+      <!-- Key Partners Card -->
+      <div class="eco-card" id="partners-card" style="display:none;">
+        <div class="eco-header">
+          <span class="material-symbols-outlined" style="color:#059669;">handshake</span>
+          <span>Key Strategic Partners</span>
+        </div>
+        <div id="partners-list"></div>
+      </div>
+
+      <!-- Key Competitors Card -->
+      <div class="eco-card" id="competitors-card" style="display:none;">
+        <div class="eco-header">
+          <span class="material-symbols-outlined" style="color:#dc2626;">swords</span>
+          <span>Key Competitors</span>
+        </div>
+        <div id="competitors-list"></div>
       </div>
     </div>
 
@@ -716,6 +802,48 @@
       }
 
       document.getElementById('banner-count').textContent = data.total_results;
+
+      // Key Partners & Key Competitors Ecosystem
+      const ecoSection = document.getElementById('ecosystem-section');
+      const partnersCard = document.getElementById('partners-card');
+      const partnersList = document.getElementById('partners-list');
+      const competitorsCard = document.getElementById('competitors-card');
+      const competitorsList = document.getElementById('competitors-list');
+
+      let hasEco = false;
+      if (data.key_partners && data.key_partners.length > 0) {
+        hasEco = true;
+        partnersList.innerHTML = data.key_partners.map(p => `
+          <div class="eco-item">
+            <div class="eco-item-left">
+              <span class="eco-item-name">${p.name}</span>
+              <span class="eco-item-desc">${p.relationship || 'Strategic Partner'}</span>
+            </div>
+            ${p.website ? `<a href="${p.website}" target="_blank" rel="noopener" class="eco-link-btn"><span>Visit</span><span class="material-symbols-outlined" style="font-size:0.85rem;">open_in_new</span></a>` : ''}
+          </div>
+        `).join('');
+        partnersCard.style.display = 'block';
+      } else {
+        partnersCard.style.display = 'none';
+      }
+
+      if (data.key_competitors && data.key_competitors.length > 0) {
+        hasEco = true;
+        competitorsList.innerHTML = data.key_competitors.map(c => `
+          <div class="eco-item">
+            <div class="eco-item-left">
+              <span class="eco-item-name">${c.name}</span>
+              <span class="eco-item-desc">${c.differentiation || 'Market Competitor'}</span>
+            </div>
+            ${c.website ? `<a href="${c.website}" target="_blank" rel="noopener" class="eco-link-btn"><span>Visit</span><span class="material-symbols-outlined" style="font-size:0.85rem;">open_in_new</span></a>` : ''}
+          </div>
+        `).join('');
+        competitorsCard.style.display = 'block';
+      } else {
+        competitorsCard.style.display = 'none';
+      }
+
+      ecoSection.style.display = hasEco ? 'grid' : 'none';
 
       // Company Recent Tweets Box
       const compTweetsCard = document.getElementById('company-tweets-card');

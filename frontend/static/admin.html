@@ -64,7 +64,7 @@
       gap: 0.35rem;
     }
     .container {
-      max-width: 1380px;
+      max-width: 1440px;
       width: 100%;
       margin: 2rem auto;
       padding: 0 1.5rem;
@@ -253,16 +253,20 @@
     }
     .twitter-link:hover { background: #e2e8f0; }
 
-    .tweet-snippet {
-      font-size: 0.78rem;
-      color: #475569;
-      background: #f8fafc;
-      padding: 0.35rem 0.55rem;
+    .tag-bubble {
+      display: inline-block;
+      font-size: 0.74rem;
+      padding: 0.15rem 0.45rem;
       border-radius: 6px;
-      border-left: 2px solid #0f172a;
-      margin-top: 0.35rem;
-      max-width: 300px;
-      white-space: normal;
+      background: #f1f5f9;
+      color: #334155;
+      margin: 0.15rem 0.2rem 0.15rem 0;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .tag-bubble:hover {
+      background: #e2e8f0;
+      color: var(--primary);
     }
 
     .spinner {
@@ -311,14 +315,14 @@
         Click to select or drag and drop a CSV file of companies/domains
       </p>
       <p style="font-size: 0.82rem; color: #94a3b8;">
-        Extracts executives, board members, emails, X handles, and 3 latest messages automatically.
+        Extracts executives, board members, key partners, competitors, emails, and X handles.
       </p>
       <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleBatchUpload(this)" />
     </div>
 
     <div id="batch-progress" class="batch-status status-running">
       <div class="spinner"></div>
-      <span id="batch-progress-text">Processing batch file: scraping sites, extracting executives, fetching X handles, generating logos...</span>
+      <span id="batch-progress-text">Processing batch file: scraping sites, extracting partners, competitors, executives, and logos...</span>
     </div>
 
     <div id="batch-result" class="batch-status status-done"></div>
@@ -349,12 +353,12 @@
         <tr>
           <th>Logo</th>
           <th>Company</th>
-          <th>Company X</th>
+          <th>Key Partners</th>
+          <th>Key Competitors</th>
           <th>Name</th>
           <th>Role / Title</th>
           <th>Group</th>
           <th>Individual X</th>
-          <th>Latest Posts</th>
           <th>Email</th>
           <th>Tenure</th>
         </tr>
@@ -398,29 +402,34 @@
           ? `<a href="mailto:${r.email}" class="email-link">${r.email}</a>`
           : `<span style="color:#94a3b8;">N/A</span>`;
 
-        const compX = r.company_twitter_handle && r.company_twitter_handle !== 'N/A'
-          ? `<a href="https://x.com/${r.company_twitter_handle.replace('@','')}" target="_blank" class="twitter-link">${r.company_twitter_handle}</a>`
-          : `<span style="color:#94a3b8;">-</span>`;
-
         const indivX = r.twitter_handle && r.twitter_handle !== 'N/A'
           ? `<a href="https://x.com/${r.twitter_handle.replace('@','')}" target="_blank" class="twitter-link">${r.twitter_handle}</a>`
           : `<span style="color:#94a3b8;">-</span>`;
 
-        let tweetsCell = `<span style="color:#94a3b8;">-</span>`;
-        if (r.recent_tweets && r.recent_tweets.length > 0) {
-          tweetsCell = r.recent_tweets.slice(0, 3).map(t => `<div class="tweet-snippet">"${t}"</div>`).join('');
+        let partnersHtml = `<span style="color:#94a3b8;">-</span>`;
+        if (r.key_partners && r.key_partners.length > 0) {
+          partnersHtml = r.key_partners.map(p => `
+            <a href="${p.website || '#'}" target="_blank" rel="noopener" class="tag-bubble" title="${p.relationship || ''}">${p.name}</a>
+          `).join('');
+        }
+
+        let competitorsHtml = `<span style="color:#94a3b8;">-</span>`;
+        if (r.key_competitors && r.key_competitors.length > 0) {
+          competitorsHtml = r.key_competitors.map(c => `
+            <a href="${c.website || '#'}" target="_blank" rel="noopener" class="tag-bubble" title="${c.differentiation || ''}">${c.name}</a>
+          `).join('');
         }
 
         return `
           <tr>
             <td>${logoImg}</td>
             <td><strong>${r.company_name || 'N/A'}</strong></td>
-            <td>${compX}</td>
+            <td style="max-width: 180px;">${partnersHtml}</td>
+            <td style="max-width: 180px;">${competitorsHtml}</td>
             <td>${r.name}</td>
             <td style="color:#475569;">${r.title || 'Leadership'}</td>
             <td><span class="badge ${isBoard ? 'badge-board' : 'badge-exec'}">${r.group}</span></td>
             <td>${indivX}</td>
-            <td>${tweetsCell}</td>
             <td>${emailCell}</td>
             <td>${r.tenure_years != null ? r.tenure_years + ' yrs' : '-'}</td>
           </tr>
@@ -461,7 +470,7 @@
         
         resultDiv.innerHTML = `
           <strong>Batch Extraction Complete!</strong><br>
-          Processed ${data.total_requested} companies: ${successCount} newly extracted with X handles & tweets, 
+          Processed ${data.total_requested} companies: ${successCount} newly extracted with partners & competitors, 
           ${alreadyCount} already indexed, ${data.total_new_profiles_added} new profiles saved to Firestore.
         `;
         loadAdminData();

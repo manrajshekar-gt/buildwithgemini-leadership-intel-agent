@@ -3,9 +3,10 @@
 When a search misses in Firestore or batch import is triggered:
 1. Gathers intelligence from the company website and Wikipedia/search fallbacks.
 2. Extracts key Executives and Board of Directors using Gemini.
-3. Extracts company and individual X/Twitter handles and their last 3 recent messages.
+3. Extracts company X/Twitter handles, recent messages, KEY PARTNERS (with websites),
+   and KEY COMPETITORS (with websites).
 4. Generates a custom company logo and uploads to Cloud Storage.
-5. Persists the new profiles and logo into Firestore.
+5. Persists the new profiles and organization-level intelligence into Firestore.
 """
 
 import json
@@ -62,8 +63,8 @@ def _slugify(text: str) -> str:
 def discover_and_save_company(query: str) -> Dict[str, Any]:
     """Autonomous research pipeline: scrapes web, queries Wikipedia, extracts members
 
-    with email, X/twitter handles, and last 3 recent messages, generates custom logo,
-    and stores in Firestore.
+    with email, X/twitter handles, partners with websites, competitors with websites,
+    generates custom logo, and stores in Firestore.
     """
     company_name = query.strip()
     website_url = query.strip()
@@ -92,7 +93,6 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
                     if href.startswith("mailto:"):
                         discovered_emails.append(href.replace("mailto:", "").split("?")[0].strip())
                     if "twitter.com/" in href or "x.com/" in href:
-                        # Extract handle
                         handle_match = re.search(r"(?:twitter\.com|x\.com)/([A-Za-z0-9_]+)", href)
                         if handle_match and handle_match.group(1).lower() not in ["home", "share", "intent", "search"]:
                             discovered_twitter.append(f"@{handle_match.group(1)}")
@@ -124,10 +124,10 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
     except Exception:
         pass
 
-    # 3. Use Gemini to extract leadership, board members, Twitter/X handles, and recent messages
+    # 3. Use Gemini to extract leadership, board, X handles, tweets, partners & competitors
     ai_client = get_genai()
     prompt = f"""
-You are an executive and corporate research agent.
+You are an executive and strategic corporate intelligence agent.
 Company: '{company_name}'
 Website: '{website_url}'
 
@@ -143,14 +143,24 @@ Discovered Twitter/X links on site: {list(set(discovered_twitter))[:3]}
 Return a JSON object containing:
 1. "company_twitter_handle": string (e.g. '@Company' or official verified X handle, or N/A)
 2. "company_recent_tweets": array of 3 realistic recent public announcement tweets/posts from the company's handle
-3. "members": an array of 4 to 8 key leaders representing both 'Executive Management' and 'Board of Directors'.
+3. "key_partners": array of 3 to 6 major ecosystem/strategic partners of this company.
+   Each object in "key_partners" MUST contain:
+   - "name": string (Partner company name, e.g. "Salesforce", "AWS", "Google Cloud")
+   - "website": string (Official website URL, e.g. "https://www.salesforce.com")
+   - "relationship": string (Short 1-phrase description, e.g. "Cloud & AI Infrastructure Partner", "Strategic Integration Partner")
+4. "key_competitors": array of 3 to 6 primary direct market competitors.
+   Each object in "key_competitors" MUST contain:
+   - "name": string (Competitor name, e.g. "Lyft", "Microsoft", "Stripe")
+   - "website": string (Official website URL, e.g. "https://www.lyft.com")
+   - "differentiation": string (Short 1-phrase description, e.g. "Rideshare market rival", "Enterprise cloud competitor")
+5. "members": an array of 4 to 8 key leaders representing both 'Executive Management' and 'Board of Directors'.
    Each member MUST contain:
    - name: string (Full Name)
    - title: string (Role, e.g. 'Chief Executive Officer', 'Chief Financial Officer', 'Director')
    - group: string ('Executive Management' or 'Board of Directors')
    - email: string (corporate email e.g. first@domain or name@company.com, or N/A)
    - twitter_handle: string (known X/Twitter handle like '@handle', or N/A)
-   - recent_tweets: array of up to 3 recent public messages/tweets/quotes from this person's handle or public statements (e.g. ["Message 1...", "Message 2...", "Message 3..."])
+   - recent_tweets: array of up to 3 recent public messages/tweets/quotes from this person's handle
    - committee: string or null
    - is_independent: boolean
    - tenure_years: integer or null
@@ -170,7 +180,6 @@ Respond with ONLY the JSON object inside a ```json ``` block.
     try:
         data_payload = json.loads(raw_text)
     except Exception:
-        # Fallback extract JSON
         json_match = re.search(r"\{.*\}", raw_text, re.DOTALL)
         if json_match:
             try:
@@ -181,6 +190,8 @@ Respond with ONLY the JSON object inside a ```json ``` block.
     members_data = data_payload.get("members", [])
     company_twitter = data_payload.get("company_twitter_handle", "") or (discovered_twitter[0] if discovered_twitter else "N/A")
     company_recent_tweets = data_payload.get("company_recent_tweets", [])
+    key_partners = data_payload.get("key_partners", [])
+    key_competitors = data_payload.get("key_competitors", [])
 
     # 4. Generate custom company logo and upload to Cloud Storage
     logo_url = ""
@@ -226,6 +237,8 @@ Respond with ONLY the JSON object inside a ```json ``` block.
             "company_url": website_url,
             "company_twitter_handle": company_twitter,
             "company_recent_tweets": company_recent_tweets,
+            "key_partners": key_partners,
+            "key_competitors": key_competitors,
             "name": m.get("name", "Unknown"),
             "title": m.get("title", "Leadership"),
             "group": m.get("group", "Executive Management"),
@@ -253,6 +266,8 @@ Respond with ONLY the JSON object inside a ```json ``` block.
         "company_url": website_url,
         "company_twitter_handle": company_twitter,
         "company_recent_tweets": company_recent_tweets,
+        "key_partners": key_partners,
+        "key_competitors": key_competitors,
         "total_results": len(executives) + len(board_of_directors),
         "executives": executives,
         "board_of_directors": board_of_directors,
