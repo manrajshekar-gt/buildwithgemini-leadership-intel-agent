@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Data Export & Batch Import - Leadership Intelligence</title>
+  <title>Admin Observability & Data Operations - Leadership Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -66,68 +66,89 @@
     .container {
       max-width: 1440px;
       width: 100%;
-      margin: 2rem auto;
+      margin: 1.75rem auto;
       padding: 0 1.5rem;
       flex: 1;
     }
-    .admin-banner {
+
+    /* Live Telemetry & Metrics Row */
+    .metrics-section {
+      margin-bottom: 1.75rem;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .metric-card {
       background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.75rem 2rem;
-      margin-bottom: 1.5rem;
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .metric-card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-    }
-    .banner-text h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      margin-bottom: 0.35rem;
-    }
-    .banner-text p {
       color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-    .actions-group {
-      display: flex;
-      gap: 0.75rem;
-    }
-    .btn {
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
+      font-size: 0.8rem;
       font-weight: 600;
-      font-size: 0.92rem;
-      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .metric-card-header .material-symbols-outlined {
+      font-size: 1.25rem;
+      color: #94a3b8;
+    }
+    .metric-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0.35rem 0 0.15rem 0;
+    }
+    .metric-subtext {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .badge-status {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      text-decoration: none;
-      border: none;
-      transition: all 0.15s;
+      gap: 0.3rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #f0fdf4;
+      color: #16a34a;
     }
-    .btn-primary {
-      background: var(--primary);
-      color: #ffffff;
-    }
-    .btn-primary:hover {
-      background: var(--primary-hover);
-    }
-    .btn-success {
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
       background: #16a34a;
-      color: #ffffff;
+      box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
+      animation: pulse 1.8s infinite;
     }
-    .btn-success:hover {
-      background: #15803d;
-    }
-    .btn-secondary {
-      background: #ffffff;
-      color: #334155;
-      border: 1px solid var(--border);
-    }
-    .btn-secondary:hover {
-      background: #f1f5f9;
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
     }
 
     /* Batch Upload Card */
@@ -136,7 +157,7 @@
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 1.5rem 2rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.02);
       display: flex;
       flex-direction: column;
@@ -157,7 +178,7 @@
     .batch-dropzone {
       border: 2px dashed #cbd5e1;
       border-radius: 12px;
-      padding: 1.75rem;
+      padding: 1.5rem;
       text-align: center;
       background: #f8fafc;
       cursor: pointer;
@@ -189,6 +210,52 @@
       border: 1px solid #bbf7d0;
     }
 
+    /* Actions Banner */
+    .admin-banner {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.75rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .banner-text h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+    .banner-text p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .actions-group {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .btn {
+      padding: 0.65rem 1.15rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: var(--primary); color: #ffffff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-success { background: #16a34a; color: #ffffff; }
+    .btn-success:hover { background: #15803d; }
+    .btn-secondary { background: #ffffff; color: #334155; border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #f1f5f9; }
+
+    /* Data Table */
     .table-container {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -216,9 +283,7 @@
       color: #1e293b;
       vertical-align: middle;
     }
-    tr:hover td {
-      background: #fbfcfe;
-    }
+    tr:hover td { background: #fbfcfe; }
     .logo-thumb {
       width: 32px;
       height: 32px;
@@ -285,9 +350,13 @@
 <header>
   <a href="/" class="header-logo">
     <span class="material-symbols-outlined icon">admin_panel_settings</span>
-    <span>Leadership Intelligence Admin</span>
+    <span>Leadership Intelligence Admin & Telemetry</span>
   </a>
-  <div>
+  <div style="display: flex; align-items: center; gap: 1.25rem;">
+    <div class="badge-status">
+      <span class="pulse-dot"></span>
+      <span id="service-health-text">All Systems Operational</span>
+    </div>
     <a href="/" class="nav-link">
       <span class="material-symbols-outlined">search</span>
       <span>Back to Search Portal</span>
@@ -296,7 +365,78 @@
 </header>
 
 <div class="container">
-  
+
+  <!-- Live Observability & Telemetry KPI Row -->
+  <div class="metrics-section">
+    <div class="section-title">
+      <span class="material-symbols-outlined" style="color:var(--primary);">monitoring</span>
+      <span>Live Observability & Telemetry Counters</span>
+    </div>
+    <div class="metrics-grid">
+      
+      <!-- Metric 1: Total Companies -->
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span>Companies Indexed</span>
+          <span class="material-symbols-outlined">apartment</span>
+        </div>
+        <div class="metric-value" id="metric-companies">--</div>
+        <div class="metric-subtext" id="metric-avg-profiles">Avg profiles / co: --</div>
+      </div>
+
+      <!-- Metric 2: Profiles & Split -->
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span>Total Profiles</span>
+          <span class="material-symbols-outlined">groups</span>
+        </div>
+        <div class="metric-value" id="metric-profiles">--</div>
+        <div class="metric-subtext" id="metric-profiles-split">C-Suite: -- | Board: --</div>
+      </div>
+
+      <!-- Metric 3: Email Coverage -->
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span>Email Coverage</span>
+          <span class="material-symbols-outlined">mail</span>
+        </div>
+        <div class="metric-value" id="metric-email-pct">--%</div>
+        <div class="metric-subtext" id="metric-email-count">-- verified corporate emails</div>
+      </div>
+
+      <!-- Metric 4: Social / X Coverage -->
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span>Social / X Coverage</span>
+          <span class="material-symbols-outlined">alternate_email</span>
+        </div>
+        <div class="metric-value" id="metric-social-pct">--%</div>
+        <div class="metric-subtext" id="metric-social-count">-- profiles with X handles</div>
+      </div>
+
+      <!-- Metric 5: Ecosystem Graph -->
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span>Ecosystem Nodes</span>
+          <span class="material-symbols-outlined">hub</span>
+        </div>
+        <div class="metric-value" id="metric-ecosystem-total">--</div>
+        <div class="metric-subtext" id="metric-eco-detail">Partners & Competitor links</div>
+      </div>
+
+      <!-- Metric 6: Cache Hit Ratio -->
+      <div class="metric-card">
+        <div class="metric-card-header">
+          <span>Cache Hit Ratio</span>
+          <span class="material-symbols-outlined">bolt</span>
+        </div>
+        <div class="metric-value" id="metric-cache-hit">--%</div>
+        <div class="metric-subtext" id="metric-cache-sub">Instant Firestore hits</div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Batch CSV Upload Section -->
   <div class="batch-card">
     <div class="batch-header">
@@ -332,9 +472,13 @@
   <div class="admin-banner">
     <div class="banner-text">
       <h1>All Collected Leadership Intelligence</h1>
-      <p id="stats-summary">Loading database records...</p>
+      <p id="stats-summary">Loading database catalog...</p>
     </div>
     <div class="actions-group">
+      <button onclick="loadAdminData()" class="btn btn-secondary" title="Refresh metrics and records">
+        <span class="material-symbols-outlined">refresh</span>
+        <span>Refresh</span>
+      </button>
       <a href="/api/admin/export/csv" class="btn btn-success" download>
         <span class="material-symbols-outlined">download</span>
         <span>Download Full CSV</span>
@@ -375,7 +519,40 @@
 </div>
 
 <script>
+  async function loadMetrics() {
+    try {
+      const resp = await fetch('/api/admin/metrics');
+      const data = await resp.json();
+
+      document.getElementById('metric-companies').textContent = data.catalog.total_companies || 0;
+      document.getElementById('metric-avg-profiles').textContent = `Avg profiles / co: ${data.catalog.avg_profiles_per_company}`;
+      
+      document.getElementById('metric-profiles').textContent = data.catalog.total_profiles || 0;
+      document.getElementById('metric-profiles-split').textContent = `C-Suite: ${data.catalog.c_suite_executives} | Board: ${data.catalog.board_of_directors}`;
+      
+      document.getElementById('metric-email-pct').textContent = `${data.coverage.email_coverage_pct}%`;
+      document.getElementById('metric-email-count').textContent = `${data.coverage.email_count} verified emails`;
+
+      document.getElementById('metric-social-pct').textContent = `${data.coverage.social_coverage_pct}%`;
+      document.getElementById('metric-social-count').textContent = `${data.coverage.social_count} profiles with X`;
+
+      const totalEco = (data.ecosystem.partners_data_points || 0) + (data.ecosystem.competitors_data_points || 0);
+      document.getElementById('metric-ecosystem-total').textContent = totalEco;
+      document.getElementById('metric-eco-detail').textContent = `${data.ecosystem.partners_data_points} partners, ${data.ecosystem.competitors_data_points} competitors`;
+
+      document.getElementById('metric-cache-hit').textContent = `${data.performance.cache_hit_ratio_pct}%`;
+      document.getElementById('metric-cache-sub').textContent = `${data.performance.cache_hits} hits / ${data.performance.total_searches} searches`;
+
+      if (data.service_health && data.service_health.database_status) {
+        document.getElementById('service-health-text').textContent = 'Firestore & Vertex AI Online';
+      }
+    } catch (err) {
+      console.error('Error loading metrics:', err);
+    }
+  }
+
   async function loadAdminData() {
+    loadMetrics();
     try {
       const resp = await fetch('/api/admin/all');
       const data = await resp.json();
