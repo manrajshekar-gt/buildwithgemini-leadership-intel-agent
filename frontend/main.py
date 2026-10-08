@@ -198,7 +198,7 @@ async def upload_batch_csv(file: UploadFile = File(...)):
     except UnicodeDecodeError:
         text = contents.decode("latin1", errors="ignore")
 
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    lines = [line.strip() for line in text.splitlines() if line.strip() and all(32 <= ord(c) <= 126 for c in line)]
     if not lines:
         return {"status": "error", "message": "Uploaded file is empty"}
 
