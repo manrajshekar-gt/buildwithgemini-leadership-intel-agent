@@ -2,14 +2,17 @@
 
 Serves the front-end web UI and provides:
 1. /api/search - Instant query of Firestore with semantic vector search fallback.
-2. /api/semantic-search - Natural-language executive search (e.g. 'board member with cybersecurity in fintech').
+2. /api/semantic-search - Natural-language executive search.
 3. /api/webhook/crm - Outbound webhook trigger to sync leadership data with HubSpot/Salesforce.
-4. /api/digest/weekly - Weekly competitor intelligence digest generator (for Cloud Scheduler / email delivery).
-5. /api/admin/metrics - Real-time telemetry, coverage stats, performance counters & service health.
-6. /api/admin/export/csv & /api/admin/export/json - Data downloads.
-7. /api/admin/upload-batch - Batch CSV extraction.
+4. /api/digest/weekly - Weekly competitor intelligence digest generator.
+5. /api/admin/schedule - GET & POST endpoints to configure automated refresh frequency (Daily, 12h, 6h, Weekly, or Manual) and view execution telemetry.
+6. /api/admin/schedule/run-now - Trigger an immediate full catalog automated refresh.
+7. /api/admin/metrics - Real-time telemetry, coverage stats, performance counters & service health.
+8. /api/admin/export/csv & /api/admin/export/json - Data downloads.
+9. /api/admin/upload-batch - Batch CSV extraction.
 """
 
+import asyncio
 import csv
 import io
 import json
@@ -38,6 +41,8 @@ app.add_middleware(
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-a0fc456f3f90")
 COLLECTION_NAME = "leadership_profiles"
+CONFIG_COLLECTION = "system_configurations"
+SCHEDULE_DOC_ID = "refresh_schedule"
 
 _db = None
 _start_time = time.time()
@@ -46,6 +51,19 @@ _search_stats = {
     "cache_hits": 0,
     "cache_misses": 0,
     "total_latency_seconds": 0.0,
+}
+
+# Automated scheduler state
+_scheduler_task = None
+_default_schedule = {
+    "enabled": True,
+    "frequency": "daily",  # options: hourly, every_6h, every_12h, daily, weekly, manual
+    "interval_seconds": 86400,
+    "last_run": None,
+    "next_run": None,
+    "last_status": "Idle (Awaiting schedule)",
+    "last_companies_refreshed": 0,
+    "last_duration_seconds": 0,
 }
 
 
@@ -57,14 +75,176 @@ def get_db():
 
 
 # ==========================================
+# AUTOMATED REFRESH RUNNER
+# ==========================================
+
+async def execute_scheduled_refresh():
+    """Iterates through all indexed companies and re-runs discovery to refresh
+    partners, competitors, latest tweets/statements, and executive movements.
+    """
+    db = get_db()
+    docs = list(db.collection(COLLECTION_NAME).stream())
+    distinct_companies = {}
+    for d in docs:
+        data = d.to_dict()
+        comp = data.get("company_name")
+        url = data.get("company_url")
+        if comp and comp not in distinct_companies:
+            distinct_companies[comp] = url or comp
+
+    start_ts = time.time()
+    refreshed_count = 0
+    print(f"[Scheduler] Starting automated intelligence refresh for {len(distinct_companies)} companies...")
+
+    for comp, query_val in distinct_companies.items():
+        try:
+            # Re-discover in thread to avoid blocking FastAPI
+            await asyncio.to_thread(discover_and_save_company, query_val)
+            refreshed_count += 1
+            print(f"[Scheduler] Refreshed intelligence for: {comp}")
+        except Exception as e:
+            print(f"[Scheduler] Error refreshing {comp}: {e}")
+
+    duration = round(time.time() - start_ts, 1)
+    now_str = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime())
+
+    # Update state in Firestore
+    sched_doc = get_schedule_config()
+    next_ts = time.time() + sched_doc.get("interval_seconds", 86400)
+    next_str = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime(next_ts))
+
+    update_payload = {
+        "last_run": now_str,
+        "next_run": next_str,
+        "last_status": f"Successfully refreshed {refreshed_count}/{len(distinct_companies)} companies in {duration}s",
+        "last_companies_refreshed": refreshed_count,
+        "last_duration_seconds": duration,
+    }
+    db.collection(CONFIG_COLLECTION).document(SCHEDULE_DOC_ID).set(update_payload, merge=True)
+    return update_payload
+
+
+async def scheduler_background_loop():
+    """Continuous background loop monitoring schedule frequency."""
+    # Small initial delay to allow FastAPI startup to complete cleanly
+    await asyncio.sleep(5)
+    while True:
+        try:
+            sched = get_schedule_config()
+            if sched.get("enabled", True) and sched.get("frequency") != "manual":
+                interval = sched.get("interval_seconds", 86400)
+                last_run = sched.get("last_run_timestamp")
+                now = time.time()
+
+                if last_run is None:
+                    # Initialize timestamp on first boot so it does not trigger immediately
+                    db = get_db()
+                    db.collection(CONFIG_COLLECTION).document(SCHEDULE_DOC_ID).set(
+                        {"last_run_timestamp": now}, merge=True
+                    )
+                elif now - last_run >= interval:
+                    # Update timestamp first to prevent re-entrancy
+                    db = get_db()
+                    db.collection(CONFIG_COLLECTION).document(SCHEDULE_DOC_ID).set(
+                        {"last_run_timestamp": now}, merge=True
+                    )
+                    await execute_scheduled_refresh()
+        except Exception as e:
+            print(f"[Scheduler Loop Error] {e}")
+
+        # Check every 60 seconds
+        await asyncio.sleep(60)
+
+        # Check every 60 seconds
+        await asyncio.sleep(60)
+
+
+@app.on_event("startup")
+async def start_scheduler():
+    global _scheduler_task
+    _scheduler_task = asyncio.create_task(scheduler_background_loop())
+
+
+def get_schedule_config() -> Dict[str, Any]:
+    db = get_db()
+    try:
+        doc = db.collection(CONFIG_COLLECTION).document(SCHEDULE_DOC_ID).get()
+        if doc.exists:
+            merged = dict(_default_schedule)
+            merged.update(doc.to_dict())
+            return merged
+    except Exception:
+        pass
+    return dict(_default_schedule)
+
+
+# ==========================================
+# ADMIN SCHEDULE CONTROLS & API
+# ==========================================
+@app.get("/api/admin/schedule")
+async def get_schedule():
+    """Returns current automation schedule, frequency, and telemetry."""
+    return get_schedule_config()
+
+
+@app.post("/api/admin/schedule")
+async def update_schedule(payload: Dict[str, Any]):
+    """Updates the automated intelligence refresh schedule at the admin level.
+
+    Accepts:
+    {
+       "enabled": true,
+       "frequency": "daily" | "every_12h" | "every_6h" | "hourly" | "weekly" | "manual"
+    }
+    """
+    freq_map = {
+        "hourly": 3600,
+        "every_6h": 21600,
+        "every_12h": 43200,
+        "daily": 86400,
+        "weekly": 604800,
+        "manual": 0,
+    }
+
+    freq = payload.get("frequency", "daily")
+    if freq not in freq_map:
+        raise HTTPException(status_code=400, detail=f"Invalid frequency '{freq}'. Valid options: {list(freq_map.keys())}")
+
+    enabled = bool(payload.get("enabled", True))
+    interval = freq_map[freq]
+
+    now_ts = time.time()
+    next_run_str = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime(now_ts + interval)) if enabled and interval > 0 else "Paused / Manual Only"
+
+    updated = {
+        "enabled": enabled,
+        "frequency": freq,
+        "interval_seconds": interval,
+        "next_run": next_run_str,
+        "last_updated": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime(now_ts)),
+    }
+
+    db = get_db()
+    db.collection(CONFIG_COLLECTION).document(SCHEDULE_DOC_ID).set(updated, merge=True)
+    return {"status": "success", "schedule": get_schedule_config()}
+
+
+@app.post("/api/admin/schedule/run-now")
+async def trigger_refresh_now():
+    """Immediately triggers an on-demand full catalog refresh asynchronously."""
+    asyncio.create_task(execute_scheduled_refresh())
+    return {
+        "status": "triggered",
+        "message": "Automated intelligence refresh has been launched across all indexed companies in the background."
+    }
+
+
+# ==========================================
 # 1. CRM WEBHOOK INTEGRATION (HubSpot/Salesforce)
 # ==========================================
 @app.post("/api/webhook/crm")
 async def trigger_crm_sync(payload: Dict[str, Any]):
-    """Syncs a company's leadership intelligence to an external CRM webhook (Salesforce, HubSpot, etc.).
-
-    Accepts: { "company_name": "Spotify", "crm_webhook_url": "https://hooks.hubspot.com/..." }
-    """
+    """Syncs a company's leadership intelligence to an external CRM webhook."""
     company_name = payload.get("company_name", "").strip()
     webhook_url = payload.get("crm_webhook_url", "").strip()
     
@@ -120,10 +300,7 @@ async def trigger_crm_sync(payload: Dict[str, Any]):
 # ==========================================
 @app.get("/api/semantic-search")
 async def semantic_search(prompt: str = Query(..., min_length=2)):
-    """Natural-language semantic vector search across all executive & board member profiles.
-
-    Example: 'find board members with cybersecurity experience in fintech'
-    """
+    """Natural-language semantic vector search across all executive & board member profiles."""
     db = get_db()
     docs = list(db.collection(COLLECTION_NAME).stream())
     catalog = [d.to_dict() for d in docs]
@@ -178,10 +355,7 @@ Respond with ONLY JSON.
 # ==========================================
 @app.get("/api/digest/weekly")
 async def generate_weekly_digest(company: Optional[str] = Query(None)):
-    """Synthesizes a weekly competitor and leadership intelligence executive briefing.
-
-    Can be triggered periodically via GCP Cloud Scheduler.
-    """
+    """Synthesizes a weekly competitor and leadership intelligence executive briefing."""
     db = get_db()
     docs = list(db.collection(COLLECTION_NAME).stream())
     all_records = [d.to_dict() for d in docs]
