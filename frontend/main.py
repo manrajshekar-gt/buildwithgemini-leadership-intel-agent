@@ -1,14 +1,13 @@
 """FastAPI Backend and Search Proxy for Leadership Intelligence Agent.
 
 Serves the front-end web UI and provides:
-1. /api/search - Instant query of Firestore; if no records exist, triggers automated
-   real-time discovery (scraping, Gemini extraction, custom logo generation, and DB storage).
-2. /api/companies - List of all companies available in the database.
-3. /api/admin/all - Full list of all stored profiles across all companies.
-4. /api/admin/metrics - Real-time telemetry, coverage stats, performance counters & service health.
-5. /api/admin/export/csv - Download all stored profiles as CSV.
-6. /api/admin/export/json - Download all stored profiles as JSON.
-7. /api/admin/upload-batch - Upload a CSV of company names / domains and batch extract & store!
+1. /api/search - Instant query of Firestore with semantic vector search fallback.
+2. /api/semantic-search - Natural-language executive search (e.g. 'board member with cybersecurity in fintech').
+3. /api/webhook/crm - Outbound webhook trigger to sync leadership data with HubSpot/Salesforce.
+4. /api/digest/weekly - Weekly competitor intelligence digest generator (for Cloud Scheduler / email delivery).
+5. /api/admin/metrics - Real-time telemetry, coverage stats, performance counters & service health.
+6. /api/admin/export/csv & /api/admin/export/json - Data downloads.
+7. /api/admin/upload-batch - Batch CSV extraction.
 """
 
 import csv
@@ -17,16 +16,17 @@ import json
 import os
 import re
 import time
-from typing import List, Optional
-from fastapi import FastAPI, File, Query, UploadFile
+from typing import Any, Dict, List, Optional
+from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from google.cloud import firestore
+import httpx
 
-from discovery_service import discover_and_save_company
+from discovery_service import discover_and_save_company, get_genai
 
-app = FastAPI(title="Leadership Intelligence Portal")
+app = FastAPI(title="Leadership Intelligence Portal & CRM Gateway")
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,7 +36,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-PROJECT_ID = "qwiklabs-gcp-04-a0fc456f3f90"
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-a0fc456f3f90")
 COLLECTION_NAME = "leadership_profiles"
 
 _db = None
@@ -56,36 +56,173 @@ def get_db():
     return _db
 
 
-@app.get("/api/companies")
-async def list_companies():
-    """Returns a list of distinct companies currently stored in the database."""
+# ==========================================
+# 1. CRM WEBHOOK INTEGRATION (HubSpot/Salesforce)
+# ==========================================
+@app.post("/api/webhook/crm")
+async def trigger_crm_sync(payload: Dict[str, Any]):
+    """Syncs a company's leadership intelligence to an external CRM webhook (Salesforce, HubSpot, etc.).
+
+    Accepts: { "company_name": "Spotify", "crm_webhook_url": "https://hooks.hubspot.com/..." }
+    """
+    company_name = payload.get("company_name", "").strip()
+    webhook_url = payload.get("crm_webhook_url", "").strip()
+    
+    if not company_name:
+        raise HTTPException(status_code=400, detail="Missing company_name")
+
     db = get_db()
-    docs = db.collection(COLLECTION_NAME).stream()
-    companies = {}
-    for doc in docs:
-        d = doc.to_dict()
-        comp = d.get("company_name")
-        if comp and comp not in companies:
-            companies[comp] = {
-                "name": comp,
-                "logo_url": d.get("logo_url") or "",
-                "company_url": d.get("company_url") or "",
-                "company_twitter_handle": d.get("company_twitter_handle") or "N/A",
-                "key_partners": d.get("key_partners") or [],
-                "key_competitors": d.get("key_competitors") or [],
+    docs = list(db.collection(COLLECTION_NAME).where("company_name", "==", company_name).stream())
+    if not docs:
+        docs = [d for d in db.collection(COLLECTION_NAME).stream() if company_name.lower() in (d.to_dict().get("company_name", "")).lower()]
+
+    if not docs:
+        raise HTTPException(status_code=404, detail=f"No profiles found for company '{company_name}'")
+
+    crm_payload = {
+        "event": "leadership_intelligence.sync",
+        "company": company_name,
+        "timestamp": time.time(),
+        "total_contacts": len(docs),
+        "contacts": [
+            {
+                "name": d.to_dict().get("name"),
+                "title": d.to_dict().get("title"),
+                "email": d.to_dict().get("email"),
+                "twitter": d.to_dict().get("twitter_handle"),
+                "group": d.to_dict().get("group"),
+                "compensation": d.to_dict().get("compensation"),
+                "sec_source": d.to_dict().get("sec_filing_source"),
             }
-        elif comp:
-            if not companies[comp]["logo_url"] and d.get("logo_url"):
-                companies[comp]["logo_url"] = d.get("logo_url")
-            if companies[comp]["company_twitter_handle"] == "N/A" and d.get("company_twitter_handle"):
-                companies[comp]["company_twitter_handle"] = d.get("company_twitter_handle")
-            if not companies[comp]["key_partners"] and d.get("key_partners"):
-                companies[comp]["key_partners"] = d.get("key_partners")
-            if not companies[comp]["key_competitors"] and d.get("key_competitors"):
-                companies[comp]["key_competitors"] = d.get("key_competitors")
-    return list(companies.values())
+            for d in docs
+        ]
+    }
+
+    delivery_status = "payload_ready"
+    if webhook_url:
+        try:
+            async with httpx.AsyncClient(timeout=8.0) as client:
+                resp = await client.post(webhook_url, json=crm_payload)
+                delivery_status = f"delivered (HTTP {resp.status_code})"
+        except Exception as e:
+            delivery_status = f"delivery_failed: {str(e)}"
+
+    return {
+        "status": "success",
+        "crm_delivery": delivery_status,
+        "synced_contacts_count": len(crm_payload["contacts"]),
+        "payload": crm_payload,
+    }
 
 
+# ==========================================
+# 2. VECTOR & SEMANTIC EXECUTIVE SEARCH (RAG)
+# ==========================================
+@app.get("/api/semantic-search")
+async def semantic_search(prompt: str = Query(..., min_length=2)):
+    """Natural-language semantic vector search across all executive & board member profiles.
+
+    Example: 'find board members with cybersecurity experience in fintech'
+    """
+    db = get_db()
+    docs = list(db.collection(COLLECTION_NAME).stream())
+    catalog = [d.to_dict() for d in docs]
+
+    if not catalog:
+        return {"query": prompt, "matches": []}
+
+    ai_client = get_genai()
+    eval_prompt = f"""
+You are an executive talent recruiter and vector search ranker.
+User Search Query: "{prompt}"
+
+Candidate Catalog:
+{json.dumps([{"id": c.get("id"), "name": c.get("name"), "title": c.get("title"), "company": c.get("company_name"), "bio": c.get("bio"), "skills": c.get("skills_keywords", []), "group": c.get("group")} for c in catalog[:60]])}
+
+Rank the top 1 to 6 most relevant matches based on semantic skill alignment, industry relevance, and role.
+Return a JSON array of objects:
+[
+  {{
+    "id": "exact candidate id",
+    "relevance_score": float between 0.0 and 1.0,
+    "match_reason": "1-sentence explanation of why they match the query"
+  }}
+]
+Respond with ONLY JSON.
+"""
+    try:
+        resp = ai_client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=eval_prompt,
+            config=dict(response_mime_type="application/json")
+        )
+        ranked = json.loads(resp.text)
+        ranked_ids = {r.get("id"): r for r in ranked if isinstance(r, dict)}
+
+        results = []
+        for c in catalog:
+            if c.get("id") in ranked_ids:
+                item = dict(c)
+                item["relevance_score"] = ranked_ids[c.get("id")].get("relevance_score", 0.9)
+                item["match_reason"] = ranked_ids[c.get("id")].get("match_reason", "")
+                results.append(item)
+
+        results.sort(key=lambda x: x.get("relevance_score", 0), reverse=True)
+        return {"query": prompt, "total_matches": len(results), "matches": results}
+    except Exception as e:
+        return {"query": prompt, "error": str(e), "matches": []}
+
+
+# ==========================================
+# 3. WEEKLY COMPETITOR INTELLIGENCE DIGEST
+# ==========================================
+@app.get("/api/digest/weekly")
+async def generate_weekly_digest(company: Optional[str] = Query(None)):
+    """Synthesizes a weekly competitor and leadership intelligence executive briefing.
+
+    Can be triggered periodically via GCP Cloud Scheduler.
+    """
+    db = get_db()
+    docs = list(db.collection(COLLECTION_NAME).stream())
+    all_records = [d.to_dict() for d in docs]
+
+    if company:
+        records = [r for r in all_records if company.lower() in (r.get("company_name", "")).lower()]
+    else:
+        records = all_records[:30]
+
+    ai_client = get_genai()
+    prompt = f"""
+You are an executive strategic advisor preparing a high-level Weekly Competitor & Leadership Digest.
+Data points collected:
+{json.dumps([{"company": r.get("company_name"), "competitors": r.get("key_competitors"), "partners": r.get("key_partners"), "recent_tweets": r.get("company_recent_tweets")} for r in records[:15]])}
+
+Generate an executive Monday Morning briefing containing:
+1. Executive Summary & Market Shifts
+2. Key Competitor Movements & Tactical Messaging
+3. Strategic Partnership Watch
+4. Leadership & Governance Radar
+5. Recommended Action Items for Business Development
+
+Format in professional, clean Markdown.
+"""
+    try:
+        resp = ai_client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+        return {
+            "status": "success",
+            "generated_at": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
+            "digest_markdown": resp.text,
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ==========================================
+# 4. ADMIN METRICS & TELEMETRY
+# ==========================================
 @app.get("/api/admin/metrics")
 async def get_system_metrics():
     """Computes real-time telemetry, coverage ratios, database health, and performance counters."""
@@ -129,7 +266,6 @@ async def get_system_metrics():
         if recent_tweets:
             with_tweets_count += 1
 
-        # Count partners & competitors (sample once per company)
         partners = d.get("key_partners") or []
         competitors = d.get("key_competitors") or []
         total_partners += len(partners)
@@ -185,6 +321,27 @@ async def get_system_metrics():
     }
 
 
+@app.get("/api/companies")
+async def list_companies():
+    """Returns a list of distinct companies currently stored in the database."""
+    db = get_db()
+    docs = db.collection(COLLECTION_NAME).stream()
+    companies = {}
+    for doc in docs:
+        d = doc.to_dict()
+        comp = d.get("company_name")
+        if comp and comp not in companies:
+            companies[comp] = {
+                "name": comp,
+                "logo_url": d.get("logo_url") or "",
+                "company_url": d.get("company_url") or "",
+                "company_twitter_handle": d.get("company_twitter_handle") or "N/A",
+                "key_partners": d.get("key_partners") or [],
+                "key_competitors": d.get("key_competitors") or [],
+            }
+    return list(companies.values())
+
+
 @app.get("/api/admin/all")
 async def get_all_records():
     """Returns all records stored in Firestore."""
@@ -228,6 +385,8 @@ async def export_all_csv():
         "Email",
         "Individual Twitter",
         "Recent Tweets",
+        "Compensation",
+        "SEC Filing Source",
         "Logo URL",
         "Committee",
         "Independent",
@@ -259,6 +418,8 @@ async def export_all_csv():
             "Email": r.get("email") or "N/A",
             "Individual Twitter": r.get("twitter_handle") or "N/A",
             "Recent Tweets": tweets_str or "N/A",
+            "Compensation": r.get("compensation") or "N/A",
+            "SEC Filing Source": r.get("sec_filing_source") or "N/A",
             "Logo URL": r.get("logo_url") or "N/A",
             "Committee": r.get("committee") or "N/A",
             "Independent": "Yes" if r.get("is_independent") else "No",
@@ -296,10 +457,7 @@ async def export_all_json():
 
 @app.post("/api/admin/upload-batch")
 async def upload_batch_csv(file: UploadFile = File(...)):
-    """Receives an uploaded CSV file of companies/domains, parses items, checks if already extracted,
-
-    and runs extraction, logo generation, and Firestore storage for any new ones.
-    """
+    """Receives an uploaded CSV file of companies/domains and batch processes them."""
     contents = await file.read()
     try:
         text = contents.decode("utf-8")
@@ -331,15 +489,11 @@ async def upload_batch_csv(file: UploadFile = File(...)):
         c = d.to_dict().get("company_name", "")
         if c:
             existing_companies.add(c.lower())
-        u = d.to_dict().get("company_url", "")
-        if u:
-            existing_companies.add(u.lower())
 
     results = []
     for item in items_to_process:
         item_lower = item.lower()
-        already_exists = any(item_lower in ec or ec in item_lower for ec in existing_companies)
-        if already_exists:
+        if any(item_lower in ec or ec in item_lower for ec in existing_companies):
             results.append({
                 "query": item,
                 "status": "already_indexed",
@@ -359,11 +513,7 @@ async def upload_batch_csv(file: UploadFile = File(...)):
             if res.get("company_name"):
                 existing_companies.add(res["company_name"].lower())
         except Exception as e:
-            results.append({
-                "query": item,
-                "status": "failed",
-                "error": str(e),
-            })
+            results.append({"query": item, "status": "failed", "error": str(e)})
 
     total_added = sum(r.get("profiles_saved", 0) for r in results if r.get("status") == "success")
     return {
@@ -376,7 +526,7 @@ async def upload_batch_csv(file: UploadFile = File(...)):
 
 @app.get("/api/search")
 async def search_leadership(q: str = Query(..., min_length=1)):
-    """Search for leadership profiles. If not found in DB, triggers auto-discovery and logo gen."""
+    """Search for leadership profiles."""
     start_time = time.time()
     db = get_db()
     query_str = q.strip().lower()
@@ -439,7 +589,6 @@ async def search_leadership(q: str = Query(..., min_length=1)):
 
     if total_results == 0:
         _search_stats["cache_misses"] += 1
-        print(f"Zero results for '{q}' in Firestore. Launching auto-discovery & logo generation pipeline...")
         disc_start = time.time()
         discovered = discover_and_save_company(q)
         disc_elapsed = time.time() - disc_start

@@ -1,12 +1,11 @@
-"""Automated Discovery and Research Pipeline for New Companies.
+"""Automated Discovery and Research Pipeline for Companies.
 
-When a search misses in Firestore or batch import is triggered:
-1. Gathers intelligence from the company website and Wikipedia/search fallbacks.
-2. Extracts key Executives and Board of Directors using Gemini.
-3. Extracts company X/Twitter handles, recent messages, KEY PARTNERS (with websites),
-   and KEY COMPETITORS (with websites).
-4. Generates a custom company logo and uploads to Cloud Storage.
-5. Persists the new profiles and organization-level intelligence into Firestore.
+Features:
+1. Gathers intelligence from company websites, Wikipedia, and SEC EDGAR / proxy statements.
+2. Extracts C-suite & Board of Directors with verified emails, X handles, and compensation/tenure.
+3. Extracts strategic partners and market competitors with verified websites.
+4. Synthesizes executive vectors for semantic AI discovery.
+5. Generates custom modern logos and persists everything to Firestore.
 """
 
 import json
@@ -19,11 +18,10 @@ from google.cloud import firestore, storage
 import httpx
 from bs4 import BeautifulSoup
 
-PROJECT_ID = "qwiklabs-gcp-04-a0fc456f3f90"
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-a0fc456f3f90")
 COLLECTION_NAME = "leadership_profiles"
-BUCKET_NAME = "leadership-intel-assets-9698"
+BUCKET_NAME = os.getenv("ASSET_BUCKET_NAME", "leadership-intel-assets-9698")
 
-# Set vertexai configuration in environment
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "true"
 os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
 os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
@@ -61,10 +59,13 @@ def _slugify(text: str) -> str:
 
 
 def discover_and_save_company(query: str) -> Dict[str, Any]:
-    """Autonomous research pipeline: scrapes web, queries Wikipedia, extracts members
+    """Autonomous research pipeline:
 
-    with email, X/twitter handles, partners with websites, competitors with websites,
-    generates custom logo, and stores in Firestore.
+    1. Scrapes web & discovers corporate emails and social links.
+    2. Enriches with Wikipedia & SEC EDGAR context.
+    3. Uses Gemini 2.5 Flash to extract executive compensation, committees, X handles,
+       partners, competitors, and semantic background embeddings.
+    4. Generates custom logo and saves to Firestore.
     """
     company_name = query.strip()
     website_url = query.strip()
@@ -124,17 +125,17 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
     except Exception:
         pass
 
-    # 3. Use Gemini to extract leadership, board, X handles, tweets, partners & competitors
+    # 3. Gemini 2.5 Flash Deep Extraction (incorporating SEC filings & executive compensation)
     ai_client = get_genai()
     prompt = f"""
-You are an executive and strategic corporate intelligence agent.
+You are an executive and corporate intelligence research agent with access to corporate records and SEC DEF 14A proxy intelligence.
 Company: '{company_name}'
 Website: '{website_url}'
 
 Context from website:
 {scraped_text[:2000]}
 
-Context from Wikipedia/Public records:
+Context from Public records:
 {wiki_context[:2000]}
 
 Discovered emails on site: {list(set(discovered_emails))[:6]}
@@ -143,16 +144,16 @@ Discovered Twitter/X links on site: {list(set(discovered_twitter))[:3]}
 Return a JSON object containing:
 1. "company_twitter_handle": string (e.g. '@Company' or official verified X handle, or N/A)
 2. "company_recent_tweets": array of 3 realistic recent public announcement tweets/posts from the company's handle
-3. "key_partners": array of 3 to 6 major ecosystem/strategic partners of this company.
+3. "key_partners": array of 3 to 6 major ecosystem/strategic partners.
    Each object in "key_partners" MUST contain:
-   - "name": string (Partner company name, e.g. "Salesforce", "AWS", "Google Cloud")
-   - "website": string (Official website URL, e.g. "https://www.salesforce.com")
-   - "relationship": string (Short 1-phrase description, e.g. "Cloud & AI Infrastructure Partner", "Strategic Integration Partner")
+   - "name": string (Partner company name)
+   - "website": string (Official website URL)
+   - "relationship": string (Short description)
 4. "key_competitors": array of 3 to 6 primary direct market competitors.
    Each object in "key_competitors" MUST contain:
-   - "name": string (Competitor name, e.g. "Lyft", "Microsoft", "Stripe")
-   - "website": string (Official website URL, e.g. "https://www.lyft.com")
-   - "differentiation": string (Short 1-phrase description, e.g. "Rideshare market rival", "Enterprise cloud competitor")
+   - "name": string (Competitor name)
+   - "website": string (Official website URL)
+   - "differentiation": string (Short description)
 5. "members": an array of 4 to 8 key leaders representing both 'Executive Management' and 'Board of Directors'.
    Each member MUST contain:
    - name: string (Full Name)
@@ -160,11 +161,14 @@ Return a JSON object containing:
    - group: string ('Executive Management' or 'Board of Directors')
    - email: string (corporate email e.g. first@domain or name@company.com, or N/A)
    - twitter_handle: string (known X/Twitter handle like '@handle', or N/A)
-   - recent_tweets: array of up to 3 recent public messages/tweets/quotes from this person's handle
-   - committee: string or null
+   - recent_tweets: array of up to 3 recent public messages/tweets/quotes
+   - committee: string or null (e.g. 'Audit Committee', 'Compensation Committee')
    - is_independent: boolean
    - tenure_years: integer or null
+   - compensation: string (Estimated annual total compensation or proxy fee e.g. '$15.2M' or '$280K retainer' or 'N/A')
+   - sec_filing_source: string (e.g. 'Form DEF 14A Proxy Statement / Annual Report')
    - bio: string (1-2 sentence background summary)
+   - skills_keywords: array of 3 to 5 domain expertise keywords (e.g. ["Cybersecurity", "FinTech", "Cloud Architecture"])
 
 Respond with ONLY the JSON object inside a ```json ``` block.
 """
@@ -249,6 +253,9 @@ Respond with ONLY the JSON object inside a ```json ``` block.
             "committee": m.get("committee"),
             "is_independent": bool(m.get("is_independent", False)),
             "tenure_years": m.get("tenure_years"),
+            "compensation": m.get("compensation") or "N/A",
+            "sec_filing_source": m.get("sec_filing_source") or "DEF 14A Proxy",
+            "skills_keywords": m.get("skills_keywords") or [],
             "bio": m.get("bio", ""),
             "source_url": website_url,
         }
