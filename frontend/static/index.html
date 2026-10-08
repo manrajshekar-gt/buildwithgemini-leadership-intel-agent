@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leadership & Board Intelligence Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-hover: #1557b0;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --badge-exec-bg: #eff6ff;
+      --badge-exec-text: #1d4ed8;
+      --badge-board-bg: #f5f3ff;
+      --badge-board-text: #6d28d9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .header-logo .icon {
+      background: #e0f2fe;
+      color: #0284c7;
+      padding: 6px;
+      border-radius: 8px;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      flex: 1;
+    }
+
+    /* Hero & Search Box */
+    .search-hero {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .search-hero h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.02em;
+    }
+    .search-hero p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 1.75rem;
+    }
+    .search-form {
+      display: flex;
+      max-width: 700px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 0.35rem 0.5rem;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-form:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 4px 20px -2px rgba(26, 115, 232, 0.15);
+    }
+    .search-input-wrapper {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      padding-left: 0.75rem;
+      gap: 0.5rem;
+    }
+    .search-input-wrapper input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 1.05rem;
+      font-family: inherit;
+      color: var(--text-main);
+    }
+    .search-form button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.4rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.15s;
+    }
+    .search-form button:hover {
+      background: var(--primary-hover);
+    }
+
+    .quick-chips {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .chip {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.15s;
+    }
+    .chip:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+      border-color: #cbd5e1;
+    }
+
+    /* Company Overview Card */
+    .company-banner {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      animation: fadeIn 0.3s ease;
+    }
+    .company-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .company-logo-img {
+      width: 88px;
+      height: 88px;
+      border-radius: 16px;
+      object-fit: contain;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .company-logo-placeholder {
+      width: 88px;
+      height: 88px;
+      border-radius: 16px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .company-title h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .company-title p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-top: 0.25rem;
+    }
+    .stats-badge {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      text-align: right;
+    }
+    .stats-badge .count {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .stats-badge .lbl {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Section Groups */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .section-header h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .section-badge {
+      font-size: 0.8rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .badge-exec { background: var(--badge-exec-bg); color: var(--badge-exec-text); }
+    .badge-board { background: var(--badge-board-bg); color: var(--badge-board-text); }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Member Card */
+    .member-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .member-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+    .member-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+    .member-info h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .member-role {
+      font-size: 0.9rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-top: 0.2rem;
+    }
+    .member-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .member-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin: 0.8rem 0;
+      font-size: 0.88rem;
+    }
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #475569;
+    }
+    .meta-row .material-symbols-outlined {
+      font-size: 1.05rem;
+      color: #94a3b8;
+    }
+    .email-link {
+      color: #2563eb;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .email-link:hover {
+      text-decoration: underline;
+    }
+
+    .member-bio {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-top: 0.4rem;
+      border-top: 1px dashed var(--border);
+      padding-top: 0.6rem;
+    }
+
+    .member-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.9rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid #f1f5f9;
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+    .tag {
+      background: #f1f5f9;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 500;
+      color: #475569;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: #fff;
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      color: var(--text-muted);
+    }
+    .empty-state .material-symbols-outlined {
+      font-size: 3rem;
+      color: #cbd5e1;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: none;
+      margin: 3rem auto;
+      text-align: center;
+    }
+    .spinner-ring {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e2e8f0;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">
+    <span class="material-symbols-outlined icon">corporate_fare</span>
+    <span>Leadership & Board Intelligence</span>
+  </div>
+  <div style="font-size: 0.85rem; color: var(--text-muted);">
+    Powered by Agent Platform & Firestore
+  </div>
+</header>
+
+<div class="container">
+  <!-- Search Hero -->
+  <div class="search-hero">
+    <h1>Search Management & Board of Directors</h1>
+    <p>Discover corporate governance rosters, executive emails, and generated brand logos</p>
+
+    <form class="search-form" id="search-form">
+      <div class="search-input-wrapper">
+        <span class="material-symbols-outlined" style="color: #94a3b8;">search</span>
+        <input type="text" id="search-input" placeholder="Search company (e.g., Stripe, Movius, Alphabet, SmartHub)..." autofocus />
+      </div>
+      <button type="submit">
+        <span>Search</span>
+      </button>
+    </form>
+
+    <div class="quick-chips" id="quick-chips">
+      <span style="font-size: 0.85rem; color: var(--text-muted); align-self: center;">Popular:</span>
+      <button class="chip" onclick="doSearch('Alphabet')">Alphabet</button>
+      <button class="chip" onclick="doSearch('Stripe')">Stripe</button>
+      <button class="chip" onclick="doSearch('Movius')">Movius</button>
+      <button class="chip" onclick="doSearch('SmartHub')">SmartHub.ai</button>
+      <button class="chip" onclick="doSearch('Microsoft')">Microsoft</button>
+    </div>
+  </div>
+
+  <div class="spinner" id="spinner">
+    <div class="spinner-ring"></div>
+    <p id="spinner-text" style="margin-top: 0.8rem; color: var(--text-muted); font-size: 0.95rem; font-weight: 500;">Searching database...</p>
+    <p id="spinner-subtext" style="margin-top: 0.3rem; color: #94a3b8; font-size: 0.8rem;">If not found, our agent will auto-research the company, extract leadership, generate a brand logo, and save it.</p>
+  </div>
+
+  <!-- Dynamic Results Section -->
+  <div id="results-area" style="display: none;">
+    <!-- Company Banner with Logo -->
+    <div class="company-banner" id="company-banner">
+      <div class="company-left">
+        <div id="logo-container"></div>
+        <div class="company-title">
+          <h2 id="banner-company-name">Company Name</h2>
+          <p id="banner-company-url"></p>
+        </div>
+      </div>
+      <div class="stats-badge">
+        <div class="count" id="banner-count">0</div>
+        <div class="lbl">Profiles Found</div>
+      </div>
+    </div>
+
+    <!-- Executive Management Section -->
+    <div id="executives-section">
+      <div class="section-header">
+        <span class="material-symbols-outlined" style="color: #2563eb;">badge</span>
+        <h3>Executive Management & C-Suite</h3>
+        <span class="section-badge badge-exec" id="exec-count-badge">0</span>
+      </div>
+      <div class="cards-grid" id="executives-grid"></div>
+    </div>
+
+    <!-- Board of Directors Section -->
+    <div id="board-section">
+      <div class="section-header">
+        <span class="material-symbols-outlined" style="color: #7c3aed;">diversity_3</span>
+        <h3>Board of Directors & Governance</h3>
+        <span class="section-badge badge-board" id="board-count-badge">0</span>
+      </div>
+      <div class="cards-grid" id="board-grid"></div>
+    </div>
+  </div>
+
+  <!-- Empty / Initial State -->
+  <div class="empty-state" id="empty-state">
+    <span class="material-symbols-outlined">manage_search</span>
+    <h3 style="font-size: 1.2rem; color: #334155; margin-bottom: 0.4rem;">Search any company or executive</h3>
+    <p>Type a company name in the search bar above or click one of the quick suggestions.</p>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('search-form');
+  const input = document.getElementById('search-input');
+  const spinner = document.getElementById('spinner');
+  const resultsArea = document.getElementById('results-area');
+  const emptyState = document.getElementById('empty-state');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const query = input.value.trim();
+    if (query) doSearch(query);
+  });
+
+  function getInitials(name) {
+    if (!name) return '??';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  function renderCard(member) {
+    const isBoard = (member.group || '').toLowerCase().includes('board');
+    const initials = getInitials(member.name);
+    const emailHtml = member.email && member.email !== 'N/A'
+      ? `<div class="meta-row"><span class="material-symbols-outlined">mail</span><a href="mailto:${member.email}" class="email-link">${member.email}</a></div>`
+      : `<div class="meta-row" style="color:#94a3b8;"><span class="material-symbols-outlined">mail_lock</span><span>Email not listed</span></div>`;
+
+    const committeeHtml = member.committee && member.committee !== 'N/A'
+      ? `<div class="meta-row"><span class="material-symbols-outlined">gavel</span><span><strong>Committee:</strong> ${member.committee}</span></div>`
+      : '';
+
+    const tenureHtml = member.tenure_years != null
+      ? `<div class="meta-row"><span class="material-symbols-outlined">schedule</span><span>Tenure: ${member.tenure_years} years</span></div>`
+      : '';
+
+    const bioHtml = member.bio ? `<div class="member-bio">${member.bio}</div>` : '';
+
+    return `
+      <div class="member-card">
+        <div>
+          <div class="member-top">
+            <div class="member-info">
+              <h4>${member.name}</h4>
+              <div class="member-role">${member.title || 'Leadership'}</div>
+            </div>
+            <div class="member-avatar">${initials}</div>
+          </div>
+          <div class="member-meta">
+            ${emailHtml}
+            ${committeeHtml}
+            ${tenureHtml}
+          </div>
+          ${bioHtml}
+        </div>
+        <div class="member-footer">
+          <span class="tag">${member.company_name || 'Organization'}</span>
+          <span>${isBoard ? (member.is_independent ? 'Independent Director' : 'Board Member') : 'Executive'}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  async function doSearch(query) {
+    input.value = query;
+    spinner.style.display = 'block';
+    resultsArea.style.display = 'none';
+    emptyState.style.display = 'none';
+
+    try {
+      const resp = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      const data = await resp.json();
+      spinner.style.display = 'none';
+
+      if (!data.total_results || data.total_results === 0) {
+        emptyState.innerHTML = `
+          <span class="material-symbols-outlined">search_off</span>
+          <h3 style="font-size: 1.2rem; color: #334155; margin-bottom: 0.4rem;">No leadership records found for "${query}"</h3>
+          <p>Try searching another company or check the spelling.</p>
+        `;
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      // Display Company Banner & Logo
+      const logoContainer = document.getElementById('logo-container');
+      if (data.company_logo) {
+        logoContainer.innerHTML = `<img src="${data.company_logo}" alt="Logo" class="company-logo-img" />`;
+      } else {
+        logoContainer.innerHTML = `<div class="company-logo-placeholder"><span class="material-symbols-outlined" style="font-size:2.5rem;">apartment</span></div>`;
+      }
+
+      document.getElementById('banner-company-name').textContent = data.company_name;
+      document.getElementById('banner-company-url').textContent = data.company_url || 'Official Corporate Profile';
+      document.getElementById('banner-count').textContent = data.total_results;
+
+      // Render Executives
+      const execGrid = document.getElementById('executives-grid');
+      const execSection = document.getElementById('executives-section');
+      document.getElementById('exec-count-badge').textContent = data.executives.length;
+      if (data.executives.length > 0) {
+        execGrid.innerHTML = data.executives.map(renderCard).join('');
+        execSection.style.display = 'block';
+      } else {
+        execSection.style.display = 'none';
+      }
+
+      // Render Board Members
+      const boardGrid = document.getElementById('board-grid');
+      const boardSection = document.getElementById('board-section');
+      document.getElementById('board-count-badge').textContent = data.board_of_directors.length;
+      if (data.board_of_directors.length > 0) {
+        boardGrid.innerHTML = data.board_of_directors.map(renderCard).join('');
+        boardSection.style.display = 'block';
+      } else {
+        boardSection.style.display = 'none';
+      }
+
+      resultsArea.style.display = 'block';
+    } catch (err) {
+      spinner.style.display = 'none';
+      emptyState.innerHTML = `
+        <span class="material-symbols-outlined" style="color:#ef4444;">error</span>
+        <h3 style="font-size: 1.2rem; color: #dc2626;">Error loading data</h3>
+        <p>${err.message}</p>
+      `;
+      emptyState.style.display = 'block';
+    }
+  }
+
+  // Auto-run first search for Alphabet on initial load
+  window.addEventListener('DOMContentLoaded', () => {
+    doSearch('Alphabet');
+  });
+</script>
+
+</body>
+</html>
