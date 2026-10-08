@@ -4,11 +4,18 @@ Serves the front-end web UI and provides:
 1. /api/search - Instant query of Firestore; if no records exist, triggers automated
    real-time discovery (scraping, Gemini extraction, custom logo generation, and DB storage).
 2. /api/companies - List of all companies available in the database.
+3. /api/admin/all - Full list of all stored profiles across all companies.
+4. /api/admin/export/csv - Download all stored profiles as CSV.
+5. /api/admin/export/json - Download all stored profiles as JSON.
 """
 
+import csv
+import io
+import json
 import os
 from typing import Optional
 from fastapi import FastAPI, Query
+from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from google.cloud import firestore
@@ -56,6 +63,97 @@ async def list_companies():
         elif comp and not companies[comp]["logo_url"] and d.get("logo_url"):
             companies[comp]["logo_url"] = d.get("logo_url")
     return list(companies.values())
+
+
+@app.get("/api/admin/all")
+async def get_all_records():
+    """Returns all records stored in Firestore."""
+    db = get_db()
+    docs = list(db.collection(COLLECTION_NAME).stream())
+    records = []
+    for doc in docs:
+        d = doc.to_dict()
+        d["id"] = doc.id
+        records.append(d)
+    
+    # Sort by company then name
+    records.sort(key=lambda x: (x.get("company_name", "").lower(), x.get("group", ""), x.get("name", "")))
+    return {
+        "total_records": len(records),
+        "records": records,
+    }
+
+
+@app.get("/api/admin/export/csv")
+async def export_all_csv():
+    """Streams all collected database records as a CSV download."""
+    db = get_db()
+    docs = list(db.collection(COLLECTION_NAME).stream())
+    records = []
+    for doc in docs:
+        d = doc.to_dict()
+        records.append(d)
+
+    records.sort(key=lambda x: (x.get("company_name", "").lower(), x.get("group", ""), x.get("name", "")))
+
+    output = io.StringIO()
+    fieldnames = [
+        "Company",
+        "Name",
+        "Title",
+        "Group",
+        "Email",
+        "Logo URL",
+        "Committee",
+        "Independent",
+        "Tenure (Years)",
+        "Company URL",
+        "Bio",
+    ]
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+
+    for r in records:
+        writer.writerow({
+            "Company": r.get("company_name", ""),
+            "Name": r.get("name", ""),
+            "Title": r.get("title", ""),
+            "Group": r.get("group", ""),
+            "Email": r.get("email") or "N/A",
+            "Logo URL": r.get("logo_url") or "N/A",
+            "Committee": r.get("committee") or "N/A",
+            "Independent": "Yes" if r.get("is_independent") else "No",
+            "Tenure (Years)": r.get("tenure_years") if r.get("tenure_years") is not None else "N/A",
+            "Company URL": r.get("company_url") or "",
+            "Bio": r.get("bio") or "",
+        })
+
+    csv_data = output.getvalue()
+    return Response(
+        content=csv_data,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=all-leadership-intel-data.csv"},
+    )
+
+
+@app.get("/api/admin/export/json")
+async def export_all_json():
+    """Streams all collected database records as a formatted JSON download."""
+    db = get_db()
+    docs = list(db.collection(COLLECTION_NAME).stream())
+    records = []
+    for doc in docs:
+        d = doc.to_dict()
+        d["id"] = doc.id
+        records.append(d)
+
+    records.sort(key=lambda x: (x.get("company_name", "").lower(), x.get("name", "")))
+    json_data = json.dumps(records, indent=2)
+    return Response(
+        content=json_data,
+        media_type="application/json",
+        headers={"Content-Disposition": "attachment; filename=all-leadership-intel-data.json"},
+    )
 
 
 @app.get("/api/search")
