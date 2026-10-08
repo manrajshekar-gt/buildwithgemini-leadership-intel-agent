@@ -21,6 +21,7 @@
       --badge-exec-text: #1d4ed8;
       --badge-board-bg: #f5f3ff;
       --badge-board-text: #6d28d9;
+      --twitter-blue: #0f1419;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -41,7 +42,6 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
     .header-logo {
       display: flex;
@@ -53,160 +53,194 @@
     }
     .header-logo .icon {
       background: #e0f2fe;
-      color: #0284c7;
+      color: var(--primary);
       padding: 6px;
       border-radius: 8px;
     }
     .container {
       max-width: 1200px;
       width: 100%;
-      margin: 2rem auto;
-      padding: 0 1.5rem;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
       flex: 1;
     }
 
-    /* Hero & Search Box */
-    .search-hero {
+    /* Hero / Search Section */
+    .hero {
       text-align: center;
       margin-bottom: 2.5rem;
     }
-    .search-hero h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
+    .hero h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
       color: #0f172a;
-      margin-bottom: 0.6rem;
       letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
     }
-    .search-hero p {
-      color: var(--text-muted);
+    .hero p {
       font-size: 1.05rem;
-      margin-bottom: 1.75rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 1.75rem auto;
     }
-    .search-form {
-      display: flex;
-      max-width: 700px;
+
+    .search-box-wrapper {
+      max-width: 680px;
       margin: 0 auto;
-      background: #ffffff;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 0.35rem 0.5rem;
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative;
     }
-    .search-form:focus-within {
-      border-color: var(--primary);
-      box-shadow: 0 4px 20px -2px rgba(26, 115, 232, 0.15);
-    }
-    .search-input-wrapper {
+    .search-bar {
       display: flex;
       align-items: center;
-      flex: 1;
-      padding-left: 0.75rem;
-      gap: 0.5rem;
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      padding: 0.5rem 0.6rem 0.5rem 1.25rem;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
     }
-    .search-input-wrapper input {
-      width: 100%;
+    .search-bar:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.15);
+    }
+    .search-bar input {
+      flex: 1;
       border: none;
       outline: none;
       font-size: 1.05rem;
-      font-family: inherit;
       color: var(--text-main);
+      padding: 0.4rem 0.6rem;
+      background: transparent;
     }
-    .search-form button {
+    .search-bar button {
       background: var(--primary);
-      color: #fff;
+      color: #ffffff;
       border: none;
-      border-radius: 8px;
-      padding: 0.75rem 1.4rem;
+      outline: none;
+      padding: 0.75rem 1.6rem;
+      border-radius: 40px;
       font-weight: 600;
       font-size: 0.95rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 0.4rem;
-      transition: background 0.15s;
+      transition: background 0.15s ease;
     }
-    .search-form button:hover {
+    .search-bar button:hover {
       background: var(--primary-hover);
     }
 
+    /* Quick suggestions */
     .quick-chips {
+      margin-top: 1rem;
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
       gap: 0.5rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
+      align-items: center;
+    }
+    .chip-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
     }
     .chip {
       background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 20px;
       padding: 0.35rem 0.85rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
+      border-radius: 20px;
+      font-size: 0.82rem;
+      color: #334155;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
+      font-weight: 500;
       transition: all 0.15s;
     }
     .chip:hover {
-      background: #f1f5f9;
-      color: var(--text-main);
-      border-color: #cbd5e1;
+      border-color: var(--primary);
+      color: var(--primary);
+      background: #eff6ff;
     }
 
-    /* Company Overview Card */
+    /* Loading Spinner */
+    .spinner-container {
+      display: none;
+      text-align: center;
+      padding: 3rem 0;
+    }
+    .spinner {
+      border: 3px solid #e2e8f0;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem auto;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Results Header / Company Banner */
     .company-banner {
       background: #ffffff;
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 1.5rem 2rem;
+      padding: 1.75rem 2rem;
       margin-bottom: 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-      animation: fadeIn 0.3s ease;
     }
-    .company-left {
+    .company-header-left {
       display: flex;
       align-items: center;
       gap: 1.5rem;
     }
     .company-logo-img {
-      width: 88px;
-      height: 88px;
-      border-radius: 16px;
+      width: 80px;
+      height: 80px;
       object-fit: contain;
-      background: #ffffff;
+      border-radius: 12px;
       border: 1px solid var(--border);
-      padding: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      background: #ffffff;
+      padding: 6px;
     }
     .company-logo-placeholder {
-      width: 88px;
-      height: 88px;
-      border-radius: 16px;
+      width: 80px;
+      height: 80px;
       background: #f1f5f9;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-muted);
-      border: 1px solid var(--border);
+      color: #94a3b8;
     }
     .company-title h2 {
       font-size: 1.6rem;
       font-weight: 700;
       color: #0f172a;
+    }
+    .company-url {
+      font-size: 0.9rem;
+      color: var(--primary);
+      text-decoration: none;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-    }
-    .company-title p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
+      gap: 0.25rem;
       margin-top: 0.25rem;
+    }
+    .company-twitter-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 0.4rem;
+      text-decoration: none;
     }
     .stats-badge {
       background: #f8fafc;
@@ -225,6 +259,34 @@
       text-transform: uppercase;
       font-weight: 600;
       color: var(--text-muted);
+    }
+
+    /* Company Recent Tweets Box */
+    .company-tweets-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .tweets-header {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .tweet-bubble {
+      background: #f8fafc;
+      border-left: 3px solid var(--primary);
+      padding: 0.6rem 0.85rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.88rem;
+      color: #334155;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
     }
 
     /* Section Groups */
@@ -252,7 +314,7 @@
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
       gap: 1.25rem;
       margin-bottom: 2.5rem;
     }
@@ -318,77 +380,94 @@
       color: #475569;
     }
     .meta-row .material-symbols-outlined {
-      font-size: 1.05rem;
-      color: #94a3b8;
+      font-size: 1.1rem;
+      color: #64748b;
     }
     .email-link {
-      color: #2563eb;
+      color: var(--primary);
       text-decoration: none;
-      word-break: break-all;
+      font-weight: 500;
     }
-    .email-link:hover {
-      text-decoration: underline;
+    .email-link:hover { text-decoration: underline; }
+
+    .twitter-link {
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #f1f5f9;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
     }
+    .twitter-link:hover { background: #e2e8f0; }
 
     .member-bio {
-      font-size: 0.85rem;
-      color: var(--text-muted);
+      font-size: 0.86rem;
+      color: #475569;
       line-height: 1.45;
-      margin-top: 0.4rem;
+      margin-top: 0.6rem;
+      background: #f8fafc;
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+    }
+
+    /* Individual Recent Messages */
+    .individual-tweets {
+      margin-top: 0.75rem;
       border-top: 1px dashed var(--border);
-      padding-top: 0.6rem;
+      padding-top: 0.65rem;
+    }
+    .individual-tweets-title {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .indiv-tweet {
+      font-size: 0.8rem;
+      color: #334155;
+      background: #f8fafc;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      margin-bottom: 0.35rem;
+      line-height: 1.35;
+      border-left: 2px solid #0f172a;
     }
 
     .member-footer {
+      border-top: 1px solid #f1f5f9;
+      padding-top: 0.75rem;
+      margin-top: 0.75rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 0.9rem;
-      padding-top: 0.6rem;
-      border-top: 1px solid #f1f5f9;
       font-size: 0.78rem;
       color: #94a3b8;
     }
     .tag {
       background: #f1f5f9;
-      padding: 0.15rem 0.5rem;
+      color: #475569;
+      padding: 0.2rem 0.5rem;
       border-radius: 6px;
       font-weight: 500;
-      color: #475569;
     }
 
-    /* Empty state */
     .empty-state {
       text-align: center;
-      padding: 4rem 2rem;
-      background: #fff;
-      border: 1px dashed var(--border);
-      border-radius: 16px;
+      padding: 4rem 1rem;
       color: var(--text-muted);
     }
     .empty-state .material-symbols-outlined {
-      font-size: 3rem;
+      font-size: 3.5rem;
       color: #cbd5e1;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
     }
-
-    /* Loading Spinner */
-    .spinner {
-      display: none;
-      margin: 3rem auto;
-      text-align: center;
-    }
-    .spinner-ring {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      border: 4px solid #e2e8f0;
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -401,7 +480,7 @@
   <div style="display: flex; align-items: center; gap: 1.5rem;">
     <a href="/admin.html" style="display: flex; align-items: center; gap: 0.4rem; color: #1e293b; text-decoration: none; font-weight: 600; font-size: 0.9rem; padding: 0.4rem 0.8rem; border-radius: 8px; background: #f1f5f9; transition: background 0.15s;">
       <span class="material-symbols-outlined" style="font-size: 1.15rem; color: #475569;">admin_panel_settings</span>
-      <span>Admin & Data Export</span>
+      <span>Admin & Batch Export</span>
     </a>
     <div style="font-size: 0.85rem; color: var(--text-muted);">
       Powered by Agent Platform & Firestore
@@ -411,57 +490,70 @@
 
 <div class="container">
   <!-- Search Hero -->
-  <div class="search-hero">
-    <h1>Search Management & Board of Directors</h1>
-    <p>Discover corporate governance rosters, executive emails, and generated brand logos</p>
+  <div class="hero">
+    <h1>Executive & Board Intelligence</h1>
+    <p>Search any company to discover executive leadership, board members, verified emails, X/Twitter handles, and recent posts.</p>
+    
+    <div class="search-box-wrapper">
+      <form id="search-form" class="search-bar">
+        <span class="material-symbols-outlined" style="color: #94a3b8; font-size: 1.4rem;">search</span>
+        <input type="text" id="search-input" placeholder="Enter company name, domain, or executive..." autocomplete="off" />
+        <button type="submit">
+          <span>Search</span>
+          <span class="material-symbols-outlined" style="font-size: 1.1rem;">arrow_forward</span>
+        </button>
+      </form>
 
-    <form class="search-form" id="search-form">
-      <div class="search-input-wrapper">
-        <span class="material-symbols-outlined" style="color: #94a3b8;">search</span>
-        <input type="text" id="search-input" placeholder="Search company (e.g., Stripe, Movius, Alphabet, SmartHub)..." autofocus />
+      <div class="quick-chips">
+        <span class="chip-label">Try searching:</span>
+        <span class="chip" onclick="doSearch('Alphabet')">Alphabet</span>
+        <span class="chip" onclick="doSearch('Stripe')">Stripe</span>
+        <span class="chip" onclick="doSearch('NVIDIA')">NVIDIA</span>
+        <span class="chip" onclick="doSearch('Spotify')">Spotify</span>
+        <span class="chip" onclick="doSearch('Microsoft')">Microsoft</span>
       </div>
-      <button type="submit">
-        <span>Search</span>
-      </button>
-    </form>
-
-    <div class="quick-chips" id="quick-chips">
-      <span style="font-size: 0.85rem; color: var(--text-muted); align-self: center;">Popular:</span>
-      <button class="chip" onclick="doSearch('Alphabet')">Alphabet</button>
-      <button class="chip" onclick="doSearch('Stripe')">Stripe</button>
-      <button class="chip" onclick="doSearch('Movius')">Movius</button>
-      <button class="chip" onclick="doSearch('SmartHub')">SmartHub.ai</button>
-      <button class="chip" onclick="doSearch('Microsoft')">Microsoft</button>
     </div>
   </div>
 
-  <div class="spinner" id="spinner">
-    <div class="spinner-ring"></div>
-    <p id="spinner-text" style="margin-top: 0.8rem; color: var(--text-muted); font-size: 0.95rem; font-weight: 500;">Searching database...</p>
-    <p id="spinner-subtext" style="margin-top: 0.3rem; color: #94a3b8; font-size: 0.8rem;">If not found, our agent will auto-research the company, extract leadership, generate a brand logo, and save it.</p>
+  <!-- Loading State -->
+  <div class="spinner-container" id="spinner">
+    <div class="spinner"></div>
+    <p style="color: var(--text-muted); font-weight: 500;">Researching company, extracting leadership, and retrieving X handles...</p>
   </div>
 
-  <!-- Dynamic Results Section -->
+  <!-- Results Section -->
   <div id="results-area" style="display: none;">
-    <!-- Company Banner with Logo -->
+    <!-- Company Banner -->
     <div class="company-banner" id="company-banner">
-      <div class="company-left">
+      <div class="company-header-left">
         <div id="logo-container"></div>
         <div class="company-title">
           <h2 id="banner-company-name">Company Name</h2>
-          <p id="banner-company-url"></p>
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <a href="#" id="banner-company-url" class="company-url" target="_blank" rel="noopener"></a>
+            <a href="#" id="banner-company-twitter" class="company-twitter-badge" target="_blank" style="display:none;"></a>
+          </div>
         </div>
       </div>
       <div class="stats-badge">
         <div class="count" id="banner-count">0</div>
-        <div class="lbl">Profiles Found</div>
+        <div class="lbl">Profiles Listed</div>
       </div>
     </div>
 
+    <!-- Company Tweets Section (if present) -->
+    <div class="company-tweets-card" id="company-tweets-card" style="display:none;">
+      <div class="tweets-header">
+        <span class="material-symbols-outlined" style="color:#0f172a;">chat</span>
+        <span>Latest 3 Posts from <span id="company-tweets-handle"></span></span>
+      </div>
+      <div id="company-tweets-list"></div>
+    </div>
+
     <!-- Executive Management Section -->
-    <div id="executives-section">
+    <div id="executives-section" style="display: none;">
       <div class="section-header">
-        <span class="material-symbols-outlined" style="color: #2563eb;">badge</span>
+        <span class="material-symbols-outlined" style="color: var(--primary);">badge</span>
         <h3>Executive Management & C-Suite</h3>
         <span class="section-badge badge-exec" id="exec-count-badge">0</span>
       </div>
@@ -469,10 +561,10 @@
     </div>
 
     <!-- Board of Directors Section -->
-    <div id="board-section">
+    <div id="board-section" style="display: none;">
       <div class="section-header">
-        <span class="material-symbols-outlined" style="color: #7c3aed;">diversity_3</span>
-        <h3>Board of Directors & Governance</h3>
+        <span class="material-symbols-outlined" style="color: #6d28d9;">account_balance</span>
+        <h3>Board of Directors</h3>
         <span class="section-badge badge-board" id="board-count-badge">0</span>
       </div>
       <div class="cards-grid" id="board-grid"></div>
@@ -510,10 +602,22 @@
   function renderCard(member) {
     const isBoard = (member.group || '').toLowerCase().includes('board');
     const initials = getInitials(member.name);
+    
+    // Email Row
     const emailHtml = member.email && member.email !== 'N/A'
       ? `<div class="meta-row"><span class="material-symbols-outlined">mail</span><a href="mailto:${member.email}" class="email-link">${member.email}</a></div>`
       : `<div class="meta-row" style="color:#94a3b8;"><span class="material-symbols-outlined">mail_lock</span><span>Email not listed</span></div>`;
 
+    // Twitter Handle Row
+    const twitterHandle = member.twitter_handle && member.twitter_handle !== 'N/A' ? member.twitter_handle : '';
+    const twitterHtml = twitterHandle
+      ? `<div class="meta-row">
+           <span class="material-symbols-outlined">alternate_email</span>
+           <a href="https://x.com/${twitterHandle.replace('@','')}" target="_blank" class="twitter-link">${twitterHandle}</a>
+         </div>`
+      : '';
+
+    // Committee & Tenure
     const committeeHtml = member.committee && member.committee !== 'N/A'
       ? `<div class="meta-row"><span class="material-symbols-outlined">gavel</span><span><strong>Committee:</strong> ${member.committee}</span></div>`
       : '';
@@ -523,6 +627,22 @@
       : '';
 
     const bioHtml = member.bio ? `<div class="member-bio">${member.bio}</div>` : '';
+
+    // Recent Tweets List
+    let tweetsHtml = '';
+    const recent = member.recent_tweets || [];
+    if (recent.length > 0) {
+      const tweetItems = recent.slice(0, 3).map(t => `<div class="indiv-tweet">"${t}"</div>`).join('');
+      tweetsHtml = `
+        <div class="individual-tweets">
+          <div class="individual-tweets-title">
+            <span class="material-symbols-outlined" style="font-size:0.9rem;">forum</span>
+            <span>Latest 3 Messages</span>
+          </div>
+          ${tweetItems}
+        </div>
+      `;
+    }
 
     return `
       <div class="member-card">
@@ -536,10 +656,12 @@
           </div>
           <div class="member-meta">
             ${emailHtml}
+            ${twitterHtml}
             ${committeeHtml}
             ${tenureHtml}
           </div>
           ${bioHtml}
+          ${tweetsHtml}
         </div>
         <div class="member-footer">
           <span class="tag">${member.company_name || 'Organization'}</span>
@@ -579,8 +701,33 @@
       }
 
       document.getElementById('banner-company-name').textContent = data.company_name;
-      document.getElementById('banner-company-url').textContent = data.company_url || 'Official Corporate Profile';
+      const urlElem = document.getElementById('banner-company-url');
+      urlElem.textContent = data.company_url || 'Official Corporate Profile';
+      urlElem.href = data.company_url || '#';
+
+      // Company Twitter Badge
+      const twitterElem = document.getElementById('banner-company-twitter');
+      if (data.company_twitter_handle && data.company_twitter_handle !== 'N/A') {
+        twitterElem.textContent = data.company_twitter_handle;
+        twitterElem.href = `https://x.com/${data.company_twitter_handle.replace('@','')}`;
+        twitterElem.style.display = 'inline-flex';
+      } else {
+        twitterElem.style.display = 'none';
+      }
+
       document.getElementById('banner-count').textContent = data.total_results;
+
+      // Company Recent Tweets Box
+      const compTweetsCard = document.getElementById('company-tweets-card');
+      const compTweetsList = document.getElementById('company-tweets-list');
+      const compTweetsHandle = document.getElementById('company-tweets-handle');
+      if (data.company_recent_tweets && data.company_recent_tweets.length > 0) {
+        compTweetsHandle.textContent = data.company_twitter_handle || data.company_name;
+        compTweetsList.innerHTML = data.company_recent_tweets.slice(0, 3).map(t => `<div class="tweet-bubble">"${t}"</div>`).join('');
+        compTweetsCard.style.display = 'block';
+      } else {
+        compTweetsCard.style.display = 'none';
+      }
 
       // Render Executives
       const execGrid = document.getElementById('executives-grid');
@@ -605,21 +752,17 @@
       }
 
       resultsArea.style.display = 'block';
+
     } catch (err) {
       spinner.style.display = 'none';
       emptyState.innerHTML = `
-        <span class="material-symbols-outlined" style="color:#ef4444;">error</span>
-        <h3 style="font-size: 1.2rem; color: #dc2626;">Error loading data</h3>
+        <span class="material-symbols-outlined" style="color: #ef4444;">error</span>
+        <h3 style="font-size: 1.2rem; color: #dc2626; margin-bottom: 0.4rem;">Error querying leadership data</h3>
         <p>${err.message}</p>
       `;
       emptyState.style.display = 'block';
     }
   }
-
-  // Auto-run first search for Alphabet on initial load
-  window.addEventListener('DOMContentLoaded', () => {
-    doSearch('Alphabet');
-  });
 </script>
 
 </body>

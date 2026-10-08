@@ -61,9 +61,13 @@ async def list_companies():
                 "name": comp,
                 "logo_url": d.get("logo_url") or "",
                 "company_url": d.get("company_url") or "",
+                "company_twitter_handle": d.get("company_twitter_handle") or "N/A",
             }
-        elif comp and not companies[comp]["logo_url"] and d.get("logo_url"):
-            companies[comp]["logo_url"] = d.get("logo_url")
+        elif comp:
+            if not companies[comp]["logo_url"] and d.get("logo_url"):
+                companies[comp]["logo_url"] = d.get("logo_url")
+            if companies[comp]["company_twitter_handle"] == "N/A" and d.get("company_twitter_handle"):
+                companies[comp]["company_twitter_handle"] = d.get("company_twitter_handle")
     return list(companies.values())
 
 
@@ -100,10 +104,13 @@ async def export_all_csv():
     output = io.StringIO()
     fieldnames = [
         "Company",
+        "Company Twitter",
         "Name",
         "Title",
         "Group",
         "Email",
+        "Individual Twitter",
+        "Recent Tweets",
         "Logo URL",
         "Committee",
         "Independent",
@@ -115,12 +122,18 @@ async def export_all_csv():
     writer.writeheader()
 
     for r in records:
+        tweets_list = r.get("recent_tweets") or []
+        tweets_str = " | ".join(tweets_list) if isinstance(tweets_list, list) else str(tweets_list)
+
         writer.writerow({
             "Company": r.get("company_name", ""),
+            "Company Twitter": r.get("company_twitter_handle") or "N/A",
             "Name": r.get("name", ""),
             "Title": r.get("title", ""),
             "Group": r.get("group", ""),
             "Email": r.get("email") or "N/A",
+            "Individual Twitter": r.get("twitter_handle") or "N/A",
+            "Recent Tweets": tweets_str or "N/A",
             "Logo URL": r.get("logo_url") or "N/A",
             "Committee": r.get("committee") or "N/A",
             "Independent": "Yes" if r.get("is_independent") else "No",
@@ -173,14 +186,12 @@ async def upload_batch_csv(file: UploadFile = File(...)):
     if not lines:
         return {"status": "error", "message": "Uploaded file is empty"}
 
-    # Determine items from CSV rows
     raw_reader = csv.reader(lines)
     items_to_process = []
     for row in raw_reader:
         if not row:
             continue
         val = row[0].strip()
-        # Skip header rows if present
         if val.lower() in ["company", "company_name", "domain", "url", "name", "website"]:
             continue
         if val and val not in items_to_process:
@@ -189,7 +200,6 @@ async def upload_batch_csv(file: UploadFile = File(...)):
     if not items_to_process:
         return {"status": "error", "message": "No valid company names or domains found in CSV."}
 
-    # Retrieve existing companies to avoid duplicate scraping
     db = get_db()
     existing_docs = list(db.collection(COLLECTION_NAME).stream())
     existing_companies = set()
@@ -204,7 +214,6 @@ async def upload_batch_csv(file: UploadFile = File(...)):
     results = []
     for item in items_to_process:
         item_lower = item.lower()
-        # Check if already present
         already_exists = any(item_lower in ec or ec in item_lower for ec in existing_companies)
         if already_exists:
             results.append({
@@ -214,7 +223,6 @@ async def upload_batch_csv(file: UploadFile = File(...)):
             })
             continue
 
-        # Run extraction & storage
         try:
             res = discover_and_save_company(item)
             results.append({
@@ -254,6 +262,8 @@ async def search_leadership(q: str = Query(..., min_length=1)):
     company_name_found = ""
     company_logo_found = ""
     company_url_found = ""
+    company_twitter_found = ""
+    company_recent_tweets_found = []
 
     for doc in docs:
         d = doc.to_dict()
@@ -263,9 +273,15 @@ async def search_leadership(q: str = Query(..., min_length=1)):
         p_name = d.get("name", "")
         p_title = d.get("title", "")
         p_email = d.get("email", "")
+        p_twitter = d.get("twitter_handle", "")
 
         matches_company = query_str in c_name.lower() or query_str in c_url.lower()
-        matches_person = query_str in p_name.lower() or query_str in p_title.lower() or query_str in p_email.lower()
+        matches_person = (
+            query_str in p_name.lower() or 
+            query_str in p_title.lower() or 
+            query_str in p_email.lower() or
+            query_str in p_twitter.lower()
+        )
 
         if matches_company or matches_person:
             if not company_name_found and c_name:
@@ -274,6 +290,10 @@ async def search_leadership(q: str = Query(..., min_length=1)):
                 company_logo_found = d.get("logo_url")
             if not company_url_found and c_url:
                 company_url_found = c_url
+            if not company_twitter_found and d.get("company_twitter_handle"):
+                company_twitter_found = d.get("company_twitter_handle")
+            if not company_recent_tweets_found and d.get("company_recent_tweets"):
+                company_recent_tweets_found = d.get("company_recent_tweets")
 
             group = d.get("group", "Executive Management")
             if "board" in group.lower():
@@ -283,7 +303,6 @@ async def search_leadership(q: str = Query(..., min_length=1)):
 
     total_results = len(executives) + len(board_members)
 
-    # IF NO DATA IN DATABASE: Automatically run discovery pipeline!
     if total_results == 0:
         print(f"Zero results for '{q}' in Firestore. Launching auto-discovery & logo generation pipeline...")
         discovered = discover_and_save_company(q)
@@ -294,6 +313,8 @@ async def search_leadership(q: str = Query(..., min_length=1)):
         "company_name": company_name_found or q,
         "company_logo": company_logo_found,
         "company_url": company_url_found,
+        "company_twitter_handle": company_twitter_found or "N/A",
+        "company_recent_tweets": company_recent_tweets_found or [],
         "total_results": total_results,
         "executives": executives,
         "board_of_directors": board_members,

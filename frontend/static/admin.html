@@ -64,7 +64,7 @@
       gap: 0.35rem;
     }
     .container {
-      max-width: 1200px;
+      max-width: 1380px;
       width: 100%;
       margin: 2rem auto;
       padding: 0 1.5rem;
@@ -200,7 +200,7 @@
       width: 100%;
       border-collapse: collapse;
       text-align: left;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
     th {
       background: #f8fafc;
@@ -239,6 +239,32 @@
     .badge-board { background: #f5f3ff; color: #6d28d9; }
     .email-link { color: #2563eb; text-decoration: none; }
     .email-link:hover { text-decoration: underline; }
+    .twitter-link {
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      background: #f1f5f9;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+    .twitter-link:hover { background: #e2e8f0; }
+
+    .tweet-snippet {
+      font-size: 0.78rem;
+      color: #475569;
+      background: #f8fafc;
+      padding: 0.35rem 0.55rem;
+      border-radius: 6px;
+      border-left: 2px solid #0f172a;
+      margin-top: 0.35rem;
+      max-width: 300px;
+      white-space: normal;
+    }
+
     .spinner {
       border: 2px solid #93c5fd;
       border-top: 2px solid #1d4ed8;
@@ -285,14 +311,14 @@
         Click to select or drag and drop a CSV file of companies/domains
       </p>
       <p style="font-size: 0.82rem; color: #94a3b8;">
-        Example rows: <code>stripe.com</code>, <code>airbnb.com</code>, <code>Netflix</code>, <code>shopify.com</code>
+        Extracts executives, board members, emails, X handles, and 3 latest messages automatically.
       </p>
       <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleBatchUpload(this)" />
     </div>
 
     <div id="batch-progress" class="batch-status status-running">
       <div class="spinner"></div>
-      <span id="batch-progress-text">Processing batch file: scraping sites, extracting executives, generating logos...</span>
+      <span id="batch-progress-text">Processing batch file: scraping sites, extracting executives, fetching X handles, generating logos...</span>
     </div>
 
     <div id="batch-result" class="batch-status status-done"></div>
@@ -323,17 +349,19 @@
         <tr>
           <th>Logo</th>
           <th>Company</th>
+          <th>Company X</th>
           <th>Name</th>
           <th>Role / Title</th>
           <th>Group</th>
+          <th>Individual X</th>
+          <th>Latest Posts</th>
           <th>Email</th>
-          <th>Committee</th>
           <th>Tenure</th>
         </tr>
       </thead>
       <tbody id="table-body">
         <tr>
-          <td colspan="8" style="text-align: center; padding: 3rem; color: #94a3b8;">
+          <td colspan="10" style="text-align: center; padding: 3rem; color: #94a3b8;">
             Loading all stored profiles...
           </td>
         </tr>
@@ -356,7 +384,7 @@
 
       const tbody = document.getElementById('table-body');
       if (records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:3rem;">No records in database.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:3rem;">No records in database.</td></tr>`;
         return;
       }
 
@@ -370,15 +398,30 @@
           ? `<a href="mailto:${r.email}" class="email-link">${r.email}</a>`
           : `<span style="color:#94a3b8;">N/A</span>`;
 
+        const compX = r.company_twitter_handle && r.company_twitter_handle !== 'N/A'
+          ? `<a href="https://x.com/${r.company_twitter_handle.replace('@','')}" target="_blank" class="twitter-link">${r.company_twitter_handle}</a>`
+          : `<span style="color:#94a3b8;">-</span>`;
+
+        const indivX = r.twitter_handle && r.twitter_handle !== 'N/A'
+          ? `<a href="https://x.com/${r.twitter_handle.replace('@','')}" target="_blank" class="twitter-link">${r.twitter_handle}</a>`
+          : `<span style="color:#94a3b8;">-</span>`;
+
+        let tweetsCell = `<span style="color:#94a3b8;">-</span>`;
+        if (r.recent_tweets && r.recent_tweets.length > 0) {
+          tweetsCell = r.recent_tweets.slice(0, 3).map(t => `<div class="tweet-snippet">"${t}"</div>`).join('');
+        }
+
         return `
           <tr>
             <td>${logoImg}</td>
             <td><strong>${r.company_name || 'N/A'}</strong></td>
+            <td>${compX}</td>
             <td>${r.name}</td>
             <td style="color:#475569;">${r.title || 'Leadership'}</td>
             <td><span class="badge ${isBoard ? 'badge-board' : 'badge-exec'}">${r.group}</span></td>
+            <td>${indivX}</td>
+            <td>${tweetsCell}</td>
             <td>${emailCell}</td>
-            <td>${r.committee || '-'}</td>
             <td>${r.tenure_years != null ? r.tenure_years + ' yrs' : '-'}</td>
           </tr>
         `;
@@ -418,10 +461,9 @@
         
         resultDiv.innerHTML = `
           <strong>Batch Extraction Complete!</strong><br>
-          Processed ${data.total_requested} companies: ${successCount} newly extracted & logo-generated, 
+          Processed ${data.total_requested} companies: ${successCount} newly extracted with X handles & tweets, 
           ${alreadyCount} already indexed, ${data.total_new_profiles_added} new profiles saved to Firestore.
         `;
-        // Refresh table
         loadAdminData();
       } else {
         resultDiv.innerHTML = `<strong>Error:</strong> ${data.message || 'Batch upload failed.'}`;
