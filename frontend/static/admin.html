@@ -753,6 +753,15 @@
 
       <div class="metric-card">
         <div class="metric-card-header">
+          <span>LinkedIn Coverage</span>
+          <span class="material-symbols-outlined" style="color:#0a66c2;">account_circle</span>
+        </div>
+        <div class="metric-value" id="metric-linkedin-pct">--%</div>
+        <div class="metric-subtext" id="metric-linkedin-count">-- verified profiles</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-card-header">
           <span>Social / X Coverage</span>
           <span class="material-symbols-outlined">alternate_email</span>
         </div>
@@ -928,6 +937,7 @@
           <th>Name</th>
           <th>Role / Title</th>
           <th>Group</th>
+          <th>LinkedIn</th>
           <th>Individual X</th>
           <th>Compensation / SEC</th>
           <th>Email</th>
@@ -936,7 +946,7 @@
       </thead>
       <tbody id="table-body">
         <tr>
-          <td colspan="11" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+          <td colspan="12" style="text-align: center; padding: 3rem; color: var(--text-muted);">
             Loading all stored profiles...
           </td>
         </tr>
@@ -1076,6 +1086,9 @@
       document.getElementById('metric-email-pct').textContent = `${data.coverage.email_coverage_pct}%`;
       document.getElementById('metric-email-count').textContent = `${data.coverage.email_count} verified emails`;
 
+      document.getElementById('metric-linkedin-pct').textContent = `${data.coverage.linkedin_coverage_pct || 0}%`;
+      document.getElementById('metric-linkedin-count').textContent = `${data.coverage.linkedin_count || 0} verified profiles`;
+
       document.getElementById('metric-social-pct').textContent = `${data.coverage.social_coverage_pct}%`;
       document.getElementById('metric-social-count').textContent = `${data.coverage.social_count} profiles with X`;
 
@@ -1105,7 +1118,7 @@
 
       const tbody = document.getElementById('table-body');
       if (records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:3rem; color:var(--text-muted);">No records in database.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; padding:3rem; color:var(--text-muted);">No records in database.</td></tr>`;
         return;
       }
 
@@ -1118,6 +1131,10 @@
         const emailCell = r.email && r.email !== 'N/A'
           ? `<a href="mailto:${r.email}" class="email-link">${r.email}</a>`
           : `<span style="color:var(--text-muted);">N/A</span>`;
+
+        const indivLinkedIn = r.linkedin_url && r.linkedin_url !== 'N/A' && r.linkedin_url.includes('linkedin.com')
+          ? `<a href="${r.linkedin_url}" target="_blank" rel="noopener" class="tag-bubble" style="color:#0a66c2; border-color:rgba(10,102,194,0.3); font-weight:600;">LinkedIn</a>`
+          : `<span style="color:var(--text-muted);">-</span>`;
 
         const indivX = r.twitter_handle && r.twitter_handle !== 'N/A'
           ? `<a href="https://x.com/${r.twitter_handle.replace('@','')}" target="_blank" class="twitter-link">${r.twitter_handle}</a>`
@@ -1150,6 +1167,7 @@
             <td><strong>${r.name}</strong></td>
             <td style="color:var(--text-secondary);">${r.title || 'Leadership'}</td>
             <td><span class="badge ${isBoard ? 'badge-board' : 'badge-exec'}">${r.group}</span></td>
+            <td>${indivLinkedIn}</td>
             <td>${indivX}</td>
             <td>${compSec}</td>
             <td>${emailCell}</td>

@@ -465,6 +465,23 @@
     .company-twitter-badge:hover {
       opacity: 0.85;
     }
+    .company-linkedin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: #0a66c2;
+      color: #ffffff;
+      padding: 0.25rem 0.65rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 0.35rem;
+      text-decoration: none;
+      transition: opacity 0.15s ease;
+    }
+    .company-linkedin-badge:hover {
+      opacity: 0.88;
+    }
     .stats-badge {
       background: var(--callout-bg);
       border: 1px solid var(--border);
@@ -712,6 +729,23 @@
       border-color: var(--primary);
       color: var(--primary);
     }
+    .linkedin-link {
+      color: #0a66c2;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--callout-bg);
+      padding: 0.2rem 0.55rem;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      transition: all 0.15s ease;
+    }
+    .linkedin-link:hover { 
+      background: rgba(10, 102, 194, 0.12);
+      border-color: #0a66c2;
+    }
 
     .member-bio {
       font-size: 0.88rem;
@@ -854,6 +888,7 @@
           <h2 id="banner-company-name">Company Name</h2>
           <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
             <a href="#" id="banner-company-url" class="company-url" target="_blank" rel="noopener"></a>
+            <a href="#" id="banner-company-linkedin" class="company-linkedin-badge" target="_blank" rel="noopener" style="display:none;"></a>
             <a href="#" id="banner-company-twitter" class="company-twitter-badge" target="_blank" style="display:none;"></a>
           </div>
         </div>
@@ -973,6 +1008,18 @@
          </div>`
       : '';
 
+    // LinkedIn Profile Row
+    const linkedinUrl = member.linkedin_url && member.linkedin_url !== 'N/A' && member.linkedin_url.includes('linkedin.com') ? member.linkedin_url : '';
+    const linkedinHtml = linkedinUrl
+      ? `<div class="meta-row">
+           <span class="material-symbols-outlined" style="color:#0a66c2;">account_circle</span>
+           <a href="${linkedinUrl}" target="_blank" rel="noopener" class="linkedin-link">
+             <span>LinkedIn Profile</span>
+             <span class="material-symbols-outlined" style="font-size:0.8rem;">open_in_new</span>
+           </a>
+         </div>`
+      : '';
+
     // Committee & Tenure
     const committeeHtml = member.committee && member.committee !== 'N/A'
       ? `<div class="meta-row"><span class="material-symbols-outlined">gavel</span><span><strong>Committee:</strong> ${member.committee}</span></div>`
@@ -1012,6 +1059,7 @@
           </div>
           <div class="member-meta">
             ${emailHtml}
+            ${linkedinHtml}
             ${twitterHtml}
             ${committeeHtml}
             ${tenureHtml}
@@ -1060,6 +1108,16 @@
       const urlElem = document.getElementById('banner-company-url');
       urlElem.textContent = data.company_url || 'Official Corporate Profile';
       urlElem.href = data.company_url || '#';
+
+      // Company LinkedIn Badge
+      const linkedinElem = document.getElementById('banner-company-linkedin');
+      if (data.company_linkedin_url && data.company_linkedin_url !== 'N/A' && data.company_linkedin_url.includes('linkedin.com')) {
+        linkedinElem.innerHTML = `<span style="font-weight:700;">in</span> <span>LinkedIn</span>`;
+        linkedinElem.href = data.company_linkedin_url;
+        linkedinElem.style.display = 'inline-flex';
+      } else {
+        linkedinElem.style.display = 'none';
+      }
 
       // Company Twitter Badge
       const twitterElem = document.getElementById('banner-company-twitter');

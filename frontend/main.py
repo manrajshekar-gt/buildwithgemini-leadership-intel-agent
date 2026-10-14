@@ -282,6 +282,7 @@ async def trigger_crm_sync(payload: Dict[str, Any]):
                 "name": d.to_dict().get("name"),
                 "title": d.to_dict().get("title"),
                 "email": d.to_dict().get("email"),
+                "linkedin": d.to_dict().get("linkedin_url") or "N/A",
                 "twitter": d.to_dict().get("twitter_handle"),
                 "group": d.to_dict().get("group"),
                 "compensation": d.to_dict().get("compensation"),
@@ -421,6 +422,7 @@ async def get_system_metrics():
     c_suite_count = 0
     board_count = 0
     with_email_count = 0
+    with_linkedin_count = 0
     with_twitter_count = 0
     with_tweets_count = 0
     total_partners = 0
@@ -445,6 +447,10 @@ async def get_system_metrics():
         if email and email not in ["N/A", "None", ""]:
             with_email_count += 1
 
+        linkedin = d.get("linkedin_url") or ""
+        if linkedin and linkedin not in ["N/A", "None", ""]:
+            with_linkedin_count += 1
+
         twitter = d.get("twitter_handle") or ""
         if twitter and twitter not in ["N/A", "None", ""]:
             with_twitter_count += 1
@@ -461,6 +467,7 @@ async def get_system_metrics():
     distinct_companies_count = len(companies)
     avg_profiles_per_company = round(total_profiles / distinct_companies_count, 1) if distinct_companies_count else 0
     email_coverage_pct = round((with_email_count / total_profiles) * 100, 1) if total_profiles else 0
+    linkedin_coverage_pct = round((with_linkedin_count / total_profiles) * 100, 1) if total_profiles else 0
     social_coverage_pct = round((with_twitter_count / total_profiles) * 100, 1) if total_profiles else 0
     logo_coverage_pct = round((len(companies_with_logo) / distinct_companies_count) * 100, 1) if distinct_companies_count else 0
 
@@ -481,6 +488,8 @@ async def get_system_metrics():
         "coverage": {
             "email_coverage_pct": email_coverage_pct,
             "email_count": with_email_count,
+            "linkedin_coverage_pct": linkedin_coverage_pct,
+            "linkedin_count": with_linkedin_count,
             "social_coverage_pct": social_coverage_pct,
             "social_count": with_twitter_count,
             "logo_coverage_pct": logo_coverage_pct,
@@ -522,6 +531,7 @@ async def list_companies():
                 "name": comp,
                 "logo_url": d.get("logo_url") or "",
                 "company_url": d.get("company_url") or "",
+                "company_linkedin_url": d.get("company_linkedin_url") or "N/A",
                 "company_twitter_handle": d.get("company_twitter_handle") or "N/A",
                 "key_partners": d.get("key_partners") or [],
                 "key_competitors": d.get("key_competitors") or [],
@@ -563,6 +573,7 @@ async def export_all_csv():
     fieldnames = [
         "Company",
         "Company URL",
+        "Company LinkedIn",
         "Company Twitter",
         "Key Partners",
         "Key Competitors",
@@ -570,6 +581,7 @@ async def export_all_csv():
         "Title",
         "Group",
         "Email",
+        "LinkedIn Profile",
         "Individual Twitter",
         "Recent Tweets",
         "Compensation",
@@ -596,6 +608,7 @@ async def export_all_csv():
         writer.writerow({
             "Company": r.get("company_name", ""),
             "Company URL": r.get("company_url") or "",
+            "Company LinkedIn": r.get("company_linkedin_url") or "N/A",
             "Company Twitter": r.get("company_twitter_handle") or "N/A",
             "Key Partners": partners_str,
             "Key Competitors": competitors_str,
@@ -603,6 +616,7 @@ async def export_all_csv():
             "Title": r.get("title", ""),
             "Group": r.get("group", ""),
             "Email": r.get("email") or "N/A",
+            "LinkedIn Profile": r.get("linkedin_url") or "N/A",
             "Individual Twitter": r.get("twitter_handle") or "N/A",
             "Recent Tweets": tweets_str or "N/A",
             "Compensation": r.get("compensation") or "N/A",
@@ -726,6 +740,7 @@ async def search_leadership(q: str = Query(..., min_length=1)):
     company_name_found = ""
     company_logo_found = ""
     company_url_found = ""
+    company_linkedin_found = ""
     company_twitter_found = ""
     company_recent_tweets_found = []
     key_partners_found = []
@@ -739,6 +754,7 @@ async def search_leadership(q: str = Query(..., min_length=1)):
         p_name = d.get("name", "")
         p_title = d.get("title", "")
         p_email = d.get("email", "")
+        p_linkedin = d.get("linkedin_url", "")
         p_twitter = d.get("twitter_handle", "")
 
         q_clean = re.sub(r"[^\w]", "", query_str)
@@ -774,6 +790,7 @@ async def search_leadership(q: str = Query(..., min_length=1)):
             query_str in p_name.lower() or 
             query_str in p_title.lower() or 
             query_str in p_email.lower() or
+            query_str in p_linkedin.lower() or
             query_str in p_twitter.lower()
         )
 
@@ -784,6 +801,8 @@ async def search_leadership(q: str = Query(..., min_length=1)):
                 company_logo_found = d.get("logo_url")
             if not company_url_found and c_url:
                 company_url_found = c_url
+            if not company_linkedin_found and d.get("company_linkedin_url"):
+                company_linkedin_found = d.get("company_linkedin_url")
             if not company_twitter_found and d.get("company_twitter_handle"):
                 company_twitter_found = d.get("company_twitter_handle")
             if not company_recent_tweets_found and d.get("company_recent_tweets"):
@@ -818,6 +837,7 @@ async def search_leadership(q: str = Query(..., min_length=1)):
         "company_name": company_name_found or q,
         "company_logo": company_logo_found,
         "company_url": company_url_found,
+        "company_linkedin_url": company_linkedin_found or "N/A",
         "company_twitter_handle": company_twitter_found or "N/A",
         "company_recent_tweets": company_recent_tweets_found or [],
         "key_partners": key_partners_found or [],

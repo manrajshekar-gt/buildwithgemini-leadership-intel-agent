@@ -201,6 +201,8 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
     leadership_pages_text = ""
     discovered_emails = []
     discovered_twitter = []
+    discovered_company_linkedin = []
+    discovered_personal_linkedin = []
     try:
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
         with httpx.Client(timeout=8.0, follow_redirects=True, headers=headers) as client:
@@ -245,20 +247,29 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
                             company_name = matched
 
                 for a in soup.find_all("a", href=True):
-                    href = a["href"].lower()
+                    href = a["href"].strip()
+                    href_lower = href.lower()
                     text = a.get_text().strip().lower()
-                    if href.startswith("mailto:"):
-                        discovered_emails.append(href.replace("mailto:", "").split("?")[0].strip())
-                    if "twitter.com/" in href or "x.com/" in href:
-                        handle_match = re.search(r"(?:twitter\.com|x\.com)/([A-Za-z0-9_]+)", href)
+                    if href_lower.startswith("mailto:"):
+                        discovered_emails.append(href_lower.replace("mailto:", "").split("?")[0].strip())
+                    if "twitter.com/" in href_lower or "x.com/" in href_lower:
+                        handle_match = re.search(r"(?:twitter\.com|x\.com)/([A-Za-z0-9_]+)", href_lower)
                         if handle_match and handle_match.group(1).lower() not in ["home", "share", "intent", "search"]:
                             discovered_twitter.append(f"@{handle_match.group(1)}")
+                    if "linkedin.com/company/" in href_lower or "linkedin.com/school/" in href_lower:
+                        c_link = href.split("?")[0].rstrip("/")
+                        if c_link not in discovered_company_linkedin:
+                            discovered_company_linkedin.append(c_link)
+                    elif "linkedin.com/in/" in href_lower:
+                        p_link = href.split("?")[0].rstrip("/")
+                        if p_link not in discovered_personal_linkedin:
+                            discovered_personal_linkedin.append(p_link)
                     
                     link_keywords = [
                         "about", "team", "our-team", "leadership", "board-of-directors", 
                         "executives", "governance", "management", "who-we-are", "people"
                     ]
-                    if any(k in href or k in text for k in link_keywords):
+                    if any(k in href_lower or k in text for k in link_keywords):
                         full = str(httpx.URL(website_url).join(a["href"]))
                         if full.startswith("http") and full not in candidate_links and full != website_url:
                             if not any(ign in full.lower() for ign in ["careers", "jobs", "privacy", "terms", "login", "signup", "contact", "pricing"]):
@@ -305,6 +316,22 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
                                 if 1 <= len(parts) <= 3 and all(part[0].isupper() for part in parts):
                                     img_hints.append(" ".join(parts))
                         hint_str = f" [Discovered Team/Roster names from images: {', '.join(set(img_hints))}]" if img_hints else ""
+
+                        for a_tag in s_soup.find_all("a", href=True):
+                            a_href = a_tag["href"].strip()
+                            a_lower = a_href.lower()
+                            if "linkedin.com/in/" in a_lower:
+                                p_link = a_href.split("?")[0].rstrip("/")
+                                name_hint = a_tag.get_text().strip()
+                                if not name_hint and a_tag.parent:
+                                    name_hint = " ".join(a_tag.parent.get_text().split())[:60]
+                                entry = f"{p_link} ({name_hint})" if name_hint else p_link
+                                if entry not in discovered_personal_linkedin:
+                                    discovered_personal_linkedin.append(entry)
+                            elif "linkedin.com/company/" in a_lower or "linkedin.com/school/" in a_lower:
+                                c_link = a_href.split("?")[0].rstrip("/")
+                                if c_link not in discovered_company_linkedin:
+                                    discovered_company_linkedin.append(c_link)
 
                         for tag in s_soup(["script", "style", "nav", "footer", "header"]):
                             tag.extract()
@@ -365,6 +392,8 @@ PUBLIC REFERENCE RECORDS:
 
 Discovered emails on site: {list(set(discovered_emails))[:6]}
 Discovered Twitter/X links on site: {list(set(discovered_twitter))[:3]}
+Discovered company LinkedIn links on site: {list(set(discovered_company_linkedin))[:3]}
+Discovered individual LinkedIn links on site: {list(set(discovered_personal_linkedin))[:15]}
 ========================================================================
 
 STRICT ACCURACY & AUTHORITATIVE REPUTABLE SOURCE MANDATE:
@@ -373,26 +402,29 @@ STRICT ACCURACY & AUTHORITATIVE REPUTABLE SOURCE MANDATE:
 3. BOARD OF DIRECTORS: If a company does NOT publicly publish or disclose an external Board of Directors or advisory board in the provided official sources, DO NOT INVENT ONE. Return only confirmed individuals.
 4. VERIFY RECENT TRANSITIONS: Specifically check for executive changes within the last 6 to 12 months (e.g. CEO transitions, CFO appointments, former CEOs moving to Board Chair). Do NOT return outdated legacy roles.
 5. SOURCE TRACEABILITY: In 'sec_filing_source', cite the exact official primary source (e.g., 'SEC Form DEF 14A Proxy Statement', 'Official Corporate Leadership Directory (https://domain/team/)').
+6. LINKEDIN VERIFICATION: You MUST only provide official, verified LinkedIn profile URLs ('https://www.linkedin.com/in/...' for individuals and 'https://www.linkedin.com/company/...' for companies). Rely on the provided official site links or verified corporate directories. If a member's profile is not verified or maintained, set 'linkedin_url' to 'N/A'. Never invent or guess URLs.
 
 Return a JSON object containing:
-1. "company_twitter_handle": string (e.g. '@Company' or official verified X handle, or N/A)
-2. "company_recent_tweets": array of 3 realistic recent public announcement tweets/posts from the company's handle
-3. "key_partners": array of 3 to 6 major ecosystem/strategic partners.
+1. "company_linkedin_url": string (Official company LinkedIn page URL, e.g. 'https://www.linkedin.com/company/<slug>', or N/A)
+2. "company_twitter_handle": string (e.g. '@Company' or official verified X handle, or N/A)
+3. "company_recent_tweets": array of 3 realistic recent public announcement tweets/posts from the company's handle
+4. "key_partners": array of 3 to 6 major ecosystem/strategic partners.
    Each object in "key_partners" MUST contain:
    - "name": string (Partner company name)
    - "website": string (Official website URL)
    - "relationship": string (Short description)
-4. "key_competitors": array of 3 to 6 primary direct market competitors.
+5. "key_competitors": array of 3 to 6 primary direct market competitors.
    Each object in "key_competitors" MUST contain:
    - "name": string (Competitor name)
    - "website": string (Official website URL)
    - "differentiation": string (Short description)
-5. "members": an array of verified key leaders (1 to 12). If only 1, 2, or 3 verified leaders are confirmed by the official sources, return ONLY those verified leaders. Do NOT invent names.
+6. "members": an array of verified key leaders (1 to 12). If only 1, 2, or 3 verified leaders are confirmed by the official sources, return ONLY those verified leaders. Do NOT invent names.
    Each member MUST contain:
    - name: string (Full Name)
    - title: string (Role, e.g. 'Chief Executive Officer', 'Chief Financial Officer', 'Director', 'Chair of the Board')
    - group: string ('Executive Management' or 'Board of Directors')
    - email: string (corporate email e.g. first@domain or name@company.com, or N/A)
+   - linkedin_url: string (Verified personal LinkedIn profile URL, e.g. 'https://www.linkedin.com/in/<slug>', or N/A if not verified or not publicly maintained)
    - twitter_handle: string (known X/Twitter handle like '@handle', or N/A)
    - recent_tweets: array of up to 3 recent public messages/tweets/quotes
    - committee: string or null (e.g. 'Audit Committee', 'Compensation Committee', 'Executive Committee')
@@ -442,6 +474,10 @@ Respond with ONLY the JSON object inside a ```json ``` block.
 
     members_data = data_payload.get("members", [])
     company_twitter = data_payload.get("company_twitter_handle", "") or (discovered_twitter[0] if discovered_twitter else "N/A")
+    company_linkedin = data_payload.get("company_linkedin_url", "")
+    if not company_linkedin or company_linkedin in ("N/A", "None", ""):
+        company_linkedin = discovered_company_linkedin[0] if discovered_company_linkedin else "N/A"
+
     company_recent_tweets = data_payload.get("company_recent_tweets", [])
     key_partners = data_payload.get("key_partners", [])
     key_competitors = data_payload.get("key_competitors", [])
@@ -460,6 +496,7 @@ Respond with ONLY the JSON object inside a ```json ``` block.
             "id": doc_id,
             "company_name": company_name,
             "company_url": website_url,
+            "company_linkedin_url": company_linkedin,
             "company_twitter_handle": company_twitter,
             "company_recent_tweets": company_recent_tweets,
             "key_partners": key_partners,
@@ -468,6 +505,7 @@ Respond with ONLY the JSON object inside a ```json ``` block.
             "title": m.get("title", "Leadership"),
             "group": m.get("group", "Executive Management"),
             "email": m.get("email") or "N/A",
+            "linkedin_url": m.get("linkedin_url") or "N/A",
             "twitter_handle": m.get("twitter_handle") or "N/A",
             "recent_tweets": m.get("recent_tweets") or [],
             "logo_url": logo_url,
@@ -492,6 +530,7 @@ Respond with ONLY the JSON object inside a ```json ``` block.
         "company_name": company_name,
         "company_logo": logo_url,
         "company_url": website_url,
+        "company_linkedin_url": company_linkedin,
         "company_twitter_handle": company_twitter,
         "company_recent_tweets": company_recent_tweets,
         "key_partners": key_partners,

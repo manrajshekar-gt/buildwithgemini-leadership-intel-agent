@@ -162,6 +162,8 @@ def save_leadership_profile(
     title: str,
     group: str,
     email: Optional[str] = None,
+    linkedin_url: Optional[str] = None,
+    company_linkedin_url: Optional[str] = None,
     logo_url: Optional[str] = None,
     company_url: Optional[str] = None,
     bio: Optional[str] = None,
@@ -178,6 +180,8 @@ def save_leadership_profile(
         title: Title/role (e.g., 'Chief Executive Officer', 'Lead Independent Director').
         group: Either 'Executive Management' or 'Board of Directors'.
         email: Contact or professional email address (e.g. 'name@company.com').
+        linkedin_url: Verified personal LinkedIn profile URL (e.g. 'https://www.linkedin.com/in/...').
+        company_linkedin_url: Verified company official LinkedIn page (e.g. 'https://www.linkedin.com/company/...').
         logo_url: Public URL to the company's generated or official logo image.
         company_url: Official website URL for the company.
         bio: Brief professional background or summary.
@@ -200,6 +204,8 @@ def save_leadership_profile(
         "title": title,
         "group": group,
         "email": email or "",
+        "linkedin_url": linkedin_url or "N/A",
+        "company_linkedin_url": company_linkedin_url or "N/A",
         "logo_url": logo_url or "",
         "company_url": company_url or "",
         "bio": bio or "",
@@ -212,7 +218,7 @@ def save_leadership_profile(
     doc_ref.set(profile_data)
     return {
         "status": "success",
-        "message": f"Saved profile for {name} ({group}) with email '{email or 'N/A'}' and logo '{logo_url or 'N/A'}' at {company_name}",
+        "message": f"Saved profile for {name} ({group}) with LinkedIn '{linkedin_url or 'N/A'}' and email '{email or 'N/A'}' at {company_name}",
         "profile": profile_data,
     }
 
@@ -410,6 +416,8 @@ def export_governance_report_csv(company_name: str) -> Dict[str, Any]:
         "Title",
         "Group",
         "Email",
+        "LinkedIn URL",
+        "Company LinkedIn URL",
         "Logo URL",
         "Committee",
         "Independent Director",
@@ -426,6 +434,8 @@ def export_governance_report_csv(company_name: str) -> Dict[str, Any]:
             "Title": p.get("title", ""),
             "Group": p.get("group", ""),
             "Email": p.get("email") or "N/A",
+            "LinkedIn URL": p.get("linkedin_url") or "N/A",
+            "Company LinkedIn URL": p.get("company_linkedin_url") or "N/A",
             "Logo URL": p.get("logo_url") or "N/A",
             "Committee": p.get("committee") or "N/A",
             "Independent Director": "Yes" if p.get("is_independent") else "No",
@@ -449,7 +459,7 @@ def export_governance_report_csv(company_name: str) -> Dict[str, Any]:
         "profiles_exported": len(profiles),
         "filename": filename,
         "csv_url": public_url,
-        "message": f"Successfully exported {len(profiles)} leadership profiles (with email addresses & logo URLs) for {company_name} to {public_url}",
+        "message": f"Successfully exported {len(profiles)} leadership profiles (with LinkedIn profiles, emails & logo URLs) for {company_name} to {public_url}",
     }
 
 
@@ -463,13 +473,13 @@ instruction = schema_manager.generate_system_prompt(
         "You are the Executive & Board Leadership Intelligence Agent. "
         "Your role is to help users research, organize, and inspect company management teams and boards of directors using ONLY reputable, official, and authoritative sources (such as SEC Form DEF 14A proxy statements, Form 8-K filings, and official company investor relations and corporate leadership directories). "
         "Always verify current leadership roles and check for recent executive transitions within the last 6 to 12 months. Do NOT rely on outdated or unverified aggregators. "
-        "For each company or customer, you can generate a custom brand logo using `generate_company_logo` based on what the business does. "
-        "For each member, always discover and capture their email address and associate the company's logo URL. "
-        "When given a website URL, use `fetch_leadership_page_text` to read the site and find leadership pages and contact emails. "
+        "For each company or customer, discover and capture their official company LinkedIn URL (e.g. 'https://www.linkedin.com/company/...'). "
+        "For each executive and board member, capture their verified LinkedIn profile URL ('https://www.linkedin.com/in/...') from official corporate bio links or official directories, their email address, and associate the company's logo URL. If an individual's LinkedIn profile is not officially verified, store 'N/A'. "
+        "When given a website URL, use `fetch_leadership_page_text` to read the site and find leadership pages, verified LinkedIn links, and contact emails. "
         "If you need additional or fallback information, use `search_company_governance`. "
-        "Store discovered executive and director records (including email and logo_url) using `save_leadership_profile`. "
+        "Store discovered executive and director records (including linkedin_url, company_linkedin_url, email, and logo_url) using `save_leadership_profile`. "
         "Retrieve stored profiles using `get_leadership_profiles`. "
-        "To provide a downloadable spreadsheet, use `export_governance_report_csv` to upload a CSV with emails and logo URLs to Cloud Storage. "
+        "To provide a downloadable spreadsheet, use `export_governance_report_csv` to upload a CSV with LinkedIn profiles, emails and logo URLs to Cloud Storage. "
         "Always categorize leaders into their respective groups: 'Executive Management' or 'Board of Directors'."
     ),
     workflow_description="Analyze the request and return structured UI when appropriate.",
