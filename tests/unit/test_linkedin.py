@@ -96,3 +96,36 @@ def test_api_admin_export_csv_has_linkedin_headers(client):
     header = next(reader)
     assert "Company LinkedIn" in header
     assert "LinkedIn Profile" in header
+
+
+def test_unlisted_linkedin_profile_handling(tmp_path, monkeypatch):
+    test_db = tmp_path / "test_unlisted.db"
+    mock_client = LocalFirestoreClient(db_path=test_db)
+    monkeypatch.setattr("app.agent.get_firestore_client", lambda: mock_client)
+
+    res = save_leadership_profile(
+        name="John Collison",
+        company_name="Stripe",
+        title="President & Co-Founder",
+        group="Executive Management",
+        email="N/A",
+        linkedin_url="N/A",
+        company_linkedin_url="https://www.linkedin.com/company/stripe",
+    )
+    assert res["status"] == "success"
+    profile = res["profile"]
+    assert profile["linkedin_url"] == "N/A"
+    assert profile["company_linkedin_url"] == "https://www.linkedin.com/company/stripe"
+
+
+def test_frontend_html_contains_not_found_indicator():
+    index_html_path = ROOT_DIR / "frontend" / "static" / "index.html"
+    content = index_html_path.read_text(encoding="utf-8")
+    assert "LinkedIn profile not found" in content
+    assert "company-linkedin-badge-unlisted" in content
+    assert "LinkedIn not listed" in content
+
+    admin_html_path = ROOT_DIR / "frontend" / "static" / "admin.html"
+    admin_content = admin_html_path.read_text(encoding="utf-8")
+    assert "Not Found" in admin_content
+

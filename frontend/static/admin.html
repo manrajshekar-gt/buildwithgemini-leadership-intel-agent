@@ -1132,9 +1132,13 @@
           ? `<a href="mailto:${r.email}" class="email-link">${r.email}</a>`
           : `<span style="color:var(--text-muted);">N/A</span>`;
 
+        const compLinkedInBadge = r.company_linkedin_url && r.company_linkedin_url !== 'N/A' && r.company_linkedin_url.includes('linkedin.com')
+          ? `<a href="${r.company_linkedin_url}" target="_blank" rel="noopener" style="display:inline-block; margin-left:4px; color:#0a66c2; text-decoration:none; font-size:0.72rem; font-weight:700; background:rgba(10,102,194,0.12); padding:1px 4px; border-radius:4px;" title="Official Company LinkedIn">in</a>`
+          : '';
+
         const indivLinkedIn = r.linkedin_url && r.linkedin_url !== 'N/A' && r.linkedin_url.includes('linkedin.com')
-          ? `<a href="${r.linkedin_url}" target="_blank" rel="noopener" class="tag-bubble" style="color:#0a66c2; border-color:rgba(10,102,194,0.3); font-weight:600;">LinkedIn</a>`
-          : `<span style="color:var(--text-muted);">-</span>`;
+          ? `<a href="${r.linkedin_url}" target="_blank" rel="noopener" class="tag-bubble" style="color:#0a66c2; border-color:rgba(10,102,194,0.3); font-weight:600;"><span style="font-weight:700;">in</span> Profile</a>`
+          : `<span style="color:var(--text-muted); font-size:0.75rem; font-style:italic; background:var(--callout-bg); padding:0.15rem 0.45rem; border-radius:5px; border:1px dashed var(--border);">Not Found</span>`;
 
         const indivX = r.twitter_handle && r.twitter_handle !== 'N/A'
           ? `<a href="https://x.com/${r.twitter_handle.replace('@','')}" target="_blank" class="twitter-link">${r.twitter_handle}</a>`
@@ -1161,7 +1165,7 @@
         return `
           <tr>
             <td>${logoImg}</td>
-            <td><strong>${r.company_name || 'N/A'}</strong></td>
+            <td><strong>${r.company_name || 'N/A'}</strong>${compLinkedInBadge}</td>
             <td style="max-width: 170px;">${partnersHtml}</td>
             <td style="max-width: 170px;">${competitorsHtml}</td>
             <td><strong>${r.name}</strong></td>

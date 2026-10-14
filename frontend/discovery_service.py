@@ -402,7 +402,7 @@ STRICT ACCURACY & AUTHORITATIVE REPUTABLE SOURCE MANDATE:
 3. BOARD OF DIRECTORS: If a company does NOT publicly publish or disclose an external Board of Directors or advisory board in the provided official sources, DO NOT INVENT ONE. Return only confirmed individuals.
 4. VERIFY RECENT TRANSITIONS: Specifically check for executive changes within the last 6 to 12 months (e.g. CEO transitions, CFO appointments, former CEOs moving to Board Chair). Do NOT return outdated legacy roles.
 5. SOURCE TRACEABILITY: In 'sec_filing_source', cite the exact official primary source (e.g., 'SEC Form DEF 14A Proxy Statement', 'Official Corporate Leadership Directory (https://domain/team/)').
-6. LINKEDIN VERIFICATION: You MUST only provide official, verified LinkedIn profile URLs ('https://www.linkedin.com/in/...' for individuals and 'https://www.linkedin.com/company/...' for companies). Rely on the provided official site links or verified corporate directories. If a member's profile is not verified or maintained, set 'linkedin_url' to 'N/A'. Never invent or guess URLs.
+6. LINKEDIN VERIFICATION: You MUST only provide official, verified LinkedIn profile URLs ('https://www.linkedin.com/in/...' for individuals and 'https://www.linkedin.com/company/...' for companies). Rely on the provided official site links or verified corporate directories. If a member does not maintain a personal LinkedIn profile (e.g., Patrick Collison, John Collison, Jack Dorsey, Larry Page) or if it cannot be verified with certainty, set 'linkedin_url' strictly to 'N/A'. NEVER guess vanity URLs or link to unrelated profiles.
 
 Return a JSON object containing:
 1. "company_linkedin_url": string (Official company LinkedIn page URL, e.g. 'https://www.linkedin.com/company/<slug>', or N/A)
