@@ -20,7 +20,7 @@ import os
 import re
 import time
 from typing import Any, Dict, List, Optional
-from fastapi import FastAPI, File, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -653,72 +653,173 @@ async def export_all_json():
     )
 
 
-@app.post("/api/admin/upload-batch")
-async def upload_batch_csv(file: UploadFile = File(...)):
-    """Receives an uploaded CSV file of companies/domains and batch processes them."""
-    contents = await file.read()
-    try:
-        text = contents.decode("utf-8")
-    except UnicodeDecodeError:
-        text = contents.decode("latin1", errors="ignore")
+def _normalize_company_key(s: str) -> str:
+    """Normalize a company name or domain for duplicate detection."""
+    if not s:
+        return ""
+    clean = s.strip().lower()
+    # Strip URL protocol and path
+    clean = re.sub(r"^https?://(www\.)?", "", clean).split("/")[0]
+    # Strip common domain TLDs
+    if "." in clean:
+        clean = clean.split(".")[0]
+    # Remove common corporate suffixes
+    clean = re.sub(r"\b(inc|corp|corporation|llc|ltd|co|group|platforms|technologies|holdings|company)\b", "", clean)
+    # Remove non-alphanumeric characters
+    clean = re.sub(r"[^a-z0-9]", "", clean)
+    return clean
 
-    lines = [line.strip() for line in text.splitlines() if line.strip() and all(32 <= ord(c) <= 126 for c in line)]
+
+def _find_existing_company_match(item: str, existing_map: Dict[str, str]) -> Optional[str]:
+    """Check if an item matches an existing company in the database catalog."""
+    item_clean = item.strip()
+    if not item_clean:
+        return None
+    # 1. Exact lowercase check
+    if item_clean.lower() in existing_map:
+        return existing_map[item_clean.lower()]
+    # 2. Normalized alphanumeric check
+    norm = _normalize_company_key(item_clean)
+    if norm and norm in existing_map:
+        return existing_map[norm]
+    # 3. Domain root check if item is URL or domain
+    domain_root = re.sub(r"^https?://(www\.)?", "", item_clean.lower()).split("/")[0].split(".")[0]
+    if domain_root and domain_root in existing_map:
+        return existing_map[domain_root]
+    return None
+
+
+@app.post("/api/admin/upload-batch")
+async def upload_batch_csv(
+    file: Optional[UploadFile] = File(None),
+    raw_text: Optional[str] = Form(None),
+):
+    """Receives an uploaded CSV/text file or raw text and batch processes companies/domains."""
+    filename = "upload.csv"
+    text = ""
+    if file and file.filename:
+        filename = file.filename
+        contents = await file.read()
+        try:
+            text = contents.decode("utf-8")
+        except UnicodeDecodeError:
+            text = contents.decode("latin1", errors="ignore")
+    elif raw_text:
+        text = raw_text
+        filename = "pasted_list.txt"
+    else:
+        return {"status": "error", "message": "No file or text provided for batch processing."}
+
+    # Strip UTF-8 BOM if present
+    text = text.lstrip("\ufeff")
+
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
     if not lines:
-        return {"status": "error", "message": "Uploaded file is empty"}
+        return {"status": "error", "message": "Uploaded file or text is empty."}
 
     raw_reader = csv.reader(lines)
     items_to_process = []
     for row in raw_reader:
         if not row:
             continue
-        val = row[0].strip()
-        if val.lower() in ["company", "company_name", "domain", "url", "name", "website"]:
+        val = row[0].strip().strip('"\'')
+        if not val or val.lower() in ["company", "company_name", "domain", "url", "name", "website"]:
             continue
-        if val and val not in items_to_process:
+        if val not in items_to_process:
             items_to_process.append(val)
 
     if not items_to_process:
-        return {"status": "error", "message": "No valid company names or domains found in CSV."}
+        return {"status": "error", "message": "No valid company names or domains found in input."}
 
     db = get_db()
     existing_docs = list(db.collection(COLLECTION_NAME).stream())
-    existing_companies = set()
+    
+    # Map normalized keys and exact names to canonical company name
+    existing_companies_map: Dict[str, str] = {}
     for d in existing_docs:
-        c = d.to_dict().get("company_name", "")
-        if c:
-            existing_companies.add(c.lower())
+        data = d.to_dict()
+        c_name = (data.get("company_name") or "").strip()
+        c_url = (data.get("company_url") or "").strip()
+        if c_name:
+            existing_companies_map[c_name.lower()] = c_name
+            norm_name = _normalize_company_key(c_name)
+            if norm_name:
+                existing_companies_map[norm_name] = c_name
+            # Handle brackets/aliases like "Block, Inc. (Square)"
+            for part in re.split(r"[\(\)]", c_name):
+                p_norm = _normalize_company_key(part)
+                if p_norm:
+                    existing_companies_map[p_norm] = c_name
+        if c_url:
+            norm_url = _normalize_company_key(c_url)
+            if norm_url:
+                existing_companies_map[norm_url] = c_name
 
-    results = []
+    newly_added = []
+    already_indexed = []
+    failed = []
+
     for item in items_to_process:
-        item_lower = item.lower()
-        if any(item_lower in ec or ec in item_lower for ec in existing_companies):
-            results.append({
+        existing_match = _find_existing_company_match(item, existing_companies_map)
+        if existing_match:
+            already_indexed.append({
                 "query": item,
+                "company_name": existing_match,
                 "status": "already_indexed",
-                "message": f"'{item}' is already collected in Firestore.",
+                "message": f"'{existing_match}' is already indexed in the catalog.",
             })
             continue
 
         try:
             res = discover_and_save_company(item)
-            results.append({
+            company_name_found = res.get("company_name", item)
+            profiles_saved = res.get("total_results", 0)
+            
+            new_item = {
                 "query": item,
                 "status": "success",
-                "company_name": res.get("company_name"),
-                "profiles_saved": res.get("total_results", 0),
+                "company_name": company_name_found,
+                "profiles_saved": profiles_saved,
                 "logo_url": res.get("company_logo", ""),
-            })
-            if res.get("company_name"):
-                existing_companies.add(res["company_name"].lower())
+            }
+            newly_added.append(new_item)
+            
+            # Register in existing map to prevent duplicate scrapes within same batch
+            existing_companies_map[company_name_found.lower()] = company_name_found
+            norm_new = _normalize_company_key(company_name_found)
+            if norm_new:
+                existing_companies_map[norm_new] = company_name_found
         except Exception as e:
-            results.append({"query": item, "status": "failed", "error": str(e)})
+            failed.append({
+                "query": item,
+                "status": "failed",
+                "error": str(e),
+            })
 
-    total_added = sum(r.get("profiles_saved", 0) for r in results if r.get("status") == "success")
+    total_added_profiles = sum(r.get("profiles_saved", 0) for r in newly_added)
+
+    if newly_added and already_indexed:
+        msg = f"Batch extraction finished: Added {len(newly_added)} new companies ({total_added_profiles} profiles). Ignored {len(already_indexed)} companies already in the catalog."
+    elif newly_added and not already_indexed:
+        msg = f"Batch extraction finished: Successfully added {len(newly_added)} new companies ({total_added_profiles} profiles)."
+    elif not newly_added and already_indexed:
+        msg = f"Batch upload verified: All {len(already_indexed)} companies are already indexed in your catalog. No new profiles needed (duplicates ignored)."
+    else:
+        msg = "Batch processing completed."
+
     return {
         "status": "completed",
+        "filename": filename,
+        "message": msg,
         "total_requested": len(items_to_process),
-        "total_new_profiles_added": total_added,
-        "details": results,
+        "total_new_companies": len(newly_added),
+        "total_skipped_companies": len(already_indexed),
+        "total_failed_companies": len(failed),
+        "total_new_profiles_added": total_added_profiles,
+        "newly_added": newly_added,
+        "already_indexed": already_indexed,
+        "failed": failed,
+        "details": [*newly_added, *already_indexed, *failed],
     }
 
 

@@ -740,14 +740,17 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .batch-dropzone:hover {
+    .batch-dropzone:hover, .batch-dropzone.drag-active {
       border-color: var(--primary);
       background: var(--primary-light);
     }
+    .batch-dropzone.drag-active {
+      transform: scale(1.01);
+      box-shadow: 0 4px 18px var(--primary-glow);
+    }
     .batch-status {
       display: none;
-      padding: 0.9rem 1.1rem;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 0.9rem;
       font-weight: 500;
     }
@@ -755,15 +758,15 @@
       display: flex;
       align-items: center;
       gap: 0.6rem;
+      padding: 0.9rem 1.1rem;
       background: var(--primary-light);
       color: var(--primary);
       border: 1px solid var(--primary-glow);
+      margin-top: 1rem;
     }
     .status-done {
       display: block;
-      background: rgba(34, 197, 94, 0.15);
-      color: var(--success);
-      border: 1px solid rgba(34, 197, 94, 0.3);
+      margin-top: 1rem;
     }
 
     /* Summary & Export Banner */
@@ -1444,15 +1447,36 @@
           </span>
         </div>
         
-        <div class="batch-dropzone" onclick="document.getElementById('csv-file-input').click()">
+        <div class="batch-dropzone" id="batch-dropzone" onclick="document.getElementById('csv-file-input').click()">
           <span class="material-symbols-outlined" style="font-size: 2.4rem; color: var(--primary); margin-bottom: 0.35rem;">upload_file</span>
           <p style="font-weight: 600; color: var(--text-main); font-size:0.95rem;">
-            Click to select or drag and drop a CSV file of companies/domains
+            Click to select or drag and drop a file of companies / domains
           </p>
           <span style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem; display:block;">
-            Supported headers: "domain", "company", "website", or single-column raw text
+            Supported formats: .csv, .txt, .tsv — one company/domain per row or comma-separated
           </span>
-          <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleBatchUpload(this)" />
+          <input type="file" id="csv-file-input" accept=".csv,.txt,.tsv,text/plain,text/csv" style="display:none;" onchange="handleBatchUpload(this)" />
+        </div>
+
+        <div style="margin-top:0.6rem; display:flex; justify-content:flex-end;">
+          <button type="button" onclick="toggleBatchPasteBox()" class="btn btn-secondary btn-sm" id="btn-toggle-paste">
+            <span class="material-symbols-outlined" style="font-size:1.1rem;">edit_note</span>
+            <span>Paste Companies / Domains Directly</span>
+          </button>
+        </div>
+
+        <div id="batch-paste-box" style="display:none; margin-top:0.75rem; background:var(--callout-bg); border:1px solid var(--border); border-radius:12px; padding:1rem;">
+          <label style="font-size:0.83rem; font-weight:600; color:var(--text-main); display:block; margin-bottom:0.35rem;">
+            Paste company names or domains (one per line, e.g. Intel, Meta, Anthropic):
+          </label>
+          <textarea id="batch-paste-text" placeholder="Intel&#10;Meta&#10;Anthropic" rows="4" style="width:100%; border-radius:8px; border:1px solid var(--border); background:var(--card-bg); color:var(--text-main); padding:0.65rem; font-family:var(--font); font-size:0.85rem; box-sizing:border-box; resize:vertical;"></textarea>
+          <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.5rem;">
+            <button type="button" onclick="toggleBatchPasteBox()" class="btn btn-secondary btn-sm">Cancel</button>
+            <button type="button" onclick="submitBatchPaste()" class="btn btn-primary btn-sm">
+              <span class="material-symbols-outlined" style="font-size:1.1rem;">bolt</span>
+              <span>Process Pasted List</span>
+            </button>
+          </div>
         </div>
 
         <div id="batch-progress" class="batch-status status-running">
@@ -1938,17 +1962,119 @@
     }
   }
 
-  async function handleBatchUpload(input) {
-    const file = input.files[0];
-    if (!file) return;
-
-    const progressDiv = document.getElementById('batch-progress');
+  function renderBatchResult(data) {
     const resultDiv = document.getElementById('batch-result');
+    if (!resultDiv) return;
+
+    const newCos = data.newly_added || [];
+    const skippedCos = data.already_indexed || [];
+    const failedCos = data.failed || [];
+    const totalProfiles = data.total_new_profiles_added || 0;
+    const filename = data.filename || 'Batch Input';
+    const totalProcessed = data.total_requested || (newCos.length + skippedCos.length + failedCos.length);
+
+    let html = `
+      <div class="batch-result-card" style="background:var(--card-bg); border:1px solid var(--border); border-radius:14px; padding:1.25rem 1.4rem; box-shadow:var(--shadow-sm);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.75rem; border-bottom:1px solid var(--border); padding-bottom:0.85rem;">
+          <div style="display:flex; align-items:center; gap:0.65rem;">
+            <span class="material-symbols-outlined" style="font-size:2.2rem; color:${newCos.length > 0 ? 'var(--success)' : '#0284c7'};">
+              ${newCos.length > 0 ? 'check_circle' : 'verified'}
+            </span>
+            <div>
+              <h4 style="margin:0; font-size:1.05rem; font-weight:800; color:var(--text-main);">
+                ${newCos.length > 0 ? 'Batch Extraction Successful' : 'Batch Upload Verified (All Already in System)'}
+              </h4>
+              <p style="margin:0.2rem 0 0 0; font-size:0.84rem; color:var(--text-muted);">
+                Processed <strong>${totalProcessed}</strong> companies from <em>${filename}</em>.
+              </p>
+            </div>
+          </div>
+          <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+            <span style="background:rgba(34,197,94,0.12); color:var(--success); border:1px solid rgba(34,197,94,0.3); padding:0.28rem 0.65rem; border-radius:6px; font-weight:700; font-size:0.78rem;">
+              +${newCos.length} New Companies (${totalProfiles} profiles)
+            </span>
+            <span style="background:rgba(14,165,233,0.12); color:#0284c7; border:1px solid rgba(14,165,233,0.3); padding:0.28rem 0.65rem; border-radius:6px; font-weight:700; font-size:0.78rem;">
+              ${skippedCos.length} Already in Catalog (Skipped)
+            </span>
+            ${failedCos.length > 0 ? `<span style="background:rgba(239,68,68,0.12); color:#dc2626; border:1px solid rgba(239,68,68,0.3); padding:0.28rem 0.65rem; border-radius:6px; font-weight:700; font-size:0.78rem;">${failedCos.length} Failed</span>` : ''}
+          </div>
+        </div>
+    `;
+
+    // 1. Newly Picked Up Companies
+    if (newCos.length > 0) {
+      html += `
+        <div style="margin-top:0.95rem;">
+          <div style="font-size:0.84rem; font-weight:700; color:var(--success); display:flex; align-items:center; gap:0.35rem; margin-bottom:0.5rem;">
+            <span class="material-symbols-outlined" style="font-size:1.15rem;">add_circle</span>
+            <span>New Companies Picked Up & Indexed (${newCos.length}):</span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+            ${newCos.map(c => `
+              <div style="display:inline-flex; align-items:center; gap:0.45rem; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25); padding:0.35rem 0.75rem; border-radius:8px; font-size:0.83rem; color:var(--text-main);">
+                <span class="material-symbols-outlined" style="color:var(--success); font-size:1rem;">check</span>
+                <strong>${c.company_name || c.query}</strong>
+                <span style="color:var(--text-muted); font-size:0.75rem;">(+${c.profiles_saved || 0} profiles)</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    } else {
+      html += `
+        <div style="margin-top:0.95rem; padding:0.65rem 0.9rem; background:var(--callout-bg); border-radius:8px; border:1px solid var(--border); font-size:0.84rem; color:var(--text-secondary); display:flex; align-items:center; gap:0.55rem;">
+          <span class="material-symbols-outlined" style="font-size:1.2rem; color:#0284c7;">verified_user</span>
+          <span><strong>No new companies needed extraction:</strong> All ${skippedCos.length} companies in this upload are already collected in your catalog. No duplicate profiles were added.</span>
+        </div>
+      `;
+    }
+
+    // 2. Already in System / Ignored Companies
+    if (skippedCos.length > 0) {
+      html += `
+        <div style="margin-top:0.95rem;">
+          <div style="font-size:0.84rem; font-weight:700; color:var(--text-muted); display:flex; align-items:center; gap:0.35rem; margin-bottom:0.5rem;">
+            <span class="material-symbols-outlined" style="font-size:1.1rem;">verified</span>
+            <span>Already in System / Safely Ignored (${skippedCos.length}):</span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+            ${skippedCos.map(c => `
+              <div style="display:inline-flex; align-items:center; gap:0.35rem; background:var(--callout-bg); border:1px solid var(--border); padding:0.25rem 0.6rem; border-radius:6px; font-size:0.78rem; color:var(--text-secondary);">
+                <span class="material-symbols-outlined" style="font-size:0.95rem; color:var(--text-muted);">done_all</span>
+                <span><strong>${c.company_name || c.query}</strong> <em style="color:var(--text-muted); font-size:0.72rem;">(in catalog)</em></span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. Failed (if any)
+    if (failedCos.length > 0) {
+      html += `
+        <div style="margin-top:0.95rem; padding-top:0.75rem; border-top:1px solid var(--border);">
+          <div style="font-size:0.84rem; font-weight:700; color:#dc2626; margin-bottom:0.4rem;">Failed to Extract (${failedCos.length}):</div>
+          ${failedCos.map(f => `
+            <div style="font-size:0.8rem; color:#dc2626;">⚠ <strong>${f.query}</strong>: ${f.error || 'Failed'}</div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    html += `</div>`;
+    resultDiv.innerHTML = html;
+  }
+
+  async function processBatchPayload(formData, sourceLabel) {
+    const progressDiv = document.getElementById('batch-progress');
+    const progressText = document.getElementById('batch-progress-text');
+    const resultDiv = document.getElementById('batch-result');
+
+    if (progressText) {
+      progressText.textContent = `Processing ${sourceLabel || 'batch extraction'}... Discovering leadership intelligence...`;
+    }
     progressDiv.style.display = 'flex';
     resultDiv.style.display = 'none';
-
-    const formData = new FormData();
-    formData.append('file', file);
 
     try {
       const resp = await fetch('/api/admin/upload-batch', {
@@ -1961,23 +2087,94 @@
       resultDiv.style.display = 'block';
 
       if (data.status === 'completed') {
-        resultDiv.innerHTML = `<strong>Batch Extraction Complete!</strong> Added ${data.total_new_profiles_added} new profiles.`;
+        renderBatchResult(data);
         loadAdminData();
       } else {
-        resultDiv.innerHTML = `<strong>Error:</strong> ${data.message || 'Batch upload failed.'}`;
+        resultDiv.innerHTML = `
+          <div style="display:flex; align-items:center; gap:0.5rem; color:#dc2626; font-weight:600; padding:1rem; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:10px;">
+            <span class="material-symbols-outlined">error</span>
+            <span>Batch Upload Error: ${data.message || 'Operation failed'}</span>
+          </div>
+        `;
       }
     } catch (err) {
       progressDiv.style.display = 'none';
       resultDiv.style.display = 'block';
-      resultDiv.innerHTML = `<strong>Network Error:</strong> ${err.message}`;
-    } finally {
-      input.value = '';
+      resultDiv.innerHTML = `
+        <div style="display:flex; align-items:center; gap:0.5rem; color:#dc2626; font-weight:600; padding:1rem; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:10px;">
+          <span class="material-symbols-outlined">wifi_off</span>
+          <span>Network Error: ${err.message}</span>
+        </div>
+      `;
     }
+  }
+
+  function handleBatchUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    processBatchPayload(formData, file.name);
+    input.value = '';
+  }
+
+  function handleBatchUploadFile(file) {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    processBatchPayload(formData, file.name);
+  }
+
+  function toggleBatchPasteBox() {
+    const box = document.getElementById('batch-paste-box');
+    if (!box) return;
+    const isHidden = box.style.display === 'none' || !box.style.display;
+    box.style.display = isHidden ? 'block' : 'none';
+    if (isHidden) {
+      document.getElementById('batch-paste-text')?.focus();
+    }
+  }
+
+  function submitBatchPaste() {
+    const text = (document.getElementById('batch-paste-text')?.value || '').trim();
+    if (!text) {
+      alert('Please enter at least one company name or domain.');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('raw_text', text);
+    processBatchPayload(formData, 'pasted list');
   }
 
   window.addEventListener('DOMContentLoaded', () => {
     handleHashChange();
     loadAdminData();
+
+    // Setup drag-and-drop on batch dropzone
+    const dropzone = document.getElementById('batch-dropzone');
+    if (dropzone) {
+      ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('drag-active');
+        }, false);
+      });
+      ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('drag-active');
+        }, false);
+      });
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt?.files;
+        if (files && files.length > 0) {
+          handleBatchUploadFile(files[0]);
+        }
+      }, false);
+    }
   });
 </script>
 
