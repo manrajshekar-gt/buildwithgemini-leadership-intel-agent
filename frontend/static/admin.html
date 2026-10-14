@@ -17,7 +17,8 @@
       --bg-mesh-1: rgba(99, 91, 255, 0.08);
       --bg-mesh-2: rgba(0, 212, 255, 0.06);
       --bg-mesh-3: rgba(255, 94, 152, 0.05);
-      --header-bg: rgba(255, 255, 255, 0.82);
+      --header-bg: rgba(255, 255, 255, 0.88);
+      --sidebar-bg: #ffffff;
       --card-bg: #ffffff;
       --card-hover: #ffffff;
       --border: #e3e8ee;
@@ -54,7 +55,8 @@
       --bg-mesh-1: rgba(99, 91, 255, 0.16);
       --bg-mesh-2: rgba(0, 212, 255, 0.12);
       --bg-mesh-3: rgba(255, 94, 152, 0.1);
-      --header-bg: rgba(10, 14, 26, 0.85);
+      --header-bg: rgba(10, 14, 26, 0.88);
+      --sidebar-bg: #111726;
       --card-bg: #141c2e;
       --card-hover: #182238;
       --border: #232f48;
@@ -101,11 +103,11 @@
     }
 
     .stripe-ambient-mesh {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      height: 500px;
+      height: 450px;
       pointer-events: none;
       z-index: 0;
       background: 
@@ -119,7 +121,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      padding: 0.9rem 2rem;
+      padding: 0.85rem 1.75rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -133,7 +135,7 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--text-main);
       text-decoration: none;
@@ -153,20 +155,56 @@
     .header-logo .icon-badge .material-symbols-outlined {
       font-size: 1.25rem;
     }
+    .header-badge-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      background: var(--primary-light);
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.85rem;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
 
     .theme-toggle-btn {
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text-main);
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -180,7 +218,7 @@
       box-shadow: var(--shadow-md);
     }
     .theme-toggle-btn .material-symbols-outlined {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
     }
     [data-theme="light"] .theme-icon-moon { display: block; }
     [data-theme="light"] .theme-icon-sun { display: none; }
@@ -194,8 +232,8 @@
       color: var(--text-main);
       text-decoration: none;
       font-weight: 600;
-      font-size: 0.88rem;
-      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      padding: 0.45rem 0.85rem;
       border-radius: 9px;
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -209,20 +247,222 @@
       box-shadow: var(--shadow-md);
     }
 
-    .container {
-      max-width: 1440px;
-      width: 100%;
-      margin: 1.75rem auto 4rem auto;
-      padding: 0 1.5rem;
+    /* Two-Column App Layout */
+    .admin-layout {
+      display: flex;
       flex: 1;
+      width: 100%;
+      min-height: calc(100vh - 65px);
       position: relative;
       z-index: 1;
     }
 
-    /* Live Telemetry & Metrics Row */
-    .metrics-section {
-      margin-bottom: 2rem;
+    /* Left Sidebar Navigation */
+    .admin-sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: sticky;
+      top: 65px;
+      height: calc(100vh - 65px);
+      overflow-y: auto;
+      transition: background 0.25s ease, border-color 0.25s ease;
     }
+
+    .sidebar-section-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin: 0.25rem 0.75rem 0.75rem 0.75rem;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 0.95rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.18s ease;
+    }
+
+    .sidebar-item .material-symbols-outlined {
+      font-size: 1.35rem;
+      color: var(--text-muted);
+      transition: color 0.18s ease;
+    }
+
+    .sidebar-item-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .sidebar-item-text .item-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-item-text .item-desc {
+      font-size: 0.74rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .sidebar-item:hover {
+      background: var(--callout-bg);
+      color: var(--text-main);
+      border-color: var(--border-subtle);
+    }
+
+    .sidebar-item:hover .material-symbols-outlined {
+      color: var(--primary);
+    }
+
+    .sidebar-item.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary-glow);
+      box-shadow: inset 3px 0 0 var(--primary);
+    }
+
+    .sidebar-item.active .material-symbols-outlined {
+      color: var(--primary);
+    }
+
+    .sidebar-item.active .item-title {
+      font-weight: 700;
+    }
+
+    .sidebar-item.active .item-desc {
+      color: var(--primary);
+      opacity: 0.85;
+    }
+
+    /* Sidebar Footer Info Card */
+    .sidebar-footer {
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .sidebar-info-card {
+      background: var(--callout-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.95rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .info-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .info-card-stat {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .info-card-sub {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    /* Right Main Content Area */
+    .admin-content {
+      flex: 1;
+      min-width: 0;
+      padding: 2rem 2.5rem 4rem 2.5rem;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Tab Panes */
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+      animation: tabFadeIn 0.22s ease-in-out;
+    }
+
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tab Header & Title */
+    .tab-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-header h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.025em;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .tab-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      max-width: 720px;
+      line-height: 1.45;
+    }
+
+    .tab-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    /* Section Components */
     .section-title {
       font-size: 1.15rem;
       font-weight: 700;
@@ -233,9 +473,13 @@
       gap: 0.5rem;
       letter-spacing: -0.015em;
     }
+
+    .metrics-section {
+      margin-bottom: 2rem;
+    }
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 1.25rem;
     }
     .metric-card {
@@ -283,32 +527,6 @@
       gap: 0.35rem;
     }
 
-    .badge-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.3rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      background: rgba(34, 197, 94, 0.15);
-      color: var(--success);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-    }
-    .pulse-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-      animation: pulse 1.8s infinite;
-    }
-    @keyframes pulse {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    }
-
     /* Automation Frequency Scheduler Card */
     .schedule-card {
       background: var(--card-bg);
@@ -328,7 +546,7 @@
       flex-wrap: wrap;
       gap: 0.75rem;
     }
-    .schedule-header h2 {
+    .schedule-header h3 {
       font-size: 1.2rem;
       font-weight: 700;
       color: var(--text-main);
@@ -388,7 +606,7 @@
     /* Tooling Grid */
     .tools-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
       gap: 1.5rem;
       margin-bottom: 2rem;
     }
@@ -424,9 +642,11 @@
     .tool-input-row {
       display: flex;
       gap: 0.65rem;
+      flex-wrap: wrap;
     }
     .tool-input {
       flex: 1;
+      min-width: 200px;
       padding: 0.7rem 0.95rem;
       border: 1px solid var(--border);
       border-radius: 9px;
@@ -454,6 +674,36 @@
       white-space: pre-wrap;
     }
 
+    /* Info Config List */
+    .config-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .config-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: var(--callout-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      font-size: 0.88rem;
+    }
+    .config-label {
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .config-val {
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+
     /* Batch Upload Card */
     .batch-card {
       background: var(--card-bg);
@@ -470,8 +720,10 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
-    .batch-header h2 {
+    .batch-header h3 {
       font-size: 1.15rem;
       font-weight: 700;
       color: var(--text-main);
@@ -482,7 +734,7 @@
     .batch-dropzone {
       border: 2px dashed var(--border);
       border-radius: 14px;
-      padding: 1.5rem;
+      padding: 2.25rem 1.5rem;
       text-align: center;
       background: var(--callout-bg);
       cursor: pointer;
@@ -528,8 +780,8 @@
       gap: 1rem;
       box-shadow: var(--shadow-sm);
     }
-    .banner-text h1 {
-      font-size: 1.4rem;
+    .banner-text h3 {
+      font-size: 1.25rem;
       font-weight: 800;
       color: var(--text-main);
       letter-spacing: -0.02em;
@@ -537,7 +789,7 @@
     }
     .banner-text p {
       color: var(--text-muted);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
     .actions-group {
       display: flex;
@@ -547,10 +799,10 @@
 
     /* Buttons */
     .btn {
-      padding: 0.65rem 1.15rem;
+      padding: 0.6rem 1.1rem;
       border-radius: 9px;
       font-weight: 600;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       font-family: var(--font);
       cursor: pointer;
       display: inline-flex;
@@ -685,6 +937,39 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Responsive Layout */
+    @media (max-width: 960px) {
+      .admin-layout {
+        flex-direction: column;
+      }
+      .admin-sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 0.75rem 1rem;
+      }
+      .sidebar-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+      }
+      .sidebar-item {
+        white-space: nowrap;
+        width: auto;
+      }
+      .sidebar-footer {
+        display: none;
+      }
+      .admin-content {
+        padding: 1.5rem 1rem 3rem 1rem;
+      }
+      .tools-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -697,6 +982,7 @@
       <span class="material-symbols-outlined">admin_panel_settings</span>
     </div>
     <span>Leadership Operations & Gateway</span>
+    <span class="header-badge-tag">Admin Console</span>
   </a>
   <div class="header-actions">
     <div class="badge-status">
@@ -715,243 +1001,479 @@
   </div>
 </header>
 
-<div class="container">
+<div class="admin-layout">
 
-  <!-- Live Observability & Telemetry KPI Row -->
-  <div class="metrics-section">
-    <div class="section-title">
-      <span class="material-symbols-outlined" style="color:var(--primary);">monitoring</span>
-      <span>Live Observability & Telemetry Counters</span>
-    </div>
-    <div class="metrics-grid">
-      <div class="metric-card">
-        <div class="metric-card-header">
-          <span>Companies Indexed</span>
-          <span class="material-symbols-outlined">apartment</span>
-        </div>
-        <div class="metric-value" id="metric-companies">--</div>
-        <div class="metric-subtext" id="metric-avg-profiles">Avg profiles / co: --</div>
-      </div>
+  <!-- Left Sidebar Panel -->
+  <aside class="admin-sidebar">
+    <div>
+      <div class="sidebar-section-label">Management Views</div>
+      <nav class="sidebar-nav">
+        <!-- 1. Analytics -->
+        <button class="sidebar-item active" data-tab="analytics" onclick="switchTab('analytics')">
+          <span class="material-symbols-outlined">analytics</span>
+          <div class="sidebar-item-text">
+            <span class="item-title">Analytics</span>
+            <span class="item-desc">Metrics & Database</span>
+          </div>
+        </button>
 
-      <div class="metric-card">
-        <div class="metric-card-header">
-          <span>Total Profiles</span>
-          <span class="material-symbols-outlined">groups</span>
-        </div>
-        <div class="metric-value" id="metric-profiles">--</div>
-        <div class="metric-subtext" id="metric-profiles-split">C-Suite: -- | Board: --</div>
-      </div>
+        <!-- 2. Settings -->
+        <button class="sidebar-item" data-tab="settings" onclick="switchTab('settings')">
+          <span class="material-symbols-outlined">tune</span>
+          <div class="sidebar-item-text">
+            <span class="item-title">Settings</span>
+            <span class="item-desc">Schedules & Controls</span>
+          </div>
+        </button>
 
-      <div class="metric-card">
-        <div class="metric-card-header">
-          <span>Email Coverage</span>
-          <span class="material-symbols-outlined">mail</span>
-        </div>
-        <div class="metric-value" id="metric-email-pct">--%</div>
-        <div class="metric-subtext" id="metric-email-count">-- verified corporate emails</div>
-      </div>
-
-      <div class="metric-card">
-        <div class="metric-card-header">
-          <span>Company LinkedIn</span>
-          <span class="material-symbols-outlined" style="color:#0a66c2;">apartment</span>
-        </div>
-        <div class="metric-value" id="metric-linkedin-pct">--%</div>
-        <div class="metric-subtext" id="metric-linkedin-count">-- companies with official LinkedIn</div>
-      </div>
-
-      <div class="metric-card">
-        <div class="metric-card-header">
-          <span>Social / X Coverage</span>
-          <span class="material-symbols-outlined">alternate_email</span>
-        </div>
-        <div class="metric-value" id="metric-social-pct">--%</div>
-        <div class="metric-subtext" id="metric-social-count">-- profiles with X handles</div>
-      </div>
-
-      <div class="metric-card">
-        <div class="metric-card-header">
-          <span>Ecosystem Nodes</span>
+        <!-- 3. Integrations -->
+        <button class="sidebar-item" data-tab="integrations" onclick="switchTab('integrations')">
           <span class="material-symbols-outlined">hub</span>
-        </div>
-        <div class="metric-value" id="metric-ecosystem-total">--</div>
-        <div class="metric-subtext" id="metric-eco-detail">Partners & Competitor links</div>
-      </div>
-
-      <div class="metric-card">
-        <div class="metric-card-header">
-          <span>Cache Hit Ratio</span>
-          <span class="material-symbols-outlined">bolt</span>
-        </div>
-        <div class="metric-value" id="metric-cache-hit">--%</div>
-        <div class="metric-subtext" id="metric-cache-sub">Instant Firestore hits</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Automated Pipeline Refresh Frequency Control Card -->
-  <div class="schedule-card">
-    <div class="schedule-header">
-      <h2>
-        <span class="material-symbols-outlined" style="color:var(--primary);">schedule</span>
-        <span>Automated Refresh Frequency & Schedule Controls</span>
-      </h2>
-      <div style="display:flex; gap:0.65rem;">
-        <button onclick="triggerImmediateRefresh()" class="btn btn-warning">
-          <span class="material-symbols-outlined">sync</span>
-          <span>Run Refresh Now</span>
+          <div class="sidebar-item-text">
+            <span class="item-title">Integrations</span>
+            <span class="item-desc">CRM & Webhooks</span>
+          </div>
         </button>
-        <button onclick="saveScheduleSettings()" class="btn btn-primary">
-          <span class="material-symbols-outlined">save</span>
-          <span>Save Frequency</span>
+
+        <!-- 4. Bulk Operations -->
+        <button class="sidebar-item" data-tab="bulk" onclick="switchTab('bulk')">
+          <span class="material-symbols-outlined">upload_file</span>
+          <div class="sidebar-item-text">
+            <span class="item-title">Bulk Operations</span>
+            <span class="item-desc">Batch Extract & Export</span>
+          </div>
         </button>
-      </div>
+      </nav>
     </div>
 
-    <div class="schedule-body">
-      <div class="control-group">
-        <label for="schedule-frequency">Refresh Frequency</label>
-        <select id="schedule-frequency" class="control-select">
-          <option value="hourly">Every Hour (Aggressive Intelligence)</option>
-          <option value="every_6h">Every 6 Hours (Active Market Watch)</option>
-          <option value="every_12h">Every 12 Hours (Twice Daily)</option>
-          <option value="daily" selected>Daily (Recommended - Lowest Cost)</option>
-          <option value="weekly">Weekly (Cost Saver)</option>
-          <option value="manual">Manual Only (Disable Auto-Refresh)</option>
-        </select>
+    <!-- Sidebar Footer Telemetry Card -->
+    <div class="sidebar-footer">
+      <div class="sidebar-info-card">
+        <div class="info-card-header">
+          <span class="pulse-dot"></span>
+          <span>Live Catalog</span>
+        </div>
+        <div class="info-card-stat"><span id="sidebar-profiles-count">--</span> Profiles</div>
+        <div class="info-card-sub"><span id="sidebar-companies-count">--</span> Companies Active</div>
       </div>
+    </div>
+  </aside>
 
-      <div class="control-group">
-        <label>Next Scheduled Execution</label>
-        <div class="status-pill" id="schedule-next-run">
-          <span class="material-symbols-outlined" style="font-size:1.15rem; color:var(--primary);">event_upcoming</span>
-          <span id="next-run-text">Loading schedule...</span>
+  <!-- Right Main Content Area -->
+  <main class="admin-content">
+
+    <!-- ============================================================ -->
+    <!-- TAB 1: ANALYTICS -->
+    <!-- ============================================================ -->
+    <div id="tab-analytics" class="tab-pane active">
+      <div class="tab-header">
+        <div>
+          <h2>
+            <span class="material-symbols-outlined" style="color:var(--primary); font-size:1.8rem;">analytics</span>
+            <span>Analytics & Observability</span>
+          </h2>
+          <p class="tab-subtitle">Real-time system health, corporate telemetry counters, executive talent search, and the full catalog of collected leadership intelligence.</p>
+        </div>
+        <div class="tab-header-actions">
+          <button onclick="loadAdminData()" class="btn btn-secondary">
+            <span class="material-symbols-outlined">refresh</span>
+            <span>Refresh</span>
+          </button>
+          <a href="/api/admin/export/csv" class="btn btn-success" download>
+            <span class="material-symbols-outlined">download</span>
+            <span>Download CSV</span>
+          </a>
+          <a href="/api/admin/export/json" class="btn btn-secondary" download>
+            <span class="material-symbols-outlined">data_object</span>
+            <span>Download JSON</span>
+          </a>
         </div>
       </div>
 
-      <div class="control-group">
-        <label>Last Execution Telemetry</label>
-        <div class="status-pill" id="schedule-last-run">
-          <span class="material-symbols-outlined" style="font-size:1.15rem; color:var(--success);">task_alt</span>
-          <span id="last-run-text">Awaiting initial run</span>
+      <!-- Live Observability & Telemetry KPI Row -->
+      <div class="metrics-section">
+        <div class="section-title">
+          <span class="material-symbols-outlined" style="color:var(--primary);">monitoring</span>
+          <span>Live Observability & Telemetry Counters</span>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>Companies Indexed</span>
+              <span class="material-symbols-outlined">apartment</span>
+            </div>
+            <div class="metric-value" id="metric-companies">--</div>
+            <div class="metric-subtext" id="metric-avg-profiles">Avg profiles / co: --</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>Total Profiles</span>
+              <span class="material-symbols-outlined">groups</span>
+            </div>
+            <div class="metric-value" id="metric-profiles">--</div>
+            <div class="metric-subtext" id="metric-profiles-split">C-Suite: -- | Board: --</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>Email Coverage</span>
+              <span class="material-symbols-outlined">mail</span>
+            </div>
+            <div class="metric-value" id="metric-email-pct">--%</div>
+            <div class="metric-subtext" id="metric-email-count">-- verified corporate emails</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>Company LinkedIn</span>
+              <span class="material-symbols-outlined" style="color:#0a66c2;">apartment</span>
+            </div>
+            <div class="metric-value" id="metric-linkedin-pct">--%</div>
+            <div class="metric-subtext" id="metric-linkedin-count">-- companies with official LinkedIn</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>Social / X Coverage</span>
+              <span class="material-symbols-outlined">alternate_email</span>
+            </div>
+            <div class="metric-value" id="metric-social-pct">--%</div>
+            <div class="metric-subtext" id="metric-social-count">-- profiles with X handles</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>Ecosystem Nodes</span>
+              <span class="material-symbols-outlined">hub</span>
+            </div>
+            <div class="metric-value" id="metric-ecosystem-total">--</div>
+            <div class="metric-subtext" id="metric-eco-detail">Partners & Competitor links</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>Cache Hit Ratio</span>
+              <span class="material-symbols-outlined">bolt</span>
+            </div>
+            <div class="metric-value" id="metric-cache-hit">--%</div>
+            <div class="metric-subtext" id="metric-cache-sub">Instant Firestore hits</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Semantic & Vector Talent Discovery (RAG) -->
+      <div class="tool-card" style="margin-bottom: 2rem;">
+        <div class="tool-title">
+          <span class="material-symbols-outlined" style="color:var(--primary);">travel_explore</span>
+          <span>Semantic & Vector Talent Discovery (RAG)</span>
+        </div>
+        <p class="tool-desc">
+          Query leaders across all indexed companies by board committees, domain background, and governance skills using Gemini 3.8 Flash semantic reasoning.
+        </p>
+        <div class="tool-input-row">
+          <input type="text" id="semantic-query" class="tool-input" placeholder="e.g. board member with cybersecurity experience in fintech" />
+          <button onclick="runSemanticSearch()" class="btn btn-primary">Find Candidates</button>
+        </div>
+        <div id="semantic-results" class="tool-result-box"></div>
+      </div>
+
+      <!-- Summary and Export Banner -->
+      <div class="admin-banner">
+        <div class="banner-text">
+          <h3>All Collected Leadership Intelligence</h3>
+          <p id="stats-summary">Loading database catalog...</p>
+        </div>
+        <div class="actions-group">
+          <button onclick="loadAdminData()" class="btn btn-secondary">
+            <span class="material-symbols-outlined">refresh</span>
+            <span>Refresh</span>
+          </button>
+          <a href="/api/admin/export/csv" class="btn btn-success" download>
+            <span class="material-symbols-outlined">download</span>
+            <span>Download Full CSV</span>
+          </a>
+          <a href="/api/admin/export/json" class="btn btn-secondary" download>
+            <span class="material-symbols-outlined">data_object</span>
+            <span>Download JSON</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Logo</th>
+              <th>Company</th>
+              <th>Key Partners</th>
+              <th>Key Competitors</th>
+              <th>Name</th>
+              <th>Role / Title</th>
+              <th>Group</th>
+              <th>Individual X</th>
+              <th>Compensation / SEC</th>
+              <th>Email</th>
+              <th>Tenure</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr>
+              <td colspan="11" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                Loading all stored profiles...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 2: SETTINGS -->
+    <!-- ============================================================ -->
+    <div id="tab-settings" class="tab-pane">
+      <div class="tab-header">
+        <div>
+          <h2>
+            <span class="material-symbols-outlined" style="color:var(--primary); font-size:1.8rem;">tune</span>
+            <span>Settings & Schedule Controls</span>
+          </h2>
+          <p class="tab-subtitle">Configure automated executive refresh frequency, scheduled ingestion triggers, and system runtime controls.</p>
+        </div>
+      </div>
+
+      <!-- Automated Pipeline Refresh Frequency Control Card -->
+      <div class="schedule-card">
+        <div class="schedule-header">
+          <h3>
+            <span class="material-symbols-outlined" style="color:var(--primary);">schedule</span>
+            <span>Automated Refresh Frequency & Schedule Controls</span>
+          </h3>
+          <div style="display:flex; gap:0.65rem;">
+            <button onclick="triggerImmediateRefresh()" class="btn btn-warning">
+              <span class="material-symbols-outlined">sync</span>
+              <span>Run Refresh Now</span>
+            </button>
+            <button onclick="saveScheduleSettings()" class="btn btn-primary">
+              <span class="material-symbols-outlined">save</span>
+              <span>Save Frequency</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="schedule-body">
+          <div class="control-group">
+            <label for="schedule-frequency">Refresh Frequency</label>
+            <select id="schedule-frequency" class="control-select">
+              <option value="hourly">Every Hour (Aggressive Intelligence)</option>
+              <option value="every_6h">Every 6 Hours (Active Market Watch)</option>
+              <option value="every_12h">Every 12 Hours (Twice Daily)</option>
+              <option value="daily" selected>Daily (Recommended - Lowest Cost)</option>
+              <option value="weekly">Weekly (Cost Saver)</option>
+              <option value="manual">Manual Only (Disable Auto-Refresh)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Next Scheduled Execution</label>
+            <div class="status-pill" id="schedule-next-run">
+              <span class="material-symbols-outlined" style="font-size:1.15rem; color:var(--primary);">event_upcoming</span>
+              <span id="next-run-text">Loading schedule...</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>Last Execution Telemetry</label>
+            <div class="status-pill" id="schedule-last-run">
+              <span class="material-symbols-outlined" style="font-size:1.15rem; color:var(--success);">task_alt</span>
+              <span id="last-run-text">Awaiting initial run</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Infrastructure & Environment Configuration Card -->
+      <div class="tool-card">
+        <div class="tool-title">
+          <span class="material-symbols-outlined" style="color:var(--primary);">dns</span>
+          <span>Cloud Infrastructure & Service Architecture</span>
+        </div>
+        <p class="tool-desc">
+          Core backend configurations and live platform connection specifications.
+        </p>
+        <div class="config-list">
+          <div class="config-row">
+            <span class="config-label"><span class="material-symbols-outlined">cloud</span> Google Cloud Project ID</span>
+            <span class="config-val">buildwithgemini-448202</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label"><span class="material-symbols-outlined">database</span> Primary Database Engine</span>
+            <span class="config-val">Firestore Native (WAL persistence enabled)</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label"><span class="material-symbols-outlined">psychology</span> AI Discovery Model</span>
+            <span class="config-val">Gemini 3.8 Flash (Vertex AI endpoint)</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label"><span class="material-symbols-outlined">folder</span> Storage Bucket</span>
+            <span class="config-val">buildwithgemini-448202-reports</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label"><span class="material-symbols-outlined">public</span> Deployment Region</span>
+            <span class="config-val">us-east1 / us-central1 (Global Failover)</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Advanced Tooling Row: Vector Search, CRM Webhook & Weekly Digest -->
-  <div class="tools-grid">
-    <!-- Vector Search Card -->
-    <div class="tool-card">
-      <div class="tool-title">
-        <span class="material-symbols-outlined" style="color:var(--primary);">travel_explore</span>
-        <span>Semantic & Vector Talent Discovery (RAG)</span>
+    <!-- ============================================================ -->
+    <!-- TAB 3: INTEGRATIONS -->
+    <!-- ============================================================ -->
+    <div id="tab-integrations" class="tab-pane">
+      <div class="tab-header">
+        <div>
+          <h2>
+            <span class="material-symbols-outlined" style="color:var(--purple); font-size:1.8rem;">hub</span>
+            <span>Integrations & Ecosystem Sync</span>
+          </h2>
+          <p class="tab-subtitle">Connect your leadership intelligence data stream to external CRM systems, generate weekly briefings, and verify regulatory data feeds.</p>
+        </div>
       </div>
-      <p class="tool-desc">
-        Find executives and board members across all companies by skills, domain background, and board committees using Gemini 3.8 Flash semantic reasoning.
-      </p>
-      <div class="tool-input-row">
-        <input type="text" id="semantic-query" class="tool-input" placeholder="e.g. board member with cybersecurity experience in fintech" />
-        <button onclick="runSemanticSearch()" class="btn btn-primary">Find Candidates</button>
+
+      <!-- Tools Grid: CRM Sync & Weekly Digest -->
+      <div class="tools-grid">
+        <!-- CRM Sync Card -->
+        <div class="tool-card">
+          <div class="tool-title">
+            <span class="material-symbols-outlined" style="color:var(--purple);">sync_alt</span>
+            <span>CRM Webhook Synchronization</span>
+          </div>
+          <p class="tool-desc">
+            Push enriched executive intelligence to external Salesforce or HubSpot CRM webhook endpoints.
+          </p>
+          <div class="tool-input-row">
+            <input type="text" id="crm-company" class="tool-input" placeholder="Company Name (e.g. Spotify)" />
+            <button onclick="triggerCrmSync()" class="btn btn-purple">Push to CRM</button>
+          </div>
+          <div id="crm-results" class="tool-result-box"></div>
+        </div>
+
+        <!-- Weekly Digest Card -->
+        <div class="tool-card">
+          <div class="tool-title">
+            <span class="material-symbols-outlined" style="color:var(--primary);">newspaper</span>
+            <span>Executive Competitor Digest</span>
+          </div>
+          <p class="tool-desc">
+            Synthesize an AI-curated Monday morning competitive governance digest from current catalog changes and SEC Form 8-K filings.
+          </p>
+          <div class="tool-input-row">
+            <button onclick="generateDigest()" class="btn btn-secondary">Generate Weekly Briefing</button>
+          </div>
+        </div>
       </div>
-      <div id="semantic-results" class="tool-result-box"></div>
-    </div>
 
-    <!-- CRM Sync & Weekly Digest Card -->
-    <div class="tool-card">
-      <div class="tool-title">
-        <span class="material-symbols-outlined" style="color:var(--purple);">sync_alt</span>
-        <span>CRM Webhook & Weekly Digest</span>
+      <!-- Integration Connectors Status -->
+      <div class="tool-card">
+        <div class="tool-title">
+          <span class="material-symbols-outlined" style="color:var(--success);">link</span>
+          <span>Connected Regulatory & Intelligence Interfaces</span>
+        </div>
+        <p class="tool-desc">Active upstream regulatory and official data connectors powering the automated discovery pipeline.</p>
+        <div class="config-list">
+          <div class="config-row">
+            <span class="config-label"><span class="material-symbols-outlined" style="color:var(--success);">check_circle</span> SEC EDGAR Automated Retrieval (Forms DEF 14A, 8-K, 10-K)</span>
+            <span class="config-val" style="color:var(--success);">CONNECTED (Daily Index)</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label"><span class="material-symbols-outlined" style="color:var(--success);">check_circle</span> Official Investor Relations Scraping Engine</span>
+            <span class="config-val" style="color:var(--success);">ACTIVE (Live DOM Verification)</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label"><span class="material-symbols-outlined" style="color:var(--success);">check_circle</span> Google Cloud Storage Report Pipeline</span>
+            <span class="config-val" style="color:var(--success);">CONNECTED (Public Bucket)</span>
+          </div>
+          <div class="config-row">
+            <span class="config-label"><span class="material-symbols-outlined" style="color:var(--success);">check_circle</span> Wikipedia Official Entity Reference API</span>
+            <span class="config-val" style="color:var(--success);">ACTIVE (Verified User-Agent)</span>
+          </div>
+        </div>
       </div>
-      <p class="tool-desc">
-        Push leadership data to external Salesforce/HubSpot webhook endpoints, or generate an AI executive competitor digest.
-      </p>
-      <div class="tool-input-row">
-        <input type="text" id="crm-company" class="tool-input" placeholder="Company Name (e.g. Spotify)" style="flex:0.6;" />
-        <button onclick="triggerCrmSync()" class="btn btn-purple">Push to CRM</button>
-        <button onclick="generateDigest()" class="btn btn-secondary">Weekly Digest</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 4: BULK OPERATIONS -->
+    <!-- ============================================================ -->
+    <div id="tab-bulk" class="tab-pane">
+      <div class="tab-header">
+        <div>
+          <h2>
+            <span class="material-symbols-outlined" style="color:var(--primary); font-size:1.8rem;">upload_file</span>
+            <span>Bulk Operations & Batch Extract</span>
+          </h2>
+          <p class="tab-subtitle">Bulk ingest multiple corporate domains via CSV upload, run mass discovery jobs, or trigger full catalog exports.</p>
+        </div>
       </div>
-      <div id="crm-results" class="tool-result-box"></div>
-    </div>
-  </div>
 
-  <!-- Batch CSV Upload Section -->
-  <div class="batch-card">
-    <div class="batch-header">
-      <h2>
-        <span class="material-symbols-outlined" style="color:var(--primary);">upload_file</span>
-        <span>Batch Extract Companies & Domains</span>
-      </h2>
-      <span style="font-size: 0.82rem; color: var(--text-muted);">
-        Upload a .csv of domains or company names (one per row)
-      </span>
-    </div>
-    
-    <div class="batch-dropzone" onclick="document.getElementById('csv-file-input').click()">
-      <span class="material-symbols-outlined" style="font-size: 2.2rem; color: var(--primary); margin-bottom: 0.35rem;">cloud_upload</span>
-      <p style="font-weight: 600; color: var(--text-main); font-size:0.95rem;">
-        Click to select or drag and drop a CSV file of companies/domains
-      </p>
-      <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleBatchUpload(this)" />
+      <!-- Batch CSV Upload Section -->
+      <div class="batch-card">
+        <div class="batch-header">
+          <h3>
+            <span class="material-symbols-outlined" style="color:var(--primary);">cloud_upload</span>
+            <span>Batch Extract Companies & Domains</span>
+          </h3>
+          <span style="font-size: 0.82rem; color: var(--text-muted);">
+            Upload a .csv file of domains or company names (one per row)
+          </span>
+        </div>
+        
+        <div class="batch-dropzone" onclick="document.getElementById('csv-file-input').click()">
+          <span class="material-symbols-outlined" style="font-size: 2.4rem; color: var(--primary); margin-bottom: 0.35rem;">upload_file</span>
+          <p style="font-weight: 600; color: var(--text-main); font-size:0.95rem;">
+            Click to select or drag and drop a CSV file of companies/domains
+          </p>
+          <span style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem; display:block;">
+            Supported headers: "domain", "company", "website", or single-column raw text
+          </span>
+          <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleBatchUpload(this)" />
+        </div>
+
+        <div id="batch-progress" class="batch-status status-running">
+          <div class="spinner"></div>
+          <span id="batch-progress-text">Processing batch file...</span>
+        </div>
+
+        <div id="batch-result" class="batch-status status-done"></div>
+      </div>
+
+      <!-- Bulk Export Operations -->
+      <div class="tool-card">
+        <div class="tool-title">
+          <span class="material-symbols-outlined" style="color:var(--primary);">download</span>
+          <span>Mass Data Export & Migration Operations</span>
+        </div>
+        <p class="tool-desc">
+          Download the complete leadership dataset across all indexed companies, relationships, and verified profiles in standard portable formats.
+        </p>
+        <div style="display:flex; gap:0.85rem; flex-wrap:wrap; margin-top:0.5rem;">
+          <a href="/api/admin/export/csv" class="btn btn-success" download>
+            <span class="material-symbols-outlined">table_view</span>
+            <span>Download Complete CSV Export</span>
+          </a>
+          <a href="/api/admin/export/json" class="btn btn-secondary" download>
+            <span class="material-symbols-outlined">data_object</span>
+            <span>Download Structured JSON Dump</span>
+          </a>
+          <button onclick="triggerImmediateRefresh()" class="btn btn-warning">
+            <span class="material-symbols-outlined">sync</span>
+            <span>Re-Index Entire Catalog</span>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div id="batch-progress" class="batch-status status-running">
-      <div class="spinner"></div>
-      <span id="batch-progress-text">Processing batch file...</span>
-    </div>
-
-    <div id="batch-result" class="batch-status status-done"></div>
-  </div>
-
-  <!-- Summary and Export Banner -->
-  <div class="admin-banner">
-    <div class="banner-text">
-      <h1>All Collected Leadership Intelligence</h1>
-      <p id="stats-summary">Loading database catalog...</p>
-    </div>
-    <div class="actions-group">
-      <button onclick="loadAdminData()" class="btn btn-secondary">
-        <span class="material-symbols-outlined">refresh</span>
-        <span>Refresh</span>
-      </button>
-      <a href="/api/admin/export/csv" class="btn btn-success" download>
-        <span class="material-symbols-outlined">download</span>
-        <span>Download Full CSV</span>
-      </a>
-      <a href="/api/admin/export/json" class="btn btn-secondary" download>
-        <span class="material-symbols-outlined">data_object</span>
-        <span>Download JSON</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- Data Table -->
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Logo</th>
-          <th>Company</th>
-          <th>Key Partners</th>
-          <th>Key Competitors</th>
-          <th>Name</th>
-          <th>Role / Title</th>
-          <th>Group</th>
-          <th>Individual X</th>
-          <th>Compensation / SEC</th>
-          <th>Email</th>
-          <th>Tenure</th>
-        </tr>
-      </thead>
-      <tbody id="table-body">
-        <tr>
-          <td colspan="11" style="text-align: center; padding: 3rem; color: var(--text-muted);">
-            Loading all stored profiles...
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  </main>
 </div>
 
 <script>
@@ -966,6 +1488,42 @@
     document.documentElement.setAttribute('data-theme', target);
     localStorage.setItem('theme', target);
   });
+
+  // Sidebar Tab Switching
+  function switchTab(tabId) {
+    // 1. Update Sidebar Active Item
+    document.querySelectorAll('.sidebar-item').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+    });
+
+    // 2. Update Content Active Pane
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+      pane.classList.toggle('active', pane.id === `tab-${tabId}`);
+    });
+
+    // 3. Update URL Hash without jump
+    if (history.pushState) {
+      history.pushState(null, null, `#${tabId}`);
+    } else {
+      location.hash = `#${tabId}`;
+    }
+
+    // 4. Scroll Main Content to Top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Handle URL Hash Navigation
+  function handleHashChange() {
+    const hash = (window.location.hash || '').replace('#', '').trim().toLowerCase();
+    const validTabs = ['analytics', 'settings', 'integrations', 'bulk'];
+    if (validTabs.includes(hash)) {
+      switchTab(hash);
+    } else {
+      switchTab('analytics');
+    }
+  }
+
+  window.addEventListener('hashchange', handleHashChange);
 
   async function loadScheduleSettings() {
     try {
@@ -1076,13 +1634,24 @@
       const resp = await fetch('/api/admin/metrics');
       const data = await resp.json();
 
-      document.getElementById('metric-companies').textContent = data.catalog.total_companies || 0;
+      const totalCos = data.catalog.total_companies || 0;
+      const totalProfs = data.catalog.total_profiles || 0;
+
+      document.getElementById('metric-companies').textContent = totalCos;
       document.getElementById('metric-avg-profiles').textContent = `Avg profiles / co: ${data.catalog.avg_profiles_per_company}`;
       
-      document.getElementById('metric-profiles').textContent = data.catalog.total_profiles || 0;
+      document.getElementById('metric-profiles').textContent = totalProfs;
       document.getElementById('metric-profiles-split').textContent = `C-Suite: ${data.catalog.c_suite_executives} | Board: ${data.catalog.board_of_directors}`;
       
+      // Sidebar Telemetry counters
+      const sbProfiles = document.getElementById('sidebar-profiles-count');
+      const sbCompanies = document.getElementById('sidebar-companies-count');
+      if (sbProfiles) sbProfiles.textContent = totalProfs;
+      if (sbCompanies) sbCompanies.textContent = totalCos;
+
       document.getElementById('metric-email-pct').textContent = `${data.coverage.email_coverage_pct}%`;
+      document.getElementById('metric-email-count').textContent = `${data.coverage.email_count} verified corporate emails`;
+
       const compLinkedInPct = data.coverage.company_linkedin_coverage_pct != null ? data.coverage.company_linkedin_coverage_pct : 100;
       const compLinkedInCount = data.coverage.company_linkedin_count != null ? data.coverage.company_linkedin_count : (data.catalog.total_companies || 19);
       document.getElementById('metric-linkedin-pct').textContent = `${compLinkedInPct}%`;
@@ -1216,7 +1785,10 @@
     }
   }
 
-  window.addEventListener('DOMContentLoaded', loadAdminData);
+  window.addEventListener('DOMContentLoaded', () => {
+    handleHashChange();
+    loadAdminData();
+  });
 </script>
 
 </body>

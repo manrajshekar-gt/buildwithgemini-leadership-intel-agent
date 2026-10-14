@@ -47,3 +47,27 @@ def test_api_admin_metrics(client):
     data = response.json()
     assert "catalog" in data
     assert data["catalog"]["total_profiles"] >= 2
+
+
+def test_admin_sidebar_panels():
+    admin_path = ROOT_DIR / "frontend" / "static" / "admin.html"
+    content = admin_path.read_text(encoding="utf-8")
+    
+    # Left sidebar panel present
+    assert "admin-sidebar" in content
+    assert "sidebar-nav" in content
+    
+    # All 4 tabs present in navigation
+    assert 'data-tab="analytics"' in content
+    assert 'data-tab="settings"' in content
+    assert 'data-tab="integrations"' in content
+    assert 'data-tab="bulk"' in content
+
+    # All 4 corresponding tab content panels present
+    assert 'id="tab-analytics"' in content
+    assert 'id="tab-settings"' in content
+    assert 'id="tab-integrations"' in content
+    assert 'id="tab-bulk"' in content
+
+    # Tab switching logic
+    assert "function switchTab(tabId)" in content
