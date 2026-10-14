@@ -35,37 +35,15 @@ from .a2ui_utils import a2ui_callback
 
 MODEL = "gemini-3.8-flash"
 IMAGE_MODEL = "gemini-2.5-flash-image"
-PROJECT_ID = "qwiklabs-gcp-04-a0fc456f3f90"
-COLLECTION_NAME = "leadership_profiles"
-BUCKET_NAME = "leadership-intel-assets-9698"
 
-_firestore_client: Optional[firestore.Client] = None
-_storage_client: Optional[storage.Client] = None
-_genai_client: Optional[genai.Client] = None
-
-
-def get_firestore_client() -> firestore.Client:
-    """Returns a singleton Firestore client with hardcoded project ID."""
-    global _firestore_client
-    if _firestore_client is None:
-        _firestore_client = firestore.Client(project=PROJECT_ID)
-    return _firestore_client
-
-
-def get_storage_client() -> storage.Client:
-    """Returns a singleton Cloud Storage client with hardcoded project ID."""
-    global _storage_client
-    if _storage_client is None:
-        _storage_client = storage.Client(project=PROJECT_ID)
-    return _storage_client
-
-
-def get_genai_client() -> genai.Client:
-    """Returns a singleton GenAI client configured with Vertex AI and hardcoded project ID."""
-    global _genai_client
-    if _genai_client is None:
-        _genai_client = genai.Client(vertexai=True, project=PROJECT_ID, location="us-central1")
-    return _genai_client
+from .db import (
+    get_db as get_firestore_client,
+    get_storage as get_storage_client,
+    get_genai as get_genai_client,
+    PROJECT_ID,
+    COLLECTION_NAME,
+    BUCKET_NAME,
+)
 
 
 def _slugify(text: str) -> str:
@@ -75,72 +53,67 @@ def _slugify(text: str) -> str:
     return re.sub(r"[-\s]+", "-", text).strip("-")
 
 
-def generate_company_logo(
+def fetch_company_logo(
     company_name: str,
+    website_url: Optional[str] = None,
     business_description: Optional[str] = None,
     style_preference: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Generates a professional custom company logo based on the business type and uploads it to Cloud Storage.
+    """Fetches the official corporate brand logo directly from the company website.
 
     Args:
-        company_name: The name of the company or customer business (e.g. 'CloudScale Technologies', 'Solaris Health').
-        business_description: A description of what the business does, industry, products, or core value proposition.
-        style_preference: Optional style cue (e.g. 'minimalist modern', 'geometric tech', 'elegant luxury', 'playful organic').
+        company_name: The name of the company or customer business (e.g. 'Alphabet', 'Microsoft').
+        website_url: Optional website URL or domain for the company.
+        business_description: Optional business context.
+        style_preference: Optional style notes.
 
     Returns:
-        A dictionary containing the logo generation status, company name, Cloud Storage public image URL, and description.
+        A dictionary containing the logo retrieval status, company name, and official logo image URL.
     """
-    desc = business_description or f"A fun, innovative modern business called {company_name}"
-    style = style_preference or "playful, fun, and vibrant modern logo, charismatic mascot or creative emblem, vivid colors, friendly aesthetic, clean white background"
+    target_url = website_url or f"https://www.{_slugify(company_name)}.com"
+    if not (target_url.startswith("http://") or target_url.startswith("https://")):
+        target_url = f"https://{target_url}"
+    clean_domain = re.sub(r"^https?://(www\.)?", "", target_url).split("/")[0]
 
-    prompt = (
-        f"A vibrant, playful, and fun company logo for '{company_name}'. Business domain: {desc}. "
-        f"Design style: {style}. Creative and clever mascot or emblem, vivid joyful colors, vector art, isolated on a solid white background."
-    )
-
+    logo_url = f"https://www.google.com/s2/favicons?domain={clean_domain}&sz=128"
     try:
-        client = get_genai_client()
-        response = client.models.generate_content(
-            model=IMAGE_MODEL,
-            contents=prompt,
-        )
+        headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"}
+        with httpx.Client(timeout=6.0, headers=headers, follow_redirects=True) as client:
+            resp = client.get(target_url)
+            if resp.status_code < 400:
+                soup = BeautifulSoup(resp.text, "html.parser")
+                base_url = str(resp.url)
 
-        image_bytes = None
-        for part in response.candidates[0].content.parts:
-            if part.inline_data:
-                image_bytes = part.inline_data.data
-                break
+                og_logo = soup.find("meta", property="og:logo")
+                if og_logo and og_logo.get("content"):
+                    logo_url = urllib.parse.urljoin(base_url, og_logo["content"].strip())
+                else:
+                    apple_icon = soup.find("link", rel=lambda r: r and "apple-touch-icon" in r.lower(), href=True)
+                    if apple_icon and apple_icon.get("href"):
+                        logo_url = urllib.parse.urljoin(base_url, apple_icon["href"].strip())
+                    else:
+                        header = soup.find("header") or soup.find("nav")
+                        if header:
+                            for img in header.find_all("img"):
+                                src = img.get("src") or img.get("data-src")
+                                alt = (img.get("alt") or "").lower()
+                                cls = " ".join(img.get("class", [])).lower() if isinstance(img.get("class"), list) else str(img.get("class") or "").lower()
+                                if src and any(k in alt or k in cls for k in ["logo", "brand", clean_domain.split(".")[0]]):
+                                    logo_url = urllib.parse.urljoin(base_url, src.strip())
+                                    break
+    except Exception:
+        pass
 
-        if not image_bytes:
-            return {
-                "status": "error",
-                "message": "Image model did not return image data in the response.",
-                "logo_url": None,
-            }
+    return {
+        "status": "success",
+        "company_name": company_name,
+        "logo_url": logo_url,
+        "message": f"Successfully retrieved official logo for {company_name} from website ({logo_url})",
+    }
 
-        # Upload generated logo to public GCS bucket
-        filename = f"logos/{_slugify(company_name)}-logo.png"
-        storage_client = get_storage_client()
-        bucket = storage_client.bucket(BUCKET_NAME)
-        blob = bucket.blob(filename)
-        blob.upload_from_string(image_bytes, content_type="image/png")
 
-        public_url = f"https://storage.googleapis.com/{BUCKET_NAME}/{filename}"
-
-        return {
-            "status": "success",
-            "company_name": company_name,
-            "logo_url": public_url,
-            "business_description": desc,
-            "message": f"Successfully generated and published new logo for {company_name} at {public_url}",
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "company_name": company_name,
-            "message": f"Failed to generate logo for {company_name}: {e}",
-            "logo_url": None,
-        }
+# Backwards compatibility alias
+generate_company_logo = fetch_company_logo
 
 
 def get_leadership_profiles(
@@ -353,31 +326,34 @@ def search_company_governance(company_name: str, query_type: str = "all") -> Dic
     discovered_emails = set()
 
     try:
-        search_term = urllib.parse.quote(company_name)
-        api_url = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={search_term}&format=json"
-        req = urllib.request.Request(api_url, headers={"User-Agent": "LeadershipIntelAgent/1.0"})
-        with urllib.request.urlopen(req, timeout=8) as response:
-            data = json.loads(response.read().decode())
-            search_items = data.get("query", {}).get("search", [])
+        wiki_headers = {"User-Agent": "LeadershipIntelligenceBot/1.0 (admin@leadershipintel.io)"}
+        with httpx.Client(timeout=8.0, headers=wiki_headers) as client:
+            resp = client.get(
+                "https://en.wikipedia.org/w/api.php",
+                params={"action": "query", "list": "search", "srsearch": company_name, "format": "json"}
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                search_items = data.get("query", {}).get("search", [])
 
-            if search_items:
-                page_title = search_items[0]["title"]
-                extract_url = (
-                    f"https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles={urllib.parse.quote(page_title)}&format=json"
-                )
-                ext_req = urllib.request.Request(extract_url, headers={"User-Agent": "LeadershipIntelAgent/1.0"})
-                with urllib.request.urlopen(ext_req, timeout=8) as ext_resp:
-                    ext_data = json.loads(ext_resp.read().decode())
-                    pages = ext_data.get("query", {}).get("pages", {})
-                    for pid, pdata in pages.items():
-                        extract_text = pdata.get("extract", "")
-                        wiki_results.append({
-                            "title": pdata.get("title"),
-                            "summary": extract_text[:2500],
-                            "url": f"https://en.wikipedia.org/wiki/{urllib.parse.quote(pdata.get('title', ''))}",
-                        })
-                        for em in re.findall(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b", extract_text):
-                            discovered_emails.add(em)
+                if search_items:
+                    page_title = search_items[0]["title"]
+                    ext_resp = client.get(
+                        "https://en.wikipedia.org/w/api.php",
+                        params={"action": "query", "prop": "extracts", "exintro": 1, "explaintext": 1, "titles": page_title, "format": "json"}
+                    )
+                    if ext_resp.status_code == 200:
+                        ext_data = ext_resp.json()
+                        pages = ext_data.get("query", {}).get("pages", {})
+                        for pid, pdata in pages.items():
+                            extract_text = pdata.get("extract", "")
+                            wiki_results.append({
+                                "title": pdata.get("title"),
+                                "summary": extract_text[:2500],
+                                "url": f"https://en.wikipedia.org/wiki/{urllib.parse.quote(pdata.get('title', ''))}",
+                            })
+                            for em in re.findall(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b", extract_text):
+                                discovered_emails.add(em)
     except Exception as e:
         wiki_results.append({"error": f"Wikipedia lookup error: {e}"})
 
@@ -485,7 +461,8 @@ schema_manager = A2uiSchemaManager(
 instruction = schema_manager.generate_system_prompt(
     role_description=(
         "You are the Executive & Board Leadership Intelligence Agent. "
-        "Your role is to help users research, organize, and inspect company management teams and boards of directors. "
+        "Your role is to help users research, organize, and inspect company management teams and boards of directors using ONLY reputable, official, and authoritative sources (such as SEC Form DEF 14A proxy statements, Form 8-K filings, and official company investor relations and corporate leadership directories). "
+        "Always verify current leadership roles and check for recent executive transitions within the last 6 to 12 months. Do NOT rely on outdated or unverified aggregators. "
         "For each company or customer, you can generate a custom brand logo using `generate_company_logo` based on what the business does. "
         "For each member, always discover and capture their email address and associate the company's logo URL. "
         "When given a website URL, use `fetch_leadership_page_text` to read the site and find leadership pages and contact emails. "

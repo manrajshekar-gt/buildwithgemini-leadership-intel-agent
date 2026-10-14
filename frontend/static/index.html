@@ -1,88 +1,289 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Leadership & Board Intelligence Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <style>
     :root {
-      --primary: #1a73e8;
-      --primary-hover: #1557b0;
-      --bg: #f8fafc;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      
+      /* Stripe Light Theme */
+      --bg: #f6f9fc;
+      --bg-mesh-1: rgba(99, 91, 255, 0.08);
+      --bg-mesh-2: rgba(0, 212, 255, 0.06);
+      --bg-mesh-3: rgba(255, 94, 152, 0.05);
+      --header-bg: rgba(255, 255, 255, 0.82);
       --card-bg: #ffffff;
-      --border: #e2e8f0;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
+      --card-hover: #ffffff;
+      --border: #e3e8ee;
+      --border-subtle: #f1f5f9;
+      --text-main: #0a2540;
+      --text-muted: #627d98;
+      --text-secondary: #425466;
+      --primary: #635bff;
+      --primary-hover: #0a2540;
+      --primary-gradient: linear-gradient(135deg, #635bff 0%, #7a70ff 100%);
+      --primary-light: #f0efff;
+      --primary-glow: rgba(99, 91, 255, 0.2);
+      --accent-cyan: #00d4ff;
+      --accent-pink: #ff5e98;
+      
+      /* Badges & Tags */
       --badge-exec-bg: #eff6ff;
-      --badge-exec-text: #1d4ed8;
+      --badge-exec-text: #2563eb;
       --badge-board-bg: #f5f3ff;
-      --badge-board-text: #6d28d9;
+      --badge-board-text: #7c3aed;
+      --eco-partner-bg: #ecfdf5;
+      --eco-partner-text: #059669;
+      --eco-comp-bg: #fef2f2;
+      --eco-comp-text: #dc2626;
+      --callout-bg: #f8fafc;
+      --callout-border: #635bff;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+      --shadow-md: 0 4px 14px -2px rgba(50, 50, 93, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 13px 27px -5px rgba(50, 50, 93, 0.1), 0 8px 16px -8px rgba(0, 0, 0, 0.06);
+      --shadow-floating: 0 20px 45px -12px rgba(50, 50, 93, 0.14), 0 10px 20px -8px rgba(0, 0, 0, 0.08);
+      
+      /* Quick Chips */
+      --chip-bg: #ffffff;
+      --chip-text: #425466;
+      --chip-border: #e3e8ee;
+      --chip-hover-bg: #f0efff;
+      --chip-hover-border: #635bff;
     }
+
+    [data-theme="dark"] {
+      /* Stripe Dark Theme */
+      --bg: #0a0e1a;
+      --bg-mesh-1: rgba(99, 91, 255, 0.16);
+      --bg-mesh-2: rgba(0, 212, 255, 0.12);
+      --bg-mesh-3: rgba(255, 94, 152, 0.1);
+      --header-bg: rgba(10, 14, 26, 0.85);
+      --card-bg: #141c2e;
+      --card-hover: #182238;
+      --border: #232f48;
+      --border-subtle: #1a233a;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-secondary: #cbd5e1;
+      --primary: #7a70ff;
+      --primary-hover: #9189ff;
+      --primary-gradient: linear-gradient(135deg, #7a70ff 0%, #9189ff 100%);
+      --primary-light: rgba(99, 91, 255, 0.18);
+      --primary-glow: rgba(122, 112, 255, 0.35);
+      --accent-cyan: #38bdf8;
+      --accent-pink: #f472b6;
+      
+      --badge-exec-bg: rgba(37, 99, 235, 0.18);
+      --badge-exec-text: #60a5fa;
+      --badge-board-bg: rgba(124, 58, 237, 0.18);
+      --badge-board-text: #c084fc;
+      --eco-partner-bg: rgba(5, 150, 105, 0.18);
+      --eco-partner-text: #34d399;
+      --eco-comp-bg: rgba(220, 38, 38, 0.18);
+      --eco-comp-text: #f87171;
+      --callout-bg: #0f172a;
+      --callout-border: #7a70ff;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 13px 27px -5px rgba(0, 0, 0, 0.55);
+      --shadow-floating: 0 20px 45px -12px rgba(0, 0, 0, 0.7);
+      
+      --chip-bg: #141c2e;
+      --chip-text: #cbd5e1;
+      --chip-border: #232f48;
+      --chip-hover-bg: rgba(99, 91, 255, 0.22);
+      --chip-hover-border: #7a70ff;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
+      font-family: var(--font);
+      background-color: var(--bg);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      -webkit-font-smoothing: antialiased;
     }
+
+    /* Stripe Signature Ambient Gradient Aura */
+    .stripe-ambient-mesh {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 600px;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(circle at 18% 12%, var(--bg-mesh-1) 0%, transparent 48%),
+        radial-gradient(circle at 82% 16%, var(--bg-mesh-2) 0%, transparent 44%),
+        radial-gradient(circle at 50% 32%, var(--bg-mesh-3) 0%, transparent 40%);
+    }
+
+    /* Header */
     header {
-      background: #ffffff;
+      background: var(--header-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
+      padding: 0.9rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
       z-index: 100;
+      transition: background 0.25s ease, border-color 0.25s ease;
     }
+
     .header-logo {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      color: #1e293b;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: -0.02em;
     }
-    .header-logo .icon {
-      background: #e0f2fe;
+    .header-logo .icon-badge {
+      background: var(--primary-gradient);
+      color: #ffffff;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .header-logo .icon-badge .material-symbols-outlined {
+      font-size: 1.25rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .theme-toggle-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    .theme-toggle-btn .material-symbols-outlined {
+      font-size: 1.25rem;
+      transition: transform 0.3s ease;
+    }
+    [data-theme="light"] .theme-icon-moon { display: block; }
+    [data-theme="light"] .theme-icon-sun { display: none; }
+    [data-theme="dark"] .theme-icon-moon { display: none; }
+    [data-theme="dark"] .theme-icon-sun { display: block; }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-main);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 9px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-btn:hover {
+      border-color: var(--primary);
       color: var(--primary);
-      padding: 6px;
-      border-radius: 8px;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
+
     .container {
       max-width: 1200px;
       width: 100%;
       margin: 0 auto;
-      padding: 2.5rem 1.5rem;
+      padding: 3rem 1.5rem 5rem 1.5rem;
       flex: 1;
+      position: relative;
+      z-index: 1;
     }
 
     /* Hero / Search Section */
     .hero {
       text-align: center;
-      margin-bottom: 2.5rem;
+      margin-bottom: 3rem;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--primary-glow);
     }
     .hero h1 {
-      font-size: 2.3rem;
+      font-size: 2.75rem;
       font-weight: 800;
-      color: #0f172a;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.75rem;
+      color: var(--text-main);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 0.9rem;
+    }
+    .hero h1 .gradient-text {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     .hero p {
-      font-size: 1.05rem;
+      font-size: 1.12rem;
       color: var(--text-muted);
-      max-width: 600px;
-      margin: 0 auto 1.75rem auto;
+      max-width: 620px;
+      margin: 0 auto 2.2rem auto;
+      line-height: 1.55;
     }
 
+    /* Search Box */
     .search-box-wrapper {
       max-width: 680px;
       margin: 0 auto;
@@ -91,188 +292,217 @@
     .search-bar {
       display: flex;
       align-items: center;
-      background: #ffffff;
-      border: 2px solid var(--border);
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
       border-radius: 50px;
-      padding: 0.5rem 0.6rem 0.5rem 1.25rem;
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-      transition: all 0.2s ease;
+      padding: 0.45rem 0.55rem 0.45rem 1.35rem;
+      box-shadow: var(--shadow-floating);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .search-bar:focus-within {
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.15);
+      box-shadow: 0 0 0 4px var(--primary-glow), var(--shadow-floating);
+      transform: translateY(-2px);
     }
     .search-bar input {
       flex: 1;
       border: none;
       outline: none;
       font-size: 1.05rem;
+      font-family: var(--font);
       color: var(--text-main);
-      padding: 0.4rem 0.6rem;
+      padding: 0.5rem 0.75rem;
       background: transparent;
     }
+    .search-bar input::placeholder {
+      color: var(--text-muted);
+    }
     .search-bar button {
-      background: var(--primary);
+      background: var(--primary-gradient);
       color: #ffffff;
       border: none;
       outline: none;
-      padding: 0.75rem 1.6rem;
+      padding: 0.8rem 1.6rem;
       border-radius: 40px;
       font-weight: 600;
       font-size: 0.95rem;
+      font-family: var(--font);
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 0.4rem;
-      transition: background 0.15s ease;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px var(--primary-glow);
     }
     .search-bar button:hover {
-      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px var(--primary-glow);
     }
 
-    /* Quick suggestions */
+    /* Quick Suggestions */
     .quick-chips {
-      margin-top: 1rem;
+      margin-top: 1.25rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.55rem;
       align-items: center;
     }
     .chip-label {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
       font-weight: 500;
     }
     .chip {
-      background: #ffffff;
-      border: 1px solid var(--border);
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
       padding: 0.35rem 0.85rem;
       border-radius: 20px;
       font-size: 0.82rem;
-      color: #334155;
+      color: var(--chip-text);
       cursor: pointer;
       font-weight: 500;
-      transition: all 0.15s;
+      transition: all 0.18s ease;
+      box-shadow: var(--shadow-sm);
     }
     .chip:hover {
-      border-color: var(--primary);
+      border-color: var(--chip-hover-border);
       color: var(--primary);
-      background: #eff6ff;
+      background: var(--chip-hover-bg);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
     /* Loading Spinner */
     .spinner-container {
       display: none;
       text-align: center;
-      padding: 3rem 0;
+      padding: 3.5rem 0;
     }
     .spinner {
-      border: 3px solid #e2e8f0;
+      border: 3px solid var(--border);
       border-top: 3px solid var(--primary);
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 1rem auto;
+      width: 40px;
+      height: 40px;
+      animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      margin: 0 auto 1.2rem auto;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     /* Results Header / Company Banner */
     .company-banner {
-      background: #ffffff;
+      background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.75rem 2rem;
-      margin-bottom: 1.5rem;
+      border-radius: 20px;
+      padding: 2rem 2.25rem;
+      margin-bottom: 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      box-shadow: var(--shadow-md);
+      transition: all 0.25s ease;
     }
     .company-header-left {
       display: flex;
       align-items: center;
-      gap: 1.5rem;
+      gap: 1.75rem;
     }
     .company-logo-img {
-      width: 80px;
-      height: 80px;
+      width: 84px;
+      height: 84px;
       object-fit: contain;
-      border-radius: 12px;
+      border-radius: 16px;
       border: 1px solid var(--border);
       background: #ffffff;
-      padding: 6px;
+      padding: 8px;
+      box-shadow: var(--shadow-sm);
     }
     .company-logo-placeholder {
-      width: 80px;
-      height: 80px;
-      background: #f1f5f9;
-      border-radius: 12px;
+      width: 84px;
+      height: 84px;
+      background: var(--callout-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #94a3b8;
+      color: var(--text-muted);
     }
     .company-title h2 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #0f172a;
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.025em;
     }
     .company-url {
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       color: var(--primary);
       text-decoration: none;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0.25rem;
-      margin-top: 0.25rem;
+      gap: 0.3rem;
+      margin-top: 0.35rem;
+      font-weight: 500;
+    }
+    .company-url:hover {
+      text-decoration: underline;
     }
     .company-twitter-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
-      background: #0f172a;
-      color: #ffffff;
-      padding: 0.2rem 0.6rem;
+      background: var(--text-main);
+      color: var(--bg);
+      padding: 0.25rem 0.65rem;
       border-radius: 12px;
       font-size: 0.8rem;
       font-weight: 600;
-      margin-top: 0.4rem;
+      margin-top: 0.35rem;
       text-decoration: none;
+      transition: opacity 0.15s ease;
+    }
+    .company-twitter-badge:hover {
+      opacity: 0.85;
     }
     .stats-badge {
-      background: #f8fafc;
+      background: var(--callout-bg);
       border: 1px solid var(--border);
-      padding: 0.5rem 1rem;
-      border-radius: 10px;
+      padding: 0.6rem 1.25rem;
+      border-radius: 14px;
       text-align: right;
     }
     .stats-badge .count {
-      font-size: 1.3rem;
-      font-weight: 700;
+      font-size: 1.5rem;
+      font-weight: 800;
       color: var(--primary);
     }
     .stats-badge .lbl {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.05em;
       color: var(--text-muted);
     }
 
-    /* Organization Ecosystem Cards (Partners & Competitors) */
+    /* Ecosystem Cards (Partners & Competitors) */
     .ecosystem-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-      gap: 1.25rem;
-      margin-bottom: 2rem;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
     }
     .eco-card {
-      background: #ffffff;
+      background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.25rem 1.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      border-radius: 18px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    .eco-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
     .eco-header {
       display: flex;
@@ -280,17 +510,17 @@
       gap: 0.5rem;
       font-size: 1.05rem;
       font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #f1f5f9;
+      color: var(--text-main);
+      margin-bottom: 1.1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
     }
     .eco-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.65rem 0;
-      border-bottom: 1px dashed #f1f5f9;
+      padding: 0.75rem 0;
+      border-bottom: 1px dashed var(--border);
     }
     .eco-item:last-child {
       border-bottom: none;
@@ -301,78 +531,82 @@
     }
     .eco-item-name {
       font-weight: 600;
-      font-size: 0.92rem;
-      color: #0f172a;
+      font-size: 0.95rem;
+      color: var(--text-main);
     }
     .eco-item-desc {
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       margin-top: 0.15rem;
     }
     .eco-link-btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.2rem;
-      background: #f1f5f9;
+      gap: 0.25rem;
+      background: var(--callout-bg);
       color: var(--primary);
       text-decoration: none;
       font-size: 0.78rem;
       font-weight: 600;
-      padding: 0.3rem 0.65rem;
-      border-radius: 6px;
-      transition: background 0.15s;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      transition: all 0.15s ease;
     }
     .eco-link-btn:hover {
-      background: #e2e8f0;
+      background: var(--primary-light);
+      border-color: var(--primary);
     }
 
     /* Company Recent Tweets Box */
     .company-tweets-card {
-      background: #ffffff;
+      background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 2rem;
+      border-radius: 18px;
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-sm);
     }
     .tweets-header {
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 700;
-      color: #1e293b;
+      color: var(--text-main);
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      margin-bottom: 0.75rem;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
     }
     .tweet-bubble {
-      background: #f8fafc;
+      background: var(--callout-bg);
       border-left: 3px solid var(--primary);
-      padding: 0.6rem 0.85rem;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.88rem;
-      color: #334155;
-      margin-bottom: 0.5rem;
-      line-height: 1.4;
+      padding: 0.75rem 1rem;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.6rem;
+      line-height: 1.45;
     }
 
     /* Section Groups */
     .section-header {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 1.2rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid #e2e8f0;
+      gap: 0.65rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
     }
     .section-header h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #1e293b;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
     }
     .section-badge {
       font-size: 0.8rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 12px;
-      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      border-radius: 20px;
+      font-weight: 700;
     }
     .badge-exec { background: var(--badge-exec-bg); color: var(--badge-exec-text); }
     .badge-board { background: var(--badge-board-bg); color: var(--badge-board-text); }
@@ -380,73 +614,78 @@
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 1.25rem;
-      margin-bottom: 2.5rem;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
     }
 
     /* Member Card */
     .member-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.25rem;
+      border-radius: 18px;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .member-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
     }
     .member-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
     }
     .member-info h4 {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
-      color: #0f172a;
+      color: var(--text-main);
+      letter-spacing: -0.015em;
     }
     .member-role {
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       color: var(--primary);
       font-weight: 600;
-      margin-top: 0.2rem;
+      margin-top: 0.25rem;
     }
+    
+    /* Stripe Monogram Avatars */
     .member-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #e2e8f0;
-      color: #475569;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #635bff 0%, #00d4ff 100%);
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 1rem;
+      font-weight: 800;
+      font-size: 1.05rem;
       flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(99, 91, 255, 0.3);
     }
 
     .member-meta {
       display: flex;
       flex-direction: column;
-      gap: 0.45rem;
-      margin: 0.8rem 0;
+      gap: 0.5rem;
+      margin: 0.9rem 0;
       font-size: 0.88rem;
     }
     .meta-row {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      color: #475569;
+      gap: 0.55rem;
+      color: var(--text-secondary);
     }
     .meta-row .material-symbols-outlined {
-      font-size: 1.1rem;
-      color: #64748b;
+      font-size: 1.15rem;
+      color: var(--text-muted);
     }
     .email-link {
       color: var(--primary);
@@ -456,126 +695,145 @@
     .email-link:hover { text-decoration: underline; }
 
     .twitter-link {
-      color: #0f172a;
+      color: var(--text-main);
       text-decoration: none;
       font-weight: 600;
       display: inline-flex;
       align-items: center;
       gap: 0.25rem;
-      background: #f1f5f9;
-      padding: 0.15rem 0.5rem;
-      border-radius: 6px;
+      background: var(--callout-bg);
+      padding: 0.2rem 0.55rem;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      transition: all 0.15s ease;
     }
-    .twitter-link:hover { background: #e2e8f0; }
+    .twitter-link:hover { 
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
 
     .member-bio {
-      font-size: 0.86rem;
-      color: #475569;
-      line-height: 1.45;
-      margin-top: 0.6rem;
-      background: #f8fafc;
-      padding: 0.6rem 0.8rem;
-      border-radius: 8px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-top: 0.75rem;
+      background: var(--callout-bg);
+      padding: 0.75rem 0.9rem;
+      border-radius: 10px;
+      border-left: 3px solid var(--primary);
     }
 
     /* Individual Recent Messages */
     .individual-tweets {
-      margin-top: 0.75rem;
+      margin-top: 0.85rem;
       border-top: 1px dashed var(--border);
-      padding-top: 0.65rem;
+      padding-top: 0.75rem;
     }
     .individual-tweets-title {
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       font-weight: 700;
-      color: #64748b;
-      margin-bottom: 0.4rem;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.45rem;
       display: flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: 0.3rem;
     }
     .indiv-tweet {
-      font-size: 0.8rem;
-      color: #334155;
-      background: #f8fafc;
-      padding: 0.4rem 0.6rem;
-      border-radius: 6px;
-      margin-bottom: 0.35rem;
-      line-height: 1.35;
-      border-left: 2px solid #0f172a;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      background: var(--callout-bg);
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 0.4rem;
+      line-height: 1.4;
+      border-left: 2px solid var(--text-main);
     }
 
     .member-footer {
-      border-top: 1px solid #f1f5f9;
-      padding-top: 0.75rem;
-      margin-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      padding-top: 0.85rem;
+      margin-top: 0.85rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.78rem;
-      color: #94a3b8;
+      font-size: 0.8rem;
+      color: var(--text-muted);
     }
     .tag {
-      background: #f1f5f9;
-      color: #475569;
-      padding: 0.2rem 0.5rem;
+      background: var(--callout-bg);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.6rem;
       border-radius: 6px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .empty-state {
       text-align: center;
-      padding: 4rem 1rem;
+      padding: 4.5rem 1rem;
       color: var(--text-muted);
     }
     .empty-state .material-symbols-outlined {
-      font-size: 3.5rem;
-      color: #cbd5e1;
-      margin-bottom: 0.75rem;
+      font-size: 3.8rem;
+      color: var(--border);
+      margin-bottom: 1rem;
     }
   </style>
 </head>
 <body>
 
+<div class="stripe-ambient-mesh"></div>
+
 <header>
-  <div class="header-logo">
-    <span class="material-symbols-outlined icon">corporate_fare</span>
-    <span>Leadership & Board Intelligence</span>
-  </div>
-  <div style="display: flex; align-items: center; gap: 1.5rem;">
-    <a href="/admin.html" style="display: flex; align-items: center; gap: 0.4rem; color: #1e293b; text-decoration: none; font-weight: 600; font-size: 0.9rem; padding: 0.4rem 0.8rem; border-radius: 8px; background: #f1f5f9; transition: background 0.15s;">
-      <span class="material-symbols-outlined" style="font-size: 1.15rem; color: #475569;">admin_panel_settings</span>
-      <span>Admin & Batch Export</span>
-    </a>
-    <div style="font-size: 0.85rem; color: var(--text-muted);">
-      Powered by Agent Platform & Firestore
+  <a href="/" class="header-logo">
+    <div class="icon-badge">
+      <span class="material-symbols-outlined">corporate_fare</span>
     </div>
+    <span>Leadership & Board Intelligence</span>
+  </a>
+  <div class="header-actions">
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle light/dark theme">
+      <span class="material-symbols-outlined theme-icon-moon">dark_mode</span>
+      <span class="material-symbols-outlined theme-icon-sun">light_mode</span>
+    </button>
+    <a href="/admin.html" class="nav-btn">
+      <span class="material-symbols-outlined" style="font-size: 1.15rem; color: var(--primary);">admin_panel_settings</span>
+      <span>Admin Operations</span>
+    </a>
   </div>
 </header>
 
 <div class="container">
   <!-- Search Hero -->
   <div class="hero">
-    <h1>Executive & Strategic Intelligence</h1>
-    <p>Search any company to discover executive leadership, board members, key partners, market competitors, X handles, and recent posts.</p>
+    <div class="hero-badge">
+      <span class="material-symbols-outlined" style="font-size: 1rem;">insights</span>
+      <span>Executive Intelligence Platform</span>
+    </div>
+    <h1>Real-Time Leadership & <span class="gradient-text">Board Governance</span></h1>
+    <p>Autonomous AI intelligence discovering executive teams, board committees, compensation benchmarks, verified emails, and strategic ecosystem graphs in seconds.</p>
     
     <div class="search-box-wrapper">
       <form id="search-form" class="search-bar">
-        <span class="material-symbols-outlined" style="color: #94a3b8; font-size: 1.4rem;">search</span>
-        <input type="text" id="search-input" placeholder="Enter company name, domain, or executive..." autocomplete="off" />
+        <span class="material-symbols-outlined" style="color: var(--text-muted); font-size: 1.4rem;">search</span>
+        <input type="text" id="search-input" placeholder="Search company name, domain, or executive..." autocomplete="off" />
         <button type="submit">
           <span>Search</span>
-          <span class="material-symbols-outlined" style="font-size: 1.1rem;">arrow_forward</span>
+          <span class="material-symbols-outlined" style="font-size: 1.15rem;">arrow_forward</span>
         </button>
       </form>
 
       <div class="quick-chips">
         <span class="chip-label">Try searching:</span>
+        <span class="chip" onclick="doSearch('Spotify')">Spotify</span>
         <span class="chip" onclick="doSearch('Alphabet')">Alphabet</span>
         <span class="chip" onclick="doSearch('Stripe')">Stripe</span>
-        <span class="chip" onclick="doSearch('NVIDIA')">NVIDIA</span>
-        <span class="chip" onclick="doSearch('Spotify')">Spotify</span>
         <span class="chip" onclick="doSearch('Microsoft')">Microsoft</span>
+        <span class="chip" onclick="doSearch('NVIDIA')">NVIDIA</span>
       </div>
     </div>
   </div>
@@ -583,7 +841,7 @@
   <!-- Loading State -->
   <div class="spinner-container" id="spinner">
     <div class="spinner"></div>
-    <p style="color: var(--text-muted); font-weight: 500;">Researching organization, key partners, competitors, and leadership...</p>
+    <p style="color: var(--text-muted); font-weight: 500; font-size: 0.95rem;">Researching organization, key partners, competitors, and leadership...</p>
   </div>
 
   <!-- Results Section -->
@@ -621,7 +879,7 @@
       <div class="eco-card" id="competitors-card" style="display:none;">
         <div class="eco-header">
           <span class="material-symbols-outlined" style="color:#dc2626;">swords</span>
-          <span>Key Competitors</span>
+          <span>Key Market Competitors</span>
         </div>
         <div id="competitors-list"></div>
       </div>
@@ -630,8 +888,8 @@
     <!-- Company Tweets Section (if present) -->
     <div class="company-tweets-card" id="company-tweets-card" style="display:none;">
       <div class="tweets-header">
-        <span class="material-symbols-outlined" style="color:#0f172a;">chat</span>
-        <span>Latest 3 Posts from <span id="company-tweets-handle"></span></span>
+        <span class="material-symbols-outlined" style="color:var(--primary);">chat</span>
+        <span>Latest Public Statements from <span id="company-tweets-handle"></span></span>
       </div>
       <div id="company-tweets-list"></div>
     </div>
@@ -649,8 +907,8 @@
     <!-- Board of Directors Section -->
     <div id="board-section" style="display: none;">
       <div class="section-header">
-        <span class="material-symbols-outlined" style="color: #6d28d9;">account_balance</span>
-        <h3>Board of Directors</h3>
+        <span class="material-symbols-outlined" style="color: var(--badge-board-text);">account_balance</span>
+        <h3>Board of Directors & Governance</h3>
         <span class="section-badge badge-board" id="board-count-badge">0</span>
       </div>
       <div class="cards-grid" id="board-grid"></div>
@@ -660,12 +918,24 @@
   <!-- Empty / Initial State -->
   <div class="empty-state" id="empty-state">
     <span class="material-symbols-outlined">manage_search</span>
-    <h3 style="font-size: 1.2rem; color: #334155; margin-bottom: 0.4rem;">Search any company or executive</h3>
-    <p>Type a company name in the search bar above or click one of the quick suggestions.</p>
+    <h3 style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 700;">Search any company or executive</h3>
+    <p>Type an organization name above or click one of the quick suggestions to explore real-time leadership intelligence.</p>
   </div>
 </div>
 
 <script>
+  // Theme Manager
+  const themeToggle = document.getElementById('theme-toggle');
+  const storedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', storedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const target = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', target);
+    localStorage.setItem('theme', target);
+  });
+
   const form = document.getElementById('search-form');
   const input = document.getElementById('search-input');
   const spinner = document.getElementById('spinner');
@@ -692,7 +962,7 @@
     // Email Row
     const emailHtml = member.email && member.email !== 'N/A'
       ? `<div class="meta-row"><span class="material-symbols-outlined">mail</span><a href="mailto:${member.email}" class="email-link">${member.email}</a></div>`
-      : `<div class="meta-row" style="color:#94a3b8;"><span class="material-symbols-outlined">mail_lock</span><span>Email not listed</span></div>`;
+      : `<div class="meta-row" style="color:var(--text-muted);"><span class="material-symbols-outlined">mail_lock</span><span>Email not listed</span></div>`;
 
     // Twitter Handle Row
     const twitterHandle = member.twitter_handle && member.twitter_handle !== 'N/A' ? member.twitter_handle : '';
@@ -723,7 +993,7 @@
         <div class="individual-tweets">
           <div class="individual-tweets-title">
             <span class="material-symbols-outlined" style="font-size:0.9rem;">forum</span>
-            <span>Latest 3 Messages</span>
+            <span>Latest Statements</span>
           </div>
           ${tweetItems}
         </div>
@@ -771,7 +1041,7 @@
       if (!data.total_results || data.total_results === 0) {
         emptyState.innerHTML = `
           <span class="material-symbols-outlined">search_off</span>
-          <h3 style="font-size: 1.2rem; color: #334155; margin-bottom: 0.4rem;">No leadership records found for "${query}"</h3>
+          <h3 style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 700;">No leadership records found for "${query}"</h3>
           <p>Try searching another company or check the spelling.</p>
         `;
         emptyState.style.display = 'block';
@@ -885,7 +1155,7 @@
       spinner.style.display = 'none';
       emptyState.innerHTML = `
         <span class="material-symbols-outlined" style="color: #ef4444;">error</span>
-        <h3 style="font-size: 1.2rem; color: #dc2626; margin-bottom: 0.4rem;">Error querying leadership data</h3>
+        <h3 style="font-size: 1.25rem; color: #dc2626; margin-bottom: 0.5rem; font-weight: 700;">Error querying leadership data</h3>
         <p>${err.message}</p>
       `;
       emptyState.style.display = 'block';

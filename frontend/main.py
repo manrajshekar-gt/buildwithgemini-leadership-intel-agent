@@ -27,6 +27,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from google.cloud import firestore
 import httpx
 
+import sys
+from pathlib import Path
+
+FRONTEND_DIR = Path(__file__).resolve().parent
+ROOT_DIR = FRONTEND_DIR.parent
+for p in (str(FRONTEND_DIR), str(ROOT_DIR)):
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
 from discovery_service import discover_and_save_company, get_genai
 
 app = FastAPI(title="Leadership Intelligence Portal & CRM Gateway")
@@ -39,12 +48,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-a0fc456f3f90")
-COLLECTION_NAME = "leadership_profiles"
-CONFIG_COLLECTION = "system_configurations"
+try:
+    from app.db import (
+        get_db,
+        PROJECT_ID,
+        COLLECTION_NAME,
+        CONFIG_COLLECTION,
+    )
+except ImportError:
+    from db import (
+        get_db,
+        PROJECT_ID,
+        COLLECTION_NAME,
+        CONFIG_COLLECTION,
+    )
+
 SCHEDULE_DOC_ID = "refresh_schedule"
 
-_db = None
 _start_time = time.time()
 _search_stats = {
     "total_queries": 0,
@@ -65,13 +85,6 @@ _default_schedule = {
     "last_companies_refreshed": 0,
     "last_duration_seconds": 0,
 }
-
-
-def get_db():
-    global _db
-    if _db is None:
-        _db = firestore.Client(project=PROJECT_ID)
-    return _db
 
 
 # ==========================================
@@ -329,7 +342,7 @@ Respond with ONLY JSON.
 """
     try:
         resp = ai_client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=os.getenv("MODEL", "gemini-3.6-flash"),
             contents=eval_prompt,
             config=dict(response_mime_type="application/json")
         )
@@ -382,7 +395,7 @@ Format in professional, clean Markdown.
 """
     try:
         resp = ai_client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=os.getenv("MODEL", "gemini-3.6-flash"),
             contents=prompt,
         )
         return {
@@ -704,6 +717,8 @@ async def search_leadership(q: str = Query(..., min_length=1)):
     start_time = time.time()
     db = get_db()
     query_str = q.strip().lower()
+    q_domain = re.sub(r"^(https?://)?(www\.)?", "", query_str).rstrip("/")
+    q_root = q_domain.split(".")[0] if "." in q_domain else query_str
     docs = list(db.collection(COLLECTION_NAME).stream())
 
     executives = []
@@ -726,7 +741,35 @@ async def search_leadership(q: str = Query(..., min_length=1)):
         p_email = d.get("email", "")
         p_twitter = d.get("twitter_handle", "")
 
-        matches_company = query_str in c_name.lower() or query_str in c_url.lower()
+        q_clean = re.sub(r"[^\w]", "", query_str)
+        c_clean = re.sub(r"[^\w]", "", c_name.lower())
+        u_clean = re.sub(r"[^\w]", "", c_url.lower())
+
+        COMMON_ALIASES = {
+            "amd": ["advanced micro devices", "amd.com"],
+            "advanced micro devices": ["amd", "amd.com"],
+            "alphabet": ["google", "alphabet inc"],
+            "google": ["alphabet", "alphabet inc"],
+            "block": ["square", "block inc"],
+            "square": ["block", "block inc"],
+            "meta": ["facebook"],
+            "facebook": ["meta"],
+        }
+        alias_match = False
+        for k, aliases in COMMON_ALIASES.items():
+            if (k in query_str or any(a in query_str for a in aliases)) and (k in c_name.lower() or any(a in c_name.lower() for a in aliases)):
+                alias_match = True
+                break
+
+        matches_company = (
+            query_str in c_name.lower() or 
+            (len(c_name) >= 3 and c_name.lower() in query_str) or
+            query_str in c_url.lower() or
+            (len(q_clean) >= 3 and (q_clean in c_clean or c_clean in q_clean or q_clean in u_clean)) or
+            (len(q_root) >= 3 and q_root in c_clean) or
+            (len(q_domain) >= 3 and q_domain in u_clean) or
+            alias_match
+        )
         matches_person = (
             query_str in p_name.lower() or 
             query_str in p_title.lower() or 

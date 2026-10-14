@@ -1,9 +1,14 @@
 """Seed script for Firestore with sample leadership and governance data."""
 
-from google.cloud import firestore
+import os
+import sys
+from pathlib import Path
 
-PROJECT_ID = "qwiklabs-gcp-04-a0fc456f3f90"
-COLLECTION_NAME = "leadership_profiles"
+ROOT_DIR = Path(__file__).resolve().parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from app.db import get_db, COLLECTION_NAME, PROJECT_ID
 
 SEEDED_PROFILES = [
     {
@@ -94,8 +99,8 @@ SEEDED_PROFILES = [
 
 
 def seed():
-    print(f"Connecting to Firestore for project: {PROJECT_ID}")
-    db = firestore.Client(project=PROJECT_ID)
+    print(f"Connecting to database for project / local store (project={PROJECT_ID})...")
+    db = get_db()
     collection_ref = db.collection(COLLECTION_NAME)
 
     for item in SEEDED_PROFILES:
