@@ -129,3 +129,35 @@ def test_frontend_html_contains_not_found_indicator():
     admin_content = admin_html_path.read_text(encoding="utf-8")
     assert "Not Found" in admin_content
 
+
+def test_purged_unverified_vanity_profiles(client):
+    # Stripe: John & Patrick Collison must NOT have false vanity URLs
+    resp = client.get("/api/search?q=Stripe")
+    assert resp.status_code == 200
+    stripe_members = {m["name"]: m["linkedin_url"] for m in resp.json()["executives"] + resp.json()["board_of_directors"]}
+    assert stripe_members.get("John Collison") == "N/A"
+    assert stripe_members.get("Patrick Collison") == "N/A"
+    assert stripe_members.get("Steffan Tomlinson") == "https://www.linkedin.com/in/steffantomlinson"
+
+    # AMD: Lisa Su must be N/A, while Jean Hu is verified
+    resp = client.get("/api/search?q=AMD")
+    assert resp.status_code == 200
+    amd_members = {m["name"]: m["linkedin_url"] for m in resp.json()["executives"] + resp.json()["board_of_directors"]}
+    assert amd_members.get("Lisa Su") == "N/A"
+    assert amd_members.get("Jean Hu") == "https://www.linkedin.com/in/jean-hu-520140"
+
+    # Alphabet: Sundar Pichai must be N/A, while Ruth Porat is verified
+    resp = client.get("/api/search?q=Alphabet")
+    assert resp.status_code == 200
+    goog_members = {m["name"]: m["linkedin_url"] for m in resp.json()["executives"] + resp.json()["board_of_directors"]}
+    assert goog_members.get("Sundar Pichai") == "N/A"
+    assert goog_members.get("Ruth Porat") == "https://www.linkedin.com/in/ruth-porat-8b7768297"
+
+    # Fieldwire: Felix Hess must be N/A (was unrelated UX designer)
+    resp = client.get("/api/search?q=Fieldwire")
+    assert resp.status_code == 200
+    fw_members = {m["name"]: m["linkedin_url"] for m in resp.json()["executives"] + resp.json()["board_of_directors"]}
+    assert fw_members.get("Felix Hess") == "N/A"
+    assert fw_members.get("Yves Frinault") == "https://www.linkedin.com/in/yvesfrinault"
+
+

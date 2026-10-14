@@ -50,8 +50,7 @@ COMPANY_LINKEDIN_MAP = {
 # Only verified, official individual LinkedIn profiles.
 # Any executive or board director who does not maintain an official personal profile is omitted / set to 'N/A'.
 MEMBER_LINKEDIN_MAP = {
-    # AMD
-    "amd-lisa-su": "https://www.linkedin.com/in/lisasu",
+    # AMD (Dr. Lisa Su does not maintain a personal public LinkedIn profile -> 'N/A')
     "amd-jean-hu": "https://www.linkedin.com/in/jean-hu-520140",
     "amd-mark-papermaster": "https://www.linkedin.com/in/mark-papermaster-124b62",
     "amd-forrest-norrod": "https://www.linkedin.com/in/forrestnorrod",
@@ -76,14 +75,10 @@ MEMBER_LINKEDIN_MAP = {
     "amd-elizabeth-vanderslice": "https://www.linkedin.com/in/elizabeth-vanderslice-823b47",
     "amd-tim-ryan": "https://www.linkedin.com/in/tim-ryan-pwc",
 
-    # Abbott
-    "abbott-robert-b-ford": "https://www.linkedin.com/in/robert-ford-abbott",
-    "abbott-board-robert-ford": "https://www.linkedin.com/in/robert-ford-abbott",
+    # Abbott (Robert B. Ford, Andrea Wainer, Daniel Salvadori do not maintain public profiles -> 'N/A')
     "abbott-robert-j-funck-jr": "https://www.linkedin.com/in/robert-funck-0283348",
     "abbott-hubert-l-allen": "https://www.linkedin.com/in/hubert-allen-768a335",
     "abbott-lisa-earnhardt": "https://www.linkedin.com/in/lisaearnhardt",
-    "abbott-andrea-wainer": "https://www.linkedin.com/in/andrea-wainer-76a0846",
-    "abbott-daniel-salvadori": "https://www.linkedin.com/in/daniel-salvadori-448102",
     "abbott-claire-babineaux-fontenot": "https://www.linkedin.com/in/claire-babineaux-fontenot-4148b577",
     "abbott-kevin-conroy": "https://www.linkedin.com/in/kevin-conroy-exact",
     "abbott-michael-ogrady": "https://www.linkedin.com/in/michael-o-grady-northerntrust",
@@ -93,44 +88,33 @@ MEMBER_LINKEDIN_MAP = {
     "abbott-sally-blount": "https://www.linkedin.com/in/sally-blount",
     "abbott-nita-ahuja": "https://www.linkedin.com/in/nita-ahuja-md-mba-facs-111425178",
 
-    # Alphabet Inc. (Larry Page & Sergey Brin do NOT maintain LinkedIn profiles -> 'N/A')
-    "alphabet-sundar-pichai": "https://www.linkedin.com/in/sundarpichai",
+    # Alphabet Inc. (Sundar Pichai, Larry Page, Sergey Brin, John Hennessy, Frances Arnold, John Doerr -> 'N/A')
     "alphabet-ruth-porat": "https://www.linkedin.com/in/ruth-porat-8b7768297",
     "alphabet-anat-ashkenazi": "https://www.linkedin.com/in/anat-ashkenazi-a9792614",
     "alphabet-kent-walker": "https://www.linkedin.com/in/kent-walker-816773",
-    "alphabet-john-hennessy": "https://www.linkedin.com/in/john-hennessy-5b838914",
-    "alphabet-frances-arnold": "https://www.linkedin.com/in/frances-arnold-737753173",
     "alphabet-robin-washington": "https://www.linkedin.com/in/robin-washington-1934947",
     "alphabet-marty-chavez": "https://www.linkedin.com/in/martychavez",
-    "alphabet-l-john-doerr": "https://www.linkedin.com/in/johndoerr",
 
-    # Block, Inc. (Jack Dorsey, Mary Meeker, Shawn Carter do NOT maintain LinkedIn profiles -> 'N/A')
+    # Block, Inc. (Jack Dorsey, Mary Meeker, Shawn Carter -> 'N/A')
     "block-amrita-ahuja": "https://www.linkedin.com/in/amrita-ahuja",
-    "block-roelof-botha": "https://www.linkedin.com/in/roelof-botha-32454",
+    "block-roelof-botha": "https://www.linkedin.com/in/roelofbotha/",
 
-    # Fieldwire by Hilti
+    # Fieldwire by Hilti (Felix Hess & Nick Minella mapped to unrelated individuals -> 'N/A')
     "fieldwire-by-hilti-yves-frinault": "https://www.linkedin.com/in/yvesfrinault",
     "fieldwire-by-hilti-javed-singha": "https://www.linkedin.com/in/javedsingha",
     "fieldwire-by-hilti-jahangir-jan-doongaji": "https://www.linkedin.com/in/jan-doongaji",
-    "fieldwire-by-hilti-felix-hess": "https://www.linkedin.com/in/felix-hess-768a4025",
-    "fieldwire-by-hilti-nick-minella": "https://www.linkedin.com/in/nickminella",
 
-    # Lyft / Lyft, Inc.
-    "lyft-david-risher": "https://www.linkedin.com/in/david-risher-80410",
-    "lyft-erin-brewer": "https://www.linkedin.com/in/erin-brewer-768b541",
+    # Lyft / Lyft, Inc. (Erin Brewer mapped to educator at Landmark School, Ben Minicucci -> 'N/A')
+    "lyft-david-risher": "https://www.linkedin.com/in/jdavidrisher",
     "lyft-sean-aggarwal": "https://www.linkedin.com/in/seanaggarwal",
-    "lyft-ben-minicucci": "https://www.linkedin.com/in/ben-minicucci-alaska",
 
-    # Microsoft
+    # Microsoft / Microsoft Corporation (Penny Pritzker, Sandra Peterson, Hugh Johnston -> 'N/A')
     "microsoft-satya-nadella": "https://www.linkedin.com/in/satyanadella",
     "msft-satya-nadella": "https://www.linkedin.com/in/satyanadella",
-    "msft-amy-hood": "https://www.linkedin.com/in/amy-hood-msft",
+    "msft-amy-hood": "https://www.linkedin.com/in/amyhood1",
     "msft-brad-smith": "https://www.linkedin.com/in/bradsmi",
     "msft-judson-althoff": "https://www.linkedin.com/in/judsonalthoff",
-    "msft-sandra-peterson": "https://www.linkedin.com/in/sandra-peterson-a5796a1b",
     "msft-reid-hoffman": "https://www.linkedin.com/in/reidhoffman",
-    "msft-penny-pritzker": "https://www.linkedin.com/in/penny-pritzker-90a6176a",
-    "msft-hugh-johnston": "https://www.linkedin.com/in/hugh-johnston-pepsico",
 
     # NVIDIA (Curtis Priem & Debra K. Perry -> 'N/A')
     "nvidia-jensen-huang": "https://www.linkedin.com/in/jenhsunhuang",
@@ -181,7 +165,7 @@ MEMBER_LINKEDIN_MAP = {
     "t-mobile-srikant-datar": "https://www.linkedin.com/in/srikant-datar-77563519",
     "t-mobile-thomas-dannenfeldt": "https://www.linkedin.com/in/thomas-dannenfeldt-68a41785",
 
-    # Verizon
+    # Verizon (Paul Roth -> 'N/A')
     "verizon-hans-vestberg": "https://www.linkedin.com/in/hansvestberg",
     "verizon-tony-skiadas": "https://www.linkedin.com/in/tony-skiadas-cpa-13498b3",
     "verizon-kyle-malady": "https://www.linkedin.com/in/kyle-malady-066113",
@@ -189,18 +173,10 @@ MEMBER_LINKEDIN_MAP = {
     "verizon-carol-tome": "https://www.linkedin.com/in/carolbtome",
     "verizon-shellye-archambeau": "https://www.linkedin.com/in/shellyearchambeau",
 
-    # Portend AI
+    # Portend AI (Only Shabd Vaid verified; advisors / teammates without verified public accounts -> 'N/A')
     "portend-ai-shabd-vaid": "https://www.linkedin.com/in/shabd-vaid",
-    "portend-ai-priyam-singh": "https://www.linkedin.com/in/priyam-singh-08226017b",
-    "portend-ai-ankit-sharma": "https://www.linkedin.com/in/ankit-sharma-51368910b",
-    "portend-ai-hardika-shangari": "https://www.linkedin.com/in/hardika-shangari-6b835b118",
-    "portend-ai-anand-jagannathan": "https://www.linkedin.com/in/anand-jagannathan-82800",
-    "portend-ai-atri-chatterjee": "https://www.linkedin.com/in/atrichatterjee",
-    "portend-ai-mayur-nagarsheth": "https://www.linkedin.com/in/mayurnagarsheth",
-    "portend-ai-mital-makadia": "https://www.linkedin.com/in/mitalmakadia",
-    "portend-ai-raghu-raghavan": "https://www.linkedin.com/in/raghu-raghavan",
 
-    # SmartHub.ai
+    # SmartHub.ai (Faisal, Nithin, Prakash -> 'N/A')
     "smarthub-ai-niranjan-maka": "https://www.linkedin.com/in/niranjanmaka",
     "smarthub-ai-arun-narayanaswamy": "https://www.linkedin.com/in/arun-narayanaswamy-8b8354",
     "smarthub-ai-sanjay-rajashekar": "https://www.linkedin.com/in/sanjay-rajashekar-87b649",
