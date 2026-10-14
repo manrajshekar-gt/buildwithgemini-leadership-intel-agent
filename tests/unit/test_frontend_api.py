@@ -71,3 +71,36 @@ def test_admin_sidebar_panels():
 
     # Tab switching logic
     assert "function switchTab(tabId)" in content
+
+
+def test_admin_bulk_operations_table_and_pagination():
+    admin_path = ROOT_DIR / "frontend" / "static" / "admin.html"
+    content = admin_path.read_text(encoding="utf-8")
+
+    # Table and banner must reside inside tab-bulk
+    tab_bulk_start = content.find('id="tab-bulk"')
+    assert tab_bulk_start != -1
+
+    tab_bulk_content = content[tab_bulk_start:]
+
+    assert "All Collected Leadership Intelligence" in tab_bulk_content
+    assert 'id="table-body"' in tab_bulk_content
+    assert 'id="pagination-bar"' in tab_bulk_content
+    assert 'id="btn-prev-page"' in tab_bulk_content
+    assert 'id="btn-next-page"' in tab_bulk_content
+    assert 'id="pagination-pages"' in tab_bulk_content
+
+    # Verify table has been removed from tab-analytics
+    tab_analytics_start = content.find('id="tab-analytics"')
+    tab_settings_start = content.find('id="tab-settings"')
+    tab_analytics_content = content[tab_analytics_start:tab_settings_start]
+    assert "All Collected Leadership Intelligence" not in tab_analytics_content
+    assert 'id="table-body"' not in tab_analytics_content
+
+    # Pagination logic in JS (25 rows at a time)
+    assert "const pageSize = 25;" in content
+    assert "function renderTablePage()" in content
+    assert "function updatePaginationControls(" in content
+    assert "function changePage(" in content
+    assert "function goToPage(" in content
+
