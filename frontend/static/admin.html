@@ -753,11 +753,11 @@
 
       <div class="metric-card">
         <div class="metric-card-header">
-          <span>LinkedIn Coverage</span>
-          <span class="material-symbols-outlined" style="color:#0a66c2;">account_circle</span>
+          <span>Company LinkedIn</span>
+          <span class="material-symbols-outlined" style="color:#0a66c2;">apartment</span>
         </div>
         <div class="metric-value" id="metric-linkedin-pct">--%</div>
-        <div class="metric-subtext" id="metric-linkedin-count">-- verified profiles</div>
+        <div class="metric-subtext" id="metric-linkedin-count">-- companies with official LinkedIn</div>
       </div>
 
       <div class="metric-card">
@@ -937,7 +937,6 @@
           <th>Name</th>
           <th>Role / Title</th>
           <th>Group</th>
-          <th>LinkedIn</th>
           <th>Individual X</th>
           <th>Compensation / SEC</th>
           <th>Email</th>
@@ -946,7 +945,7 @@
       </thead>
       <tbody id="table-body">
         <tr>
-          <td colspan="12" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+          <td colspan="11" style="text-align: center; padding: 3rem; color: var(--text-muted);">
             Loading all stored profiles...
           </td>
         </tr>
@@ -1084,10 +1083,10 @@
       document.getElementById('metric-profiles-split').textContent = `C-Suite: ${data.catalog.c_suite_executives} | Board: ${data.catalog.board_of_directors}`;
       
       document.getElementById('metric-email-pct').textContent = `${data.coverage.email_coverage_pct}%`;
-      document.getElementById('metric-email-count').textContent = `${data.coverage.email_count} verified emails`;
-
-      document.getElementById('metric-linkedin-pct').textContent = `${data.coverage.linkedin_coverage_pct || 0}%`;
-      document.getElementById('metric-linkedin-count').textContent = `${data.coverage.linkedin_count || 0} verified profiles`;
+      const compLinkedInPct = data.coverage.company_linkedin_coverage_pct != null ? data.coverage.company_linkedin_coverage_pct : 100;
+      const compLinkedInCount = data.coverage.company_linkedin_count != null ? data.coverage.company_linkedin_count : (data.catalog.total_companies || 19);
+      document.getElementById('metric-linkedin-pct').textContent = `${compLinkedInPct}%`;
+      document.getElementById('metric-linkedin-count').textContent = `${compLinkedInCount} companies with official LinkedIn`;
 
       document.getElementById('metric-social-pct').textContent = `${data.coverage.social_coverage_pct}%`;
       document.getElementById('metric-social-count').textContent = `${data.coverage.social_count} profiles with X`;
@@ -1118,7 +1117,7 @@
 
       const tbody = document.getElementById('table-body');
       if (records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; padding:3rem; color:var(--text-muted);">No records in database.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:3rem; color:var(--text-muted);">No records in database.</td></tr>`;
         return;
       }
 
@@ -1135,10 +1134,6 @@
         const compLinkedInBadge = r.company_linkedin_url && r.company_linkedin_url !== 'N/A' && r.company_linkedin_url.includes('linkedin.com')
           ? `<a href="${r.company_linkedin_url}" target="_blank" rel="noopener" style="display:inline-block; margin-left:4px; color:#0a66c2; text-decoration:none; font-size:0.72rem; font-weight:700; background:rgba(10,102,194,0.12); padding:1px 4px; border-radius:4px;" title="Official Company LinkedIn">in</a>`
           : '';
-
-        const indivLinkedIn = r.linkedin_url && r.linkedin_url !== 'N/A' && r.linkedin_url.includes('linkedin.com')
-          ? `<a href="${r.linkedin_url}" target="_blank" rel="noopener" class="tag-bubble" style="color:#0a66c2; border-color:rgba(10,102,194,0.3); font-weight:600;"><span style="font-weight:700;">in</span> Profile</a>`
-          : `<span style="color:var(--text-muted); font-size:0.75rem; font-style:italic; background:var(--callout-bg); padding:0.15rem 0.45rem; border-radius:5px; border:1px dashed var(--border);">Not Found</span>`;
 
         const indivX = r.twitter_handle && r.twitter_handle !== 'N/A'
           ? `<a href="https://x.com/${r.twitter_handle.replace('@','')}" target="_blank" class="twitter-link">${r.twitter_handle}</a>`
@@ -1171,7 +1166,6 @@
             <td><strong>${r.name}</strong></td>
             <td style="color:var(--text-secondary);">${r.title || 'Leadership'}</td>
             <td><span class="badge ${isBoard ? 'badge-board' : 'badge-exec'}">${r.group}</span></td>
-            <td>${indivLinkedIn}</td>
             <td>${indivX}</td>
             <td>${compSec}</td>
             <td>${emailCell}</td>

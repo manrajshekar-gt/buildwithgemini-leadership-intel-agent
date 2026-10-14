@@ -202,7 +202,6 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
     discovered_emails = []
     discovered_twitter = []
     discovered_company_linkedin = []
-    discovered_personal_linkedin = []
     try:
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
         with httpx.Client(timeout=8.0, follow_redirects=True, headers=headers) as client:
@@ -260,10 +259,6 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
                         c_link = href.split("?")[0].rstrip("/")
                         if c_link not in discovered_company_linkedin:
                             discovered_company_linkedin.append(c_link)
-                    elif "linkedin.com/in/" in href_lower:
-                        p_link = href.split("?")[0].rstrip("/")
-                        if p_link not in discovered_personal_linkedin:
-                            discovered_personal_linkedin.append(p_link)
                     
                     link_keywords = [
                         "about", "team", "our-team", "leadership", "board-of-directors", 
@@ -320,15 +315,7 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
                         for a_tag in s_soup.find_all("a", href=True):
                             a_href = a_tag["href"].strip()
                             a_lower = a_href.lower()
-                            if "linkedin.com/in/" in a_lower:
-                                p_link = a_href.split("?")[0].rstrip("/")
-                                name_hint = a_tag.get_text().strip()
-                                if not name_hint and a_tag.parent:
-                                    name_hint = " ".join(a_tag.parent.get_text().split())[:60]
-                                entry = f"{p_link} ({name_hint})" if name_hint else p_link
-                                if entry not in discovered_personal_linkedin:
-                                    discovered_personal_linkedin.append(entry)
-                            elif "linkedin.com/company/" in a_lower or "linkedin.com/school/" in a_lower:
+                            if "linkedin.com/company/" in a_lower or "linkedin.com/school/" in a_lower:
                                 c_link = a_href.split("?")[0].rstrip("/")
                                 if c_link not in discovered_company_linkedin:
                                     discovered_company_linkedin.append(c_link)
@@ -393,7 +380,6 @@ PUBLIC REFERENCE RECORDS:
 Discovered emails on site: {list(set(discovered_emails))[:6]}
 Discovered Twitter/X links on site: {list(set(discovered_twitter))[:3]}
 Discovered company LinkedIn links on site: {list(set(discovered_company_linkedin))[:3]}
-Discovered individual LinkedIn links on site: {list(set(discovered_personal_linkedin))[:15]}
 ========================================================================
 
 STRICT ACCURACY & AUTHORITATIVE REPUTABLE SOURCE MANDATE:
@@ -402,7 +388,7 @@ STRICT ACCURACY & AUTHORITATIVE REPUTABLE SOURCE MANDATE:
 3. BOARD OF DIRECTORS: If a company does NOT publicly publish or disclose an external Board of Directors or advisory board in the provided official sources, DO NOT INVENT ONE. Return only confirmed individuals.
 4. VERIFY RECENT TRANSITIONS: Specifically check for executive changes within the last 6 to 12 months (e.g. CEO transitions, CFO appointments, former CEOs moving to Board Chair). Do NOT return outdated legacy roles.
 5. SOURCE TRACEABILITY: In 'sec_filing_source', cite the exact official primary source (e.g., 'SEC Form DEF 14A Proxy Statement', 'Official Corporate Leadership Directory (https://domain/team/)').
-6. LINKEDIN VERIFICATION: You MUST only provide official, verified LinkedIn profile URLs ('https://www.linkedin.com/in/...' for individuals and 'https://www.linkedin.com/company/...' for companies). Rely on the provided official site links or verified corporate directories. If a member does not maintain a personal LinkedIn profile (e.g., Patrick Collison, John Collison, Jack Dorsey, Larry Page) or if it cannot be verified with certainty, set 'linkedin_url' strictly to 'N/A'. NEVER guess vanity URLs or link to unrelated profiles.
+6. COMPANY LINKEDIN: In 'company_linkedin_url', provide the official corporate LinkedIn company page URL ('https://www.linkedin.com/company/<slug>') or 'N/A' if unavailable. Do NOT extract personal LinkedIn URLs for individual executives or board members.
 
 Return a JSON object containing:
 1. "company_linkedin_url": string (Official company LinkedIn page URL, e.g. 'https://www.linkedin.com/company/<slug>', or N/A)
@@ -424,7 +410,6 @@ Return a JSON object containing:
    - title: string (Role, e.g. 'Chief Executive Officer', 'Chief Financial Officer', 'Director', 'Chair of the Board')
    - group: string ('Executive Management' or 'Board of Directors')
    - email: string (corporate email e.g. first@domain or name@company.com, or N/A)
-   - linkedin_url: string (Verified personal LinkedIn profile URL, e.g. 'https://www.linkedin.com/in/<slug>', or N/A if not verified or not publicly maintained)
    - twitter_handle: string (known X/Twitter handle like '@handle', or N/A)
    - recent_tweets: array of up to 3 recent public messages/tweets/quotes
    - committee: string or null (e.g. 'Audit Committee', 'Compensation Committee', 'Executive Committee')
@@ -505,7 +490,6 @@ Respond with ONLY the JSON object inside a ```json ``` block.
             "title": m.get("title", "Leadership"),
             "group": m.get("group", "Executive Management"),
             "email": m.get("email") or "N/A",
-            "linkedin_url": m.get("linkedin_url") or "N/A",
             "twitter_handle": m.get("twitter_handle") or "N/A",
             "recent_tweets": m.get("recent_tweets") or [],
             "logo_url": logo_url,
