@@ -389,6 +389,9 @@ STRICT ACCURACY & AUTHORITATIVE REPUTABLE SOURCE MANDATE:
 4. VERIFY RECENT TRANSITIONS: Specifically check for executive changes within the last 6 to 12 months (e.g. CEO transitions, CFO appointments, former CEOs moving to Board Chair). Do NOT return outdated legacy roles.
 5. SOURCE TRACEABILITY: In 'sec_filing_source', cite the exact official primary source (e.g., 'SEC Form DEF 14A Proxy Statement', 'Official Corporate Leadership Directory (https://domain/team/)').
 6. COMPANY LINKEDIN: In 'company_linkedin_url', provide the official corporate LinkedIn company page URL ('https://www.linkedin.com/company/<slug>') or 'N/A' if unavailable. Do NOT extract personal LinkedIn URLs for individual executives or board members.
+7. X / TWITTER PROFILE VERIFICATION:
+   - 'company_twitter_handle': Provide the official verified corporate X handle (e.g., '@AMD', '@Google', '@Microsoft'), or 'N/A' if unverified.
+   - For 'members': Provide an individual's personal X handle ONLY if explicitly verified by official corporate leadership pages, verified corporate directories, or confirmed company bio links. NEVER guess, synthesize, or invent handles based solely on name (e.g. '@FirstNameLastName'). If an individual does not maintain an active, verified personal X handle matching their company role, set 'twitter_handle' strictly to 'N/A' to prevent 404 broken links.
 
 Return a JSON object containing:
 1. "company_linkedin_url": string (Official company LinkedIn page URL, e.g. 'https://www.linkedin.com/company/<slug>', or N/A)
@@ -410,7 +413,7 @@ Return a JSON object containing:
    - title: string (Role, e.g. 'Chief Executive Officer', 'Chief Financial Officer', 'Director', 'Chair of the Board')
    - group: string ('Executive Management' or 'Board of Directors')
    - email: string (corporate email e.g. first@domain or name@company.com, or N/A)
-   - twitter_handle: string (known X/Twitter handle like '@handle', or N/A)
+   - twitter_handle: string (Verified personal X/Twitter handle like '@handle' confirmed to match this executive, or 'N/A' if not verified or not publicly maintained)
    - recent_tweets: array of up to 3 recent public messages/tweets/quotes
    - committee: string or null (e.g. 'Audit Committee', 'Compensation Committee', 'Executive Committee')
    - is_independent: boolean

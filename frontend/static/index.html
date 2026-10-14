@@ -996,12 +996,15 @@
       ? `<div class="meta-row"><span class="material-symbols-outlined">mail</span><a href="mailto:${member.email}" class="email-link">${member.email}</a></div>`
       : `<div class="meta-row" style="color:var(--text-muted);"><span class="material-symbols-outlined">mail_lock</span><span>Email not listed</span></div>`;
 
-    // Twitter Handle Row
-    const twitterHandle = member.twitter_handle && member.twitter_handle !== 'N/A' ? member.twitter_handle : '';
+    // Twitter Handle Row (Strict Verified Only)
+    const twitterHandle = member.twitter_handle && member.twitter_handle !== 'N/A' && member.twitter_handle !== 'None' ? member.twitter_handle : '';
     const twitterHtml = twitterHandle
       ? `<div class="meta-row">
-           <span class="material-symbols-outlined">alternate_email</span>
-           <a href="https://x.com/${twitterHandle.replace('@','')}" target="_blank" class="twitter-link">${twitterHandle}</a>
+           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0; color:var(--text-main); margin-right:2px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+           <a href="https://x.com/${twitterHandle.replace('@','')}" target="_blank" rel="noopener" class="twitter-link">
+             <span>${twitterHandle}</span>
+             <span class="material-symbols-outlined" style="font-size:0.75rem; margin-left:2px; opacity:0.7;">open_in_new</span>
+           </a>
          </div>`
       : '';
 
@@ -1109,8 +1112,8 @@
 
       // Company Twitter Badge
       const twitterElem = document.getElementById('banner-company-twitter');
-      if (data.company_twitter_handle && data.company_twitter_handle !== 'N/A') {
-        twitterElem.textContent = data.company_twitter_handle;
+      if (data.company_twitter_handle && data.company_twitter_handle !== 'N/A' && data.company_twitter_handle !== 'None') {
+        twitterElem.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> <span>${data.company_twitter_handle}</span>`;
         twitterElem.href = `https://x.com/${data.company_twitter_handle.replace('@','')}`;
         twitterElem.style.display = 'inline-flex';
       } else {

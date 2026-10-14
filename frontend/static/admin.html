@@ -1135,8 +1135,8 @@
           ? `<a href="${r.company_linkedin_url}" target="_blank" rel="noopener" style="display:inline-block; margin-left:4px; color:#0a66c2; text-decoration:none; font-size:0.72rem; font-weight:700; background:rgba(10,102,194,0.12); padding:1px 4px; border-radius:4px;" title="Official Company LinkedIn">in</a>`
           : '';
 
-        const indivX = r.twitter_handle && r.twitter_handle !== 'N/A'
-          ? `<a href="https://x.com/${r.twitter_handle.replace('@','')}" target="_blank" class="twitter-link">${r.twitter_handle}</a>`
+        const indivX = r.twitter_handle && r.twitter_handle !== 'N/A' && r.twitter_handle !== 'None'
+          ? `<a href="https://x.com/${r.twitter_handle.replace('@','')}" target="_blank" rel="noopener" class="twitter-link" style="display:inline-flex; align-items:center; gap:3px;"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>${r.twitter_handle}</a>`
           : `<span style="color:var(--text-muted);">-</span>`;
 
         let partnersHtml = `<span style="color:var(--text-muted);">-</span>`;
