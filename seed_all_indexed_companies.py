@@ -1365,6 +1365,40 @@ def refresh_all():
         ("Verizon", VERIZON_PROFILES),
     ]
 
+    try:
+        from scripts.enrich_nextiva import NEXTIVA_COMPANY, MEMBERS as NEXTIVA_MEMBERS
+        nextiva_records = []
+        for m in NEXTIVA_MEMBERS:
+            rec = {
+                "id": m["id"],
+                "company_name": NEXTIVA_COMPANY["name"],
+                "company_url": NEXTIVA_COMPANY["url"],
+                "company_linkedin_url": NEXTIVA_COMPANY["linkedin"],
+                "company_twitter_handle": NEXTIVA_COMPANY["twitter"],
+                "company_recent_tweets": NEXTIVA_COMPANY["recent_tweets"],
+                "key_partners": NEXTIVA_COMPANY["partners"],
+                "key_competitors": NEXTIVA_COMPANY["competitors"],
+                "logo_url": NEXTIVA_COMPANY["logo_url"],
+                "name": m["name"],
+                "title": m["title"],
+                "group": m["group"],
+                "email": m["email"],
+                "twitter_handle": m["twitter_handle"],
+                "recent_tweets": ["Proud to drive innovation and amazing customer experiences at Nextiva."],
+                "committee": m["committee"],
+                "is_independent": m["is_independent"],
+                "tenure_years": m["tenure_years"],
+                "compensation": m["compensation"],
+                "sec_filing_source": NEXTIVA_COMPANY["sec_filing_source"],
+                "skills_keywords": m["skills_keywords"],
+                "bio": m["bio"],
+                "source_url": m["source_url"],
+            }
+            nextiva_records.append(rec)
+        all_sets.append(("Nextiva", nextiva_records))
+    except Exception as ne:
+        print(f"Nextiva import note: {ne}")
+
     import sqlite3
     con = sqlite3.connect("data/leadership_intel.db")
     cur = con.cursor()

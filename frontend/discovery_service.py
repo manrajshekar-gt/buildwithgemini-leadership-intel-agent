@@ -277,22 +277,33 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
 
             # Probe candidate or well-known official governance and about subpages
             known_paths = [
+                f"{website_url.rstrip('/')}/company/leadership",
+                f"{website_url.rstrip('/')}/company/leadership.html",
+                f"{website_url.rstrip('/')}/company/about",
+                f"{website_url.rstrip('/')}/company/about-us",
+                f"{website_url.rstrip('/')}/company/team",
+                f"{website_url.rstrip('/')}/company/our-team",
+                f"{website_url.rstrip('/')}/company/board-of-directors",
                 f"{website_url.rstrip('/')}/en/corporate/leadership.html",
                 f"{website_url.rstrip('/')}/en/corporate/leadership",
                 f"{website_url.rstrip('/')}/en/about/leadership.html",
                 f"{website_url.rstrip('/')}/corporate/leadership.html",
                 f"{website_url.rstrip('/')}/about/leadership",
                 f"{website_url.rstrip('/')}/about/leadership.html",
+                f"{website_url.rstrip('/')}/about/our-team",
                 f"{website_url.rstrip('/')}/about-us",
                 f"{website_url.rstrip('/')}/about",
                 f"{website_url.rstrip('/')}/team",
                 f"{website_url.rstrip('/')}/leadership",
                 f"{website_url.rstrip('/')}/corporate-governance",
+                f"{website_url.rstrip('/')}/corporate-governance/leadership",
                 f"{website_url.rstrip('/')}/governance",
+                f"{website_url.rstrip('/')}/board-of-directors",
                 f"https://ir.{clean_domain}/leadership-and-governance",
                 f"https://investor.{clean_domain}/corporate-governance",
+                f"https://investors.{clean_domain}/corporate-governance",
             ]
-            for p in candidate_links[:4] + [kp for kp in known_paths if kp not in candidate_links][:6]:
+            for p in candidate_links[:6] + [kp for kp in known_paths if kp not in candidate_links][:8]:
                 try:
                     s_resp = client.get(p)
                     if s_resp.status_code == 200:
@@ -324,8 +335,8 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
 
                         for tag in s_soup(["script", "style", "nav", "footer", "header"]):
                             tag.extract()
-                        leadership_pages_text += f"\n--- Source: {p} ---\n" + hint_str + " " + " ".join(s_soup.get_text().split())[:3500]
-                        if len(leadership_pages_text) >= 6000:
+                        leadership_pages_text += f"\n--- Source: {p} ---\n" + hint_str + " " + " ".join(s_soup.get_text().split())[:8000]
+                        if len(leadership_pages_text) >= 25000:
                             break
                 except Exception:
                     continue
@@ -371,13 +382,13 @@ OFFICIAL PRIMARY SOURCES AVAILABLE:
 {sec_context}
 
 OFFICIAL CORPORATE LEADERSHIP & GOVERNANCE PAGES:
-{leadership_pages_text[:3500]}
+{leadership_pages_text[:25000]}
 
 OFFICIAL WEBSITE CORE TEXT:
-{scraped_text[:2000]}
+{scraped_text[:8000]}
 
 PUBLIC REFERENCE RECORDS:
-{wiki_context[:2000]}
+{wiki_context[:6000]}
 
 Discovered emails on site: {list(set(discovered_emails))[:6]}
 Discovered Twitter/X links on site: {list(set(discovered_twitter))[:3]}
@@ -386,8 +397,8 @@ Discovered company LinkedIn links on site: {list(set(discovered_company_linkedin
 
 STRICT ACCURACY & AUTHORITATIVE REPUTABLE SOURCE MANDATE:
 1. ABSOLUTE ZERO HALLUCINATION: You MUST ONLY extract individuals explicitly verified by official primary records (SEC filings, official corporate leadership directories, official /about or /team pages, and confirmed corporate records).
-2. NEVER GUESS OR FABRICATE NAMES: If only 2, 3, or 4 leaders are confirmed by official sources, return ONLY those 2, 3, or 4. DO NOT invent or extrapolate additional names, investors, venture capitalists, or board members to fill an arbitrary count.
-3. BOARD OF DIRECTORS: If a company does NOT publicly publish or disclose an external Board of Directors or advisory board in the provided official sources, DO NOT INVENT ONE. Return only confirmed individuals.
+2. NEVER GUESS OR FABRICATE NAMES: If only a few leaders are confirmed by official sources, return ONLY those confirmed leaders. DO NOT invent or extrapolate additional names, investors, venture capitalists, or board members to fill an arbitrary count.
+3. BOARD OF DIRECTORS: If a company publishes an official Board of Directors or advisory board in the provided official sources, extract all confirmed members accurately. If not publicly disclosed, do not invent one.
 4. VERIFY RECENT TRANSITIONS: Specifically check for executive changes within the last 6 to 12 months (e.g. CEO transitions, CFO appointments, former CEOs moving to Board Chair). Do NOT return outdated legacy roles.
 5. SOURCE TRACEABILITY: In 'sec_filing_source', cite the exact official primary source (e.g., 'SEC Form DEF 14A Proxy Statement', 'Official Corporate Leadership Directory (https://domain/team/)').
 6. COMPANY LINKEDIN: In 'company_linkedin_url', provide the official corporate LinkedIn company page URL ('https://www.linkedin.com/company/<slug>') or 'N/A' if unavailable. Do NOT extract personal LinkedIn URLs for individual executives or board members.
@@ -409,7 +420,7 @@ Return a JSON object containing:
    - "name": string (Competitor name)
    - "website": string (Official website URL)
    - "differentiation": string (Short description)
-6. "members": an array of verified key leaders (1 to 12). If only 1, 2, or 3 verified leaders are confirmed by the official sources, return ONLY those verified leaders. Do NOT invent names.
+6. "members": an array of all verified key leaders (including full C-suite executive management and Board of Directors, up to 30 members). If only a few verified leaders are confirmed by the official sources, return only those confirmed leaders. Do NOT invent names.
    Each member MUST contain:
    - name: string (Full Name)
    - title: string (Role, e.g. 'Chief Executive Officer', 'Chief Financial Officer', 'Director', 'Chair of the Board')
@@ -473,11 +484,23 @@ Respond with ONLY the JSON object inside a ```json ``` block.
     key_partners = data_payload.get("key_partners", [])
     key_competitors = data_payload.get("key_competitors", [])
 
-    # 4. Fetch official company logo directly from company website
-    logo_url = extract_company_website_logo(website_url)
-
     # 5. Persist profiles into Firestore
     db = get_db()
+
+    # Prune any existing stale records for this company before inserting fresh roster
+    try:
+        existing_docs = list(db.collection(COLLECTION_NAME).stream())
+        target_name = company_name.lower().strip()
+        target_clean = re.sub(r"[^\w]", "", target_name)
+        for ed in existing_docs:
+            edt = ed.to_dict()
+            ec_name = edt.get("company_name", "").lower().strip()
+            ec_url = edt.get("company_url", "").lower().strip()
+            if (target_name and (target_name == ec_name or (len(target_clean) >= 4 and target_clean in re.sub(r"[^\w]", "", ec_name)))) or (clean_domain and clean_domain in ec_url):
+                db.collection(COLLECTION_NAME).document(ed.id).delete()
+    except Exception:
+        pass
+
     executives = []
     board_of_directors = []
 

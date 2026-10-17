@@ -100,6 +100,11 @@ VERIFIED_MEMBER_X_MAP = {
     "t-mobile-jon-freier": "@JonFreier",
     "t-mobile-marcelo-claure": "@marceloclaure",
 
+    # Nextiva
+    "nextiva-tomas-gorny": "@TomasGorny",
+    "nextiva-board-tomas-gorny": "@TomasGorny",
+    "nextiva-yaniv-masjedi": "@YanivMasjedi",
+
     # Verizon
     "verizon-dan-schulman": "@Dan_Schulman",
     "verizon-shellye-archambeau": "@shelarchambeau",

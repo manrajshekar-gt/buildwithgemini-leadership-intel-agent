@@ -891,13 +891,16 @@ async def search_leadership(q: str = Query(..., min_length=1)):
                 alias_match = True
                 break
 
+        c_url_clean = c_url.lower().rstrip("/")
+        q_url_clean = query_str.rstrip("/")
         matches_company = (
             query_str in c_name.lower() or 
             (len(c_name) >= 3 and c_name.lower() in query_str) or
             query_str in c_url.lower() or
+            (len(q_url_clean) >= 4 and (q_url_clean in c_url_clean or c_url_clean in q_url_clean)) or
+            (len(q_domain) >= 3 and (q_domain in c_url.lower() or q_domain in c_clean)) or
             (len(q_clean) >= 3 and (q_clean in c_clean or c_clean in q_clean or q_clean in u_clean)) or
-            (len(q_root) >= 3 and q_root in c_clean) or
-            (len(q_domain) >= 3 and q_domain in u_clean) or
+            (len(q_root) >= 3 and (q_root in c_clean or q_root in c_url.lower())) or
             alias_match
         )
         matches_person = (
