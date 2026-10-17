@@ -223,5 +223,6 @@ node_modules/
 application_default_credentials.json
 *-sa-key.json
 service-account*.json
+credentials/
 # Keep the demo GIF (README embeds it); ignore the large raw recording.
 *.webm
