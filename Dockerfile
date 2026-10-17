@@ -12,10 +12,13 @@ ENV PYTHONUNBUFFERED=1 \
 COPY frontend/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application source code and pre-indexed data
+# Copy application source code
 COPY ./app ./app
 COPY ./frontend ./frontend
-COPY ./data ./data
+COPY ./seed_all_indexed_companies.py ./seed_all_indexed_companies.py
+
+# Ensure runtime data directory exists
+RUN mkdir -p /app/data
 
 EXPOSE 8080
 

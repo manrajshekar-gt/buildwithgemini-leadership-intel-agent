@@ -175,6 +175,21 @@ async def scheduler_background_loop():
 @app.on_event("startup")
 async def start_scheduler():
     global _scheduler_task
+    # Auto-seed Firestore on first production boot if empty
+    try:
+        db = get_db()
+        sample_docs = list(db.collection(COLLECTION_NAME).limit(1).stream())
+        if not sample_docs:
+            print("[Startup] Firestore collection is empty. Auto-seeding initial catalog...")
+            try:
+                import seed_all_indexed_companies
+                await asyncio.to_thread(seed_all_indexed_companies.refresh_all)
+                print("[Startup] Successfully auto-seeded Firestore catalog.")
+            except Exception as se:
+                print(f"[Startup] Note on auto-seeding: {se}")
+    except Exception as e:
+        print(f"[Startup] DB check: {e}")
+
     _scheduler_task = asyncio.create_task(scheduler_background_loop())
 
 
