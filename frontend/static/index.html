@@ -618,14 +618,21 @@
       line-height: 1.45;
     }
 
-    /* Section Groups */
+    /* Section Groups & Attribution */
+    .section-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
     .section-header {
       display: flex;
       align-items: center;
       gap: 0.65rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.6rem;
-      border-bottom: 1px solid var(--border);
     }
     .section-header h3 {
       font-size: 1.35rem;
@@ -641,6 +648,84 @@
     }
     .badge-exec { background: var(--badge-exec-bg); color: var(--badge-exec-text); }
     .badge-board { background: var(--badge-board-bg); color: var(--badge-board-text); }
+
+    .section-attribution {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+    .attribution-label {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+    .attribution-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--callout-bg);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.18s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .attribution-pill:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .attribution-pill .material-symbols-outlined {
+      font-size: 0.95rem;
+      color: var(--primary);
+    }
+    .attr-card-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 220px;
+    }
+    .attr-card-link:hover {
+      text-decoration: underline;
+    }
+    .company-sources-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--callout-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.65rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 0.35rem;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .company-sources-badge:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
 
     .cards-grid {
       display: grid;
@@ -887,6 +972,11 @@
             <a href="#" id="banner-company-url" class="company-url" target="_blank" rel="noopener"></a>
             <a href="#" id="banner-company-linkedin" class="company-linkedin-badge" target="_blank" rel="noopener" style="display:none;"></a>
             <a href="#" id="banner-company-twitter" class="company-twitter-badge" target="_blank" style="display:none;"></a>
+            <a href="#" id="banner-company-source-link" class="company-sources-badge" target="_blank" rel="noopener" style="display:none;">
+              <span class="material-symbols-outlined" style="font-size:0.9rem;">policy</span>
+              <span id="banner-source-label">Governance Directory</span>
+              <span class="material-symbols-outlined" style="font-size:0.75rem;">open_in_new</span>
+            </a>
           </div>
         </div>
       </div>
@@ -928,20 +1018,26 @@
 
     <!-- Executive Management Section -->
     <div id="executives-section" style="display: none;">
-      <div class="section-header">
-        <span class="material-symbols-outlined" style="color: var(--primary);">badge</span>
-        <h3>Executive Management & C-Suite</h3>
-        <span class="section-badge badge-exec" id="exec-count-badge">0</span>
+      <div class="section-header-row">
+        <div class="section-header">
+          <span class="material-symbols-outlined" style="color: var(--primary);">badge</span>
+          <h3>Executive Management & C-Suite</h3>
+          <span class="section-badge badge-exec" id="exec-count-badge">0</span>
+        </div>
+        <div class="section-attribution" id="exec-attribution-container"></div>
       </div>
       <div class="cards-grid" id="executives-grid"></div>
     </div>
 
     <!-- Board of Directors Section -->
     <div id="board-section" style="display: none;">
-      <div class="section-header">
-        <span class="material-symbols-outlined" style="color: var(--badge-board-text);">account_balance</span>
-        <h3>Board of Directors & Governance</h3>
-        <span class="section-badge badge-board" id="board-count-badge">0</span>
+      <div class="section-header-row">
+        <div class="section-header">
+          <span class="material-symbols-outlined" style="color: var(--badge-board-text);">account_balance</span>
+          <h3>Board of Directors & Governance</h3>
+          <span class="section-badge badge-board" id="board-count-badge">0</span>
+        </div>
+        <div class="section-attribution" id="board-attribution-container"></div>
       </div>
       <div class="cards-grid" id="board-grid"></div>
     </div>
@@ -980,6 +1076,21 @@
     if (query) doSearch(query);
   });
 
+  function cleanUrlDomain(url) {
+    if (!url) return '';
+    try {
+      const parsed = new URL(url);
+      let path = parsed.pathname.replace(/\/$/, '');
+      if (path.length > 28) {
+        path = path.substring(0, 25) + '...';
+      }
+      const host = parsed.hostname.replace(/^www\./, '');
+      return path && path !== '/' ? `${host}${path}` : host;
+    } catch (e) {
+      return url.replace(/^https?:\/\/(www\.)?/, '').substring(0, 30);
+    }
+  }
+
   function getInitials(name) {
     if (!name) return '??';
     const parts = name.trim().split(/\s+/);
@@ -1017,6 +1128,19 @@
       ? `<div class="meta-row"><span class="material-symbols-outlined">schedule</span><span>Tenure: ${member.tenure_years} years</span></div>`
       : '';
 
+    // Source Attribution Row
+    const sourceUrl = member.source_url || '';
+    const sourceHtml = sourceUrl
+      ? `<div class="meta-row">
+           <span class="material-symbols-outlined" style="color:var(--primary); font-size:1.05rem;">verified</span>
+           <span style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin-right:2px;">Source:</span>
+           <a href="${sourceUrl}" target="_blank" rel="noopener" class="attr-card-link" title="${sourceUrl}">
+             <span>${cleanUrlDomain(sourceUrl)}</span>
+             <span class="material-symbols-outlined" style="font-size:0.75rem;">open_in_new</span>
+           </a>
+         </div>`
+      : '';
+
     const bioHtml = member.bio ? `<div class="member-bio">${member.bio}</div>` : '';
 
     // Recent Tweets List
@@ -1050,6 +1174,7 @@
             ${twitterHtml}
             ${committeeHtml}
             ${tenureHtml}
+            ${sourceHtml}
           </div>
           ${bioHtml}
           ${tweetsHtml}
@@ -1120,6 +1245,20 @@
         twitterElem.style.display = 'none';
       }
 
+      // Governance Directory Source Link
+      const bannerSourceLink = document.getElementById('banner-company-source-link');
+      if (bannerSourceLink) {
+        const primarySource = (data.team_attributions && data.team_attributions[0]) || (data.board_attributions && data.board_attributions[0]);
+        if (primarySource && primarySource !== data.company_url) {
+          bannerSourceLink.href = primarySource;
+          const labelEl = document.getElementById('banner-source-label');
+          if (labelEl) labelEl.textContent = 'Governance Directory';
+          bannerSourceLink.style.display = 'inline-flex';
+        } else {
+          bannerSourceLink.style.display = 'none';
+        }
+      }
+
       document.getElementById('banner-count').textContent = data.total_results;
 
       // Key Partners & Key Competitors Ecosystem
@@ -1176,26 +1315,68 @@
         compTweetsCard.style.display = 'none';
       }
 
-      // Render Executives
+      // Render Executives & Attributions
       const execGrid = document.getElementById('executives-grid');
       const execSection = document.getElementById('executives-section');
+      const execAttrContainer = document.getElementById('exec-attribution-container');
       document.getElementById('exec-count-badge').textContent = data.executives.length;
       if (data.executives.length > 0) {
         execGrid.innerHTML = data.executives.map(renderCard).join('');
         execSection.style.display = 'block';
+
+        if (execAttrContainer) {
+          const teamUrls = (data.team_attributions || []).filter(u => u && u !== 'N/A');
+          if (teamUrls.length > 0) {
+            execAttrContainer.innerHTML = `
+              <span class="attribution-label"><span class="material-symbols-outlined" style="font-size:0.85rem;">source</span> Team Source:</span>
+              ${teamUrls.slice(0, 2).map(u => `
+                <a href="${u}" target="_blank" rel="noopener" class="attribution-pill" title="${u}">
+                  <span class="material-symbols-outlined">verified</span>
+                  <span>${cleanUrlDomain(u)}</span>
+                  <span class="material-symbols-outlined" style="font-size:0.75rem;">open_in_new</span>
+                </a>
+              `).join('')}
+            `;
+            execAttrContainer.style.display = 'inline-flex';
+          } else {
+            execAttrContainer.style.display = 'none';
+          }
+        }
       } else {
         execSection.style.display = 'none';
+        if (execAttrContainer) execAttrContainer.style.display = 'none';
       }
 
-      // Render Board Members
+      // Render Board Members & Attributions
       const boardGrid = document.getElementById('board-grid');
       const boardSection = document.getElementById('board-section');
+      const boardAttrContainer = document.getElementById('board-attribution-container');
       document.getElementById('board-count-badge').textContent = data.board_of_directors.length;
       if (data.board_of_directors.length > 0) {
         boardGrid.innerHTML = data.board_of_directors.map(renderCard).join('');
         boardSection.style.display = 'block';
+
+        if (boardAttrContainer) {
+          const boardUrls = (data.board_attributions || []).filter(u => u && u !== 'N/A');
+          if (boardUrls.length > 0) {
+            boardAttrContainer.innerHTML = `
+              <span class="attribution-label"><span class="material-symbols-outlined" style="font-size:0.85rem;">source</span> Board Source:</span>
+              ${boardUrls.slice(0, 2).map(u => `
+                <a href="${u}" target="_blank" rel="noopener" class="attribution-pill" title="${u}">
+                  <span class="material-symbols-outlined">verified</span>
+                  <span>${cleanUrlDomain(u)}</span>
+                  <span class="material-symbols-outlined" style="font-size:0.75rem;">open_in_new</span>
+                </a>
+              `).join('')}
+            `;
+            boardAttrContainer.style.display = 'inline-flex';
+          } else {
+            boardAttrContainer.style.display = 'none';
+          }
+        }
       } else {
         boardSection.style.display = 'none';
+        if (boardAttrContainer) boardAttrContainer.style.display = 'none';
       }
 
       resultsArea.style.display = 'block';

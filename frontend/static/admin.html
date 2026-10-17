@@ -1528,13 +1528,14 @@
                 <th>Group</th>
                 <th>Individual X</th>
                 <th>Compensation / SEC</th>
+                <th>Attribution / Source</th>
                 <th>Email</th>
                 <th>Tenure</th>
               </tr>
             </thead>
             <tbody id="table-body">
               <tr>
-                <td colspan="11" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                <td colspan="12" style="text-align: center; padding: 3rem; color: var(--text-muted);">
                   Loading all stored profiles...
                 </td>
               </tr>
@@ -1804,6 +1805,21 @@
     renderTablePage();
   }
 
+  function cleanDisplayUrl(url) {
+    if (!url) return '';
+    try {
+      const parsed = new URL(url);
+      let path = parsed.pathname.replace(/\/$/, '');
+      if (path.length > 20) {
+        path = path.substring(0, 18) + '...';
+      }
+      const host = parsed.hostname.replace(/^www\./, '');
+      return path && path !== '/' ? `${host}${path}` : host;
+    } catch (e) {
+      return url.replace(/^https?:\/\/(www\.)?/, '').substring(0, 22);
+    }
+  }
+
   function renderTablePage() {
     const tbody = document.getElementById('table-body');
     if (!tbody) return;
@@ -1815,7 +1831,7 @@
     if (currentPage < 1) currentPage = 1;
 
     if (totalRecords === 0) {
-      tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:3rem; color:var(--text-muted);">No matching profiles found.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; padding:3rem; color:var(--text-muted);">No matching profiles found.</td></tr>`;
       updatePaginationControls(0, 0, 0, 1, 1);
       return;
     }
@@ -1860,6 +1876,15 @@
         ? `<span style="font-weight:600; color:var(--text-main);">${r.compensation}</span>` 
         : `<span style="color:var(--text-muted);">${r.sec_filing_source || 'DEF 14A'}</span>`;
 
+      const srcUrl = r.source_url || r.company_url || '';
+      const sourceCell = srcUrl
+        ? `<a href="${srcUrl}" target="_blank" rel="noopener" class="tag-bubble" title="${srcUrl}" style="display:inline-flex; align-items:center; gap:3px; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+             <span class="material-symbols-outlined" style="font-size:0.85rem; color:var(--primary);">verified</span>
+             <span>${cleanDisplayUrl(srcUrl)}</span>
+             <span class="material-symbols-outlined" style="font-size:0.75rem; opacity:0.7;">open_in_new</span>
+           </a>`
+        : `<span style="color:var(--text-muted);">-</span>`;
+
       return `
         <tr>
           <td>${logoImg}</td>
@@ -1871,6 +1896,7 @@
           <td><span class="badge ${isBoard ? 'badge-board' : 'badge-exec'}">${r.group}</span></td>
           <td>${indivX}</td>
           <td>${compSec}</td>
+          <td style="max-width: 170px;">${sourceCell}</td>
           <td>${emailCell}</td>
           <td>${r.tenure_years != null ? r.tenure_years + ' yrs' : '-'}</td>
         </tr>

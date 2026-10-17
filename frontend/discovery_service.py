@@ -202,6 +202,7 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
     discovered_emails = []
     discovered_twitter = []
     discovered_company_linkedin = []
+    discovered_leadership_pages = []
     try:
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
         with httpx.Client(timeout=8.0, follow_redirects=True, headers=headers) as client:
@@ -295,6 +296,7 @@ def discover_and_save_company(query: str) -> Dict[str, Any]:
                 try:
                     s_resp = client.get(p)
                     if s_resp.status_code == 200:
+                        discovered_leadership_pages.append(p)
                         s_soup = BeautifulSoup(s_resp.text, "html.parser")
                         img_hints = []
                         for img_tag in s_soup.find_all("img"):
@@ -420,6 +422,7 @@ Return a JSON object containing:
    - tenure_years: integer or null
    - compensation: string (Estimated annual total compensation or proxy fee e.g. '$15.2M' or '$280K retainer' or 'N/A')
    - sec_filing_source: string (e.g. 'SEC Form DEF 14A Proxy Statement / Annual Report')
+   - source_url: string (The official URL from the sources where this person was listed, e.g. 'https://domain/leadership' or 'https://domain/team')
    - bio: string (1-2 sentence background summary)
    - skills_keywords: array of 3 to 5 domain expertise keywords (e.g. ["Cybersecurity", "FinTech", "Cloud Architecture"])
 
@@ -503,7 +506,7 @@ Respond with ONLY the JSON object inside a ```json ``` block.
             "sec_filing_source": m.get("sec_filing_source") or "DEF 14A Proxy",
             "skills_keywords": m.get("skills_keywords") or [],
             "bio": m.get("bio", ""),
-            "source_url": website_url,
+            "source_url": m.get("source_url") or (discovered_leadership_pages[0] if discovered_leadership_pages else website_url),
         }
         db.collection(COLLECTION_NAME).document(doc_id).set(record)
 
@@ -511,6 +514,14 @@ Respond with ONLY the JSON object inside a ```json ``` block.
             board_of_directors.append(record)
         else:
             executives.append(record)
+
+    team_attributions = list(dict.fromkeys(
+        m.get("source_url") for m in executives if m.get("source_url")
+    )) or ([discovered_leadership_pages[0]] if discovered_leadership_pages else ([website_url] if website_url else []))
+
+    board_attributions = list(dict.fromkeys(
+        m.get("source_url") for m in board_of_directors if m.get("source_url")
+    )) or ([discovered_leadership_pages[0]] if discovered_leadership_pages else ([website_url] if website_url else []))
 
     return {
         "query": query,
@@ -525,5 +536,7 @@ Respond with ONLY the JSON object inside a ```json ``` block.
         "total_results": len(executives) + len(board_of_directors),
         "executives": executives,
         "board_of_directors": board_of_directors,
+        "team_attributions": team_attributions,
+        "board_attributions": board_attributions,
         "auto_discovered": True,
     }

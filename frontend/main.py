@@ -584,6 +584,7 @@ async def export_all_csv():
         "Recent Tweets",
         "Compensation",
         "SEC Filing Source",
+        "Attribution Source URL",
         "Logo URL",
         "Committee",
         "Independent",
@@ -618,6 +619,7 @@ async def export_all_csv():
             "Recent Tweets": tweets_str or "N/A",
             "Compensation": r.get("compensation") or "N/A",
             "SEC Filing Source": r.get("sec_filing_source") or "N/A",
+            "Attribution Source URL": r.get("source_url") or r.get("company_url") or "N/A",
             "Logo URL": r.get("logo_url") or "N/A",
             "Committee": r.get("committee") or "N/A",
             "Independent": "Yes" if r.get("is_independent") else "No",
@@ -928,6 +930,29 @@ async def search_leadership(q: str = Query(..., min_length=1)):
         return discovered
 
     _search_stats["cache_hits"] += 1
+
+    team_attributions = []
+    for d in executives:
+        u = d.get("source_url")
+        if u and u not in team_attributions:
+            team_attributions.append(u)
+    if not team_attributions and company_url_found:
+        team_attributions.append(company_url_found)
+
+    board_attributions = []
+    for d in board_members:
+        u = d.get("source_url")
+        if u and u not in board_attributions:
+            board_attributions.append(u)
+    if not board_attributions:
+        board_attributions = list(team_attributions)
+
+    sec_attributions = []
+    for d in executives + board_members:
+        sec = d.get("sec_filing_source")
+        if sec and sec != "N/A" and sec not in sec_attributions:
+            sec_attributions.append(sec)
+
     return {
         "query": q,
         "company_name": company_name_found or q,
@@ -941,6 +966,9 @@ async def search_leadership(q: str = Query(..., min_length=1)):
         "total_results": total_results,
         "executives": executives,
         "board_of_directors": board_members,
+        "team_attributions": team_attributions,
+        "board_attributions": board_attributions,
+        "sec_attributions": sec_attributions,
         "auto_discovered": False,
     }
 

@@ -104,3 +104,50 @@ def test_admin_bulk_operations_table_and_pagination():
     assert "function changePage(" in content
     assert "function goToPage(" in content
 
+
+def test_attribution_urls_in_api_search(client):
+    """Verify /api/search returns team_attributions, board_attributions, and source_url on profiles."""
+    resp = client.get("/api/search?q=Alphabet")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "team_attributions" in data
+    assert "board_attributions" in data
+    assert len(data["team_attributions"]) > 0
+    assert any("abc.xyz" in u for u in data["team_attributions"])
+    assert any(m.get("source_url") for m in data["executives"])
+
+    resp_amd = client.get("/api/search?q=AMD")
+    assert resp_amd.status_code == 200
+    data_amd = resp_amd.json()
+    assert len(data_amd["team_attributions"]) > 0
+    assert any("amd.com" in u for u in data_amd["team_attributions"])
+
+
+def test_attribution_urls_in_ui():
+    """Verify attribution URL elements and styles exist in index.html and admin.html."""
+    index_path = ROOT_DIR / "frontend" / "static" / "index.html"
+    index_html = index_path.read_text(encoding="utf-8")
+
+    assert 'id="exec-attribution-container"' in index_html
+    assert 'id="board-attribution-container"' in index_html
+    assert 'id="banner-company-source-link"' in index_html
+    assert "section-attribution" in index_html
+    assert "attribution-pill" in index_html
+    assert "cleanUrlDomain" in index_html
+
+    admin_path = ROOT_DIR / "frontend" / "static" / "admin.html"
+    admin_html = admin_path.read_text(encoding="utf-8")
+
+    assert "<th>Attribution / Source</th>" in admin_html
+    assert "cleanDisplayUrl" in admin_html
+    assert "sourceCell" in admin_html
+
+
+def test_admin_export_csv_includes_attribution(client):
+    """Verify CSV export includes Attribution Source URL column."""
+    resp = client.get("/api/admin/export/csv")
+    assert resp.status_code == 200
+    csv_text = resp.text
+    first_line = csv_text.splitlines()[0]
+    assert "Attribution Source URL" in first_line
+
