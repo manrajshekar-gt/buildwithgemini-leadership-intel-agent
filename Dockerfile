@@ -1,26 +1,22 @@
-# Copyright 2026 Google LLC
 # Production Dockerfile for Leadership Intelligence Platform
+FROM python:3.11-slim
 
-FROM python:3.12-slim
+WORKDIR /app
 
-RUN pip install --no-cache-dir uv==0.8.13
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH="/app:/app/frontend" \
+    PORT=8080
 
-WORKDIR /code
+# Install production dependencies
+COPY frontend/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./pyproject.toml ./README.md ./uv.lock* ./
-
+# Copy application source code and pre-indexed data
 COPY ./app ./app
 COPY ./frontend ./frontend
 COPY ./data ./data
 
-RUN uv sync --frozen
-
-ARG AGENT_VERSION=0.1.0
-ENV AGENT_VERSION=${AGENT_VERSION} \
-    PYTHONPATH="/code:/code/frontend" \
-    PYTHONUNBUFFERED=1 \
-    PORT=8080
-
 EXPOSE 8080
 
-CMD ["uv", "run", "uvicorn", "frontend.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "frontend.main:app", "--host", "0.0.0.0", "--port", "8080"]
