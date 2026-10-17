@@ -916,6 +916,35 @@ async def search_leadership(q: str = Query(..., min_length=1)):
             else:
                 executives.append(d)
 
+    # In-memory deduplication safeguard by normalized name
+    def _norm_person_key(name: str) -> str:
+        clean = re.sub(r"^(dr\.|mr\.|ms\.|mrs\.)\s*", "", (name or "").lower())
+        clean = re.sub(r"\(.*?\)", "", clean)
+        return re.sub(r"[^a-z0-9]", "", clean)
+
+    deduped_exec = []
+    seen_exec = set()
+    for d in executives:
+        k = _norm_person_key(d.get("name", ""))
+        if not k or k not in seen_exec:
+            if k:
+                seen_exec.add(k)
+            deduped_exec.append(d)
+
+    deduped_board = []
+    seen_board = set()
+    for d in board_members:
+        k = _norm_person_key(d.get("name", ""))
+        if k and k in seen_exec:
+            continue
+        if not k or k not in seen_board:
+            if k:
+                seen_board.add(k)
+            deduped_board.append(d)
+
+    executives = deduped_exec
+    board_members = deduped_board
+
     total_results = len(executives) + len(board_members)
     elapsed = time.time() - start_time
     _search_stats["total_queries"] += 1
