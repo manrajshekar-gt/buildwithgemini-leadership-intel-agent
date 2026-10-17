@@ -12,96 +12,102 @@
     :root {
       --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       
-      /* Stripe Light Theme */
-      --bg: #f6f9fc;
-      --bg-mesh-1: rgba(99, 91, 255, 0.08);
-      --bg-mesh-2: rgba(0, 212, 255, 0.06);
-      --bg-mesh-3: rgba(255, 94, 152, 0.05);
-      --header-bg: rgba(255, 255, 255, 0.82);
-      --card-bg: #ffffff;
-      --card-hover: #ffffff;
-      --border: #e3e8ee;
-      --border-subtle: #f1f5f9;
-      --text-main: #0a2540;
-      --text-muted: #627d98;
-      --text-secondary: #425466;
-      --primary: #635bff;
-      --primary-hover: #0a2540;
-      --primary-gradient: linear-gradient(135deg, #635bff 0%, #7a70ff 100%);
-      --primary-light: #f0efff;
-      --primary-glow: rgba(99, 91, 255, 0.2);
-      --accent-cyan: #00d4ff;
-      --accent-pink: #ff5e98;
+      /* Wise Light Theme Tokens */
+      --bg: #F4F5F2;
+      --bg-mesh-1: rgba(159, 232, 112, 0.16);
+      --bg-mesh-2: rgba(22, 51, 0, 0.05);
+      --bg-mesh-3: rgba(159, 232, 112, 0.10);
+      --header-bg: rgba(244, 245, 242, 0.92);
+      --card-bg: #FFFFFF;
+      --card-hover: #FFFFFF;
+      --border: #E2E5DE;
+      --border-subtle: #EDF0EA;
+      
+      /* Wise Signature Forest & Lime Palette */
+      --text-main: #163300;
+      --text-muted: #596B50;
+      --text-secondary: #3D4E36;
+      --primary: #9FE870;
+      --primary-dark: #163300;
+      --primary-hover: #8EE25B;
+      --primary-gradient: linear-gradient(135deg, #163300 0%, #204A00 100%);
+      --primary-light: #EBF8E3;
+      --primary-glow: rgba(159, 232, 112, 0.40);
       
       /* Badges & Tags */
-      --badge-exec-bg: #eff6ff;
-      --badge-exec-text: #2563eb;
-      --badge-board-bg: #f5f3ff;
-      --badge-board-text: #7c3aed;
-      --eco-partner-bg: #ecfdf5;
-      --eco-partner-text: #059669;
-      --eco-comp-bg: #fef2f2;
-      --eco-comp-text: #dc2626;
-      --callout-bg: #f8fafc;
-      --callout-border: #635bff;
+      --badge-exec-bg: #E8F8DE;
+      --badge-exec-text: #163300;
+      --badge-board-bg: #163300;
+      --badge-board-text: #9FE870;
+      --eco-partner-bg: #E8F8DE;
+      --eco-partner-text: #163300;
+      --eco-comp-bg: #FEE2E2;
+      --eco-comp-text: #991B1B;
+      --callout-bg: #F8FAF6;
+      --callout-border: #9FE870;
+      
+      /* Pill Geometry */
+      --radius-pill: 9999px;
+      --radius-card: 22px;
+      --radius-sm: 12px;
       
       /* Shadows */
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-      --shadow-md: 0 4px 14px -2px rgba(50, 50, 93, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
-      --shadow-lg: 0 13px 27px -5px rgba(50, 50, 93, 0.1), 0 8px 16px -8px rgba(0, 0, 0, 0.06);
-      --shadow-floating: 0 20px 45px -12px rgba(50, 50, 93, 0.14), 0 10px 20px -8px rgba(0, 0, 0, 0.08);
+      --shadow-sm: 0 1px 3px rgba(22, 51, 0, 0.05), 0 1px 2px rgba(22, 51, 0, 0.03);
+      --shadow-md: 0 6px 18px -4px rgba(22, 51, 0, 0.08), 0 2px 6px -1px rgba(22, 51, 0, 0.04);
+      --shadow-lg: 0 16px 32px -8px rgba(22, 51, 0, 0.12), 0 8px 16px -6px rgba(22, 51, 0, 0.06);
+      --shadow-floating: 0 24px 48px -12px rgba(22, 51, 0, 0.16), 0 12px 24px -8px rgba(22, 51, 0, 0.08);
       
       /* Quick Chips */
-      --chip-bg: #ffffff;
-      --chip-text: #425466;
-      --chip-border: #e3e8ee;
-      --chip-hover-bg: #f0efff;
-      --chip-hover-border: #635bff;
+      --chip-bg: #FFFFFF;
+      --chip-text: #163300;
+      --chip-border: #E2E5DE;
+      --chip-hover-bg: #9FE870;
+      --chip-hover-border: #9FE870;
     }
 
     [data-theme="dark"] {
-      /* Stripe Dark Theme */
-      --bg: #0a0e1a;
-      --bg-mesh-1: rgba(99, 91, 255, 0.16);
-      --bg-mesh-2: rgba(0, 212, 255, 0.12);
-      --bg-mesh-3: rgba(255, 94, 152, 0.1);
-      --header-bg: rgba(10, 14, 26, 0.85);
-      --card-bg: #141c2e;
-      --card-hover: #182238;
-      --border: #232f48;
-      --border-subtle: #1a233a;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-secondary: #cbd5e1;
-      --primary: #7a70ff;
-      --primary-hover: #9189ff;
-      --primary-gradient: linear-gradient(135deg, #7a70ff 0%, #9189ff 100%);
-      --primary-light: rgba(99, 91, 255, 0.18);
-      --primary-glow: rgba(122, 112, 255, 0.35);
-      --accent-cyan: #38bdf8;
-      --accent-pink: #f472b6;
+      /* Wise Dark Forest Theme Tokens */
+      --bg: #0C1907;
+      --bg-mesh-1: rgba(159, 232, 112, 0.12);
+      --bg-mesh-2: rgba(32, 74, 0, 0.25);
+      --bg-mesh-3: rgba(159, 232, 112, 0.08);
+      --header-bg: rgba(12, 25, 7, 0.92);
+      --card-bg: #152710;
+      --card-hover: #1A3214;
+      --border: #233C1B;
+      --border-subtle: #1C3115;
       
-      --badge-exec-bg: rgba(37, 99, 235, 0.18);
-      --badge-exec-text: #60a5fa;
-      --badge-board-bg: rgba(124, 58, 237, 0.18);
-      --badge-board-text: #c084fc;
-      --eco-partner-bg: rgba(5, 150, 105, 0.18);
-      --eco-partner-text: #34d399;
-      --eco-comp-bg: rgba(220, 38, 38, 0.18);
-      --eco-comp-text: #f87171;
-      --callout-bg: #0f172a;
-      --callout-border: #7a70ff;
+      --text-main: #F4F5F2;
+      --text-muted: #9BB090;
+      --text-secondary: #D4E3CC;
+      --primary: #9FE870;
+      --primary-dark: #9FE870;
+      --primary-hover: #B2EFA7;
+      --primary-gradient: linear-gradient(135deg, #9FE870 0%, #B2EFA7 100%);
+      --primary-light: rgba(159, 232, 112, 0.15);
+      --primary-glow: rgba(159, 232, 112, 0.28);
       
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-      --shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.45);
-      --shadow-lg: 0 13px 27px -5px rgba(0, 0, 0, 0.55);
-      --shadow-floating: 0 20px 45px -12px rgba(0, 0, 0, 0.7);
+      --badge-exec-bg: rgba(159, 232, 112, 0.18);
+      --badge-exec-text: #9FE870;
+      --badge-board-bg: #233C1B;
+      --badge-board-text: #FFFFFF;
+      --eco-partner-bg: rgba(159, 232, 112, 0.16);
+      --eco-partner-text: #9FE870;
+      --eco-comp-bg: rgba(239, 68, 68, 0.18);
+      --eco-comp-text: #FCA5A5;
+      --callout-bg: #11200D;
+      --callout-border: #9FE870;
       
-      --chip-bg: #141c2e;
-      --chip-text: #cbd5e1;
-      --chip-border: #232f48;
-      --chip-hover-bg: rgba(99, 91, 255, 0.22);
-      --chip-hover-border: #7a70ff;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 6px 18px -4px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 16px 32px -8px rgba(0, 0, 0, 0.65);
+      --shadow-floating: 0 24px 48px -12px rgba(0, 0, 0, 0.8);
+      
+      --chip-bg: #152710;
+      --chip-text: #F4F5F2;
+      --chip-border: #233C1B;
+      --chip-hover-bg: #9FE870;
+      --chip-hover-border: #9FE870;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -119,13 +125,13 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Stripe Signature Ambient Gradient Aura */
+    /* Ambient Wise Mesh Aura */
     .stripe-ambient-mesh {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 600px;
+      height: 620px;
       pointer-events: none;
       z-index: 0;
       background: 
@@ -134,13 +140,13 @@
         radial-gradient(circle at 50% 32%, var(--bg-mesh-3) 0%, transparent 40%);
     }
 
-    /* Header */
+    /* Wise Header */
     header {
       background: var(--header-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      padding: 0.9rem 2rem;
+      padding: 0.9rem 2.2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -154,31 +160,35 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.15rem;
+      font-weight: 800;
       color: var(--text-main);
       text-decoration: none;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
     }
     .header-logo .icon-badge {
-      background: var(--primary-gradient);
-      color: #ffffff;
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
+      background: #163300;
+      color: #9FE870;
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-pill);
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 12px var(--primary-glow);
     }
+    [data-theme="dark"] .header-logo .icon-badge {
+      background: #9FE870;
+      color: #163300;
+    }
     .header-logo .icon-badge .material-symbols-outlined {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.85rem;
     }
 
     /* Theme Toggle Button */
@@ -186,9 +196,9 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text-main);
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-pill);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -197,7 +207,7 @@
       box-shadow: var(--shadow-sm);
     }
     .theme-toggle-btn:hover {
-      border-color: var(--primary);
+      border-color: var(--primary-dark);
       transform: translateY(-1px);
       box-shadow: var(--shadow-md);
     }
@@ -213,27 +223,26 @@
     .nav-btn {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      color: var(--text-main);
+      gap: 0.45rem;
+      color: #163300;
+      background: #9FE870;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 0.88rem;
-      padding: 0.5rem 0.9rem;
-      border-radius: 9px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      transition: all 0.2s ease;
-      box-shadow: var(--shadow-sm);
+      padding: 0.6rem 1.15rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 2px 8px var(--primary-glow);
     }
     .nav-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
+      background: var(--primary-hover);
       transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 4px 14px var(--primary-glow);
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1220px;
       width: 100%;
       margin: 0 auto;
       padding: 3rem 1.5rem 5rem 1.5rem;
@@ -245,47 +254,58 @@
     /* Hero / Search Section */
     .hero {
       text-align: center;
-      margin-bottom: 3rem;
+      margin-bottom: 3.25rem;
     }
     .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      background: var(--primary-light);
-      color: var(--primary);
-      font-size: 0.8rem;
+      gap: 0.45rem;
+      background: #E8F8DE;
+      color: #163300;
+      font-size: 0.82rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 0.35rem 0.85rem;
-      border-radius: 20px;
-      margin-bottom: 1.25rem;
-      border: 1px solid var(--primary-glow);
+      letter-spacing: 0.06em;
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-pill);
+      margin-bottom: 1.35rem;
+      border: 1px solid rgba(22, 51, 0, 0.08);
+    }
+    [data-theme="dark"] .hero-badge {
+      background: rgba(159, 232, 112, 0.16);
+      color: #9FE870;
+      border-color: rgba(159, 232, 112, 0.3);
     }
     .hero h1 {
-      font-size: 2.75rem;
+      font-size: 3rem;
       font-weight: 800;
       color: var(--text-main);
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-      margin-bottom: 0.9rem;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      margin-bottom: 1rem;
     }
     .hero h1 .gradient-text {
-      background: var(--primary-gradient);
+      color: #163300;
+      background: linear-gradient(135deg, #163300 0%, #3D7A0A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    [data-theme="dark"] .hero h1 .gradient-text {
+      background: linear-gradient(135deg, #9FE870 0%, #D4E3CC 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .hero p {
-      font-size: 1.12rem;
+      font-size: 1.15rem;
       color: var(--text-muted);
-      max-width: 620px;
-      margin: 0 auto 2.2rem auto;
-      line-height: 1.55;
+      max-width: 650px;
+      margin: 0 auto 2.4rem auto;
+      line-height: 1.6;
     }
 
-    /* Search Box */
+    /* Wise Search Box */
     .search-box-wrapper {
-      max-width: 680px;
+      max-width: 700px;
       margin: 0 auto;
       position: relative;
     }
@@ -293,55 +313,74 @@
       display: flex;
       align-items: center;
       background: var(--card-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 50px;
-      padding: 0.45rem 0.55rem 0.45rem 1.35rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 0.45rem 0.55rem 0.45rem 1.4rem;
       box-shadow: var(--shadow-floating);
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .search-bar:focus-within {
-      border-color: var(--primary);
+      border-color: #163300;
       box-shadow: 0 0 0 4px var(--primary-glow), var(--shadow-floating);
       transform: translateY(-2px);
+    }
+    [data-theme="dark"] .search-bar:focus-within {
+      border-color: #9FE870;
     }
     .search-bar input {
       flex: 1;
       border: none;
       outline: none;
-      font-size: 1.05rem;
+      font-size: 1.08rem;
       font-family: var(--font);
       color: var(--text-main);
-      padding: 0.5rem 0.75rem;
+      padding: 0.55rem 0.75rem;
       background: transparent;
+      font-weight: 500;
     }
     .search-bar input::placeholder {
       color: var(--text-muted);
+      opacity: 0.85;
+    }
+    .search-bar .search-kbd-hint {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--callout-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.15rem 0.45rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-right: 0.6rem;
     }
     .search-bar button {
-      background: var(--primary-gradient);
-      color: #ffffff;
+      background: #9FE870;
+      color: #163300;
       border: none;
       outline: none;
-      padding: 0.8rem 1.6rem;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 0.95rem;
+      padding: 0.85rem 1.8rem;
+      border-radius: var(--radius-pill);
+      font-weight: 700;
+      font-size: 0.98rem;
       font-family: var(--font);
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px var(--primary-glow);
+      gap: 0.45rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 14px var(--primary-glow);
     }
     .search-bar button:hover {
+      background: var(--primary-hover);
       transform: translateY(-1px);
       box-shadow: 0 6px 18px var(--primary-glow);
     }
 
     /* Quick Suggestions */
     .quick-chips {
-      margin-top: 1.25rem;
+      margin-top: 1.35rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -351,51 +390,56 @@
     .chip-label {
       font-size: 0.85rem;
       color: var(--text-muted);
-      font-weight: 500;
+      font-weight: 600;
     }
     .chip {
       background: var(--chip-bg);
-      border: 1px solid var(--chip-border);
-      padding: 0.35rem 0.85rem;
-      border-radius: 20px;
-      font-size: 0.82rem;
+      border: 1.5px solid var(--chip-border);
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.84rem;
       color: var(--chip-text);
       cursor: pointer;
-      font-weight: 500;
-      transition: all 0.18s ease;
+      font-weight: 600;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       box-shadow: var(--shadow-sm);
     }
     .chip:hover {
-      border-color: var(--chip-hover-border);
-      color: var(--primary);
-      background: var(--chip-hover-bg);
+      border-color: #9FE870;
+      color: #163300;
+      background: #9FE870;
       transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 4px 12px var(--primary-glow);
     }
 
     /* Loading Spinner */
     .spinner-container {
       display: none;
       text-align: center;
-      padding: 3.5rem 0;
+      padding: 4rem 0;
     }
     .spinner {
-      border: 3px solid var(--border);
-      border-top: 3px solid var(--primary);
+      border: 4px solid var(--border);
+      border-top: 4px solid #163300;
+      border-right: 4px solid #9FE870;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      margin: 0 auto 1.2rem auto;
+      width: 44px;
+      height: 44px;
+      animation: spin 0.85s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      margin: 0 auto 1.3rem auto;
+    }
+    [data-theme="dark"] .spinner {
+      border-top-color: #9FE870;
+      border-right-color: #FFFFFF;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     /* Results Header / Company Banner */
     .company-banner {
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2rem 2.25rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 2.2rem 2.4rem;
       margin-bottom: 2rem;
       display: flex;
       align-items: center;
@@ -406,44 +450,47 @@
     .company-header-left {
       display: flex;
       align-items: center;
-      gap: 1.75rem;
+      gap: 1.85rem;
     }
     .company-logo-img {
-      width: 84px;
-      height: 84px;
+      width: 88px;
+      height: 88px;
       object-fit: contain;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      background: #ffffff;
+      border-radius: 18px;
+      border: 1.5px solid var(--border);
+      background: #FFFFFF;
       padding: 8px;
       box-shadow: var(--shadow-sm);
     }
     .company-logo-placeholder {
-      width: 84px;
-      height: 84px;
+      width: 88px;
+      height: 88px;
       background: var(--callout-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--text-muted);
     }
     .company-title h2 {
-      font-size: 1.85rem;
+      font-size: 2rem;
       font-weight: 800;
       color: var(--text-main);
-      letter-spacing: -0.025em;
+      letter-spacing: -0.03em;
     }
     .company-url {
-      font-size: 0.92rem;
-      color: var(--primary);
+      font-size: 0.94rem;
+      color: #163300;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.35rem;
       margin-top: 0.35rem;
-      font-weight: 500;
+      font-weight: 600;
+    }
+    [data-theme="dark"] .company-url {
+      color: #9FE870;
     }
     .company-url:hover {
       text-decoration: underline;
@@ -451,36 +498,42 @@
     .company-twitter-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
-      background: var(--text-main);
-      color: var(--bg);
-      padding: 0.25rem 0.65rem;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      gap: 0.35rem;
+      background: #163300;
+      color: #9FE870;
+      padding: 0.3rem 0.85rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 700;
       margin-top: 0.35rem;
       text-decoration: none;
-      transition: opacity 0.15s ease;
+      transition: all 0.18s ease;
+    }
+    [data-theme="dark"] .company-twitter-badge {
+      background: #9FE870;
+      color: #163300;
     }
     .company-twitter-badge:hover {
-      opacity: 0.85;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
     }
     .company-linkedin-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
-      background: #0a66c2;
-      color: #ffffff;
-      padding: 0.25rem 0.65rem;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      gap: 0.35rem;
+      background: #0A66C2;
+      color: #FFFFFF;
+      padding: 0.3rem 0.85rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 700;
       margin-top: 0.35rem;
       text-decoration: none;
-      transition: opacity 0.15s ease;
+      transition: all 0.18s ease;
     }
     .company-linkedin-badge:hover {
-      opacity: 0.88;
+      opacity: 0.92;
+      transform: translateY(-1px);
     }
     .company-linkedin-badge-unlisted {
       display: inline-flex;
@@ -489,30 +542,33 @@
       background: var(--callout-bg);
       color: var(--text-muted);
       border: 1px dashed var(--border);
-      padding: 0.25rem 0.65rem;
-      border-radius: 12px;
-      font-size: 0.78rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.8rem;
       font-weight: 500;
       font-style: italic;
       margin-top: 0.35rem;
     }
     .stats-badge {
       background: var(--callout-bg);
-      border: 1px solid var(--border);
-      padding: 0.6rem 1.25rem;
-      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      border-radius: 18px;
       text-align: right;
     }
     .stats-badge .count {
-      font-size: 1.5rem;
+      font-size: 1.85rem;
       font-weight: 800;
-      color: var(--primary);
+      color: #163300;
+    }
+    [data-theme="dark"] .stats-badge .count {
+      color: #9FE870;
     }
     .stats-badge .lbl {
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       font-weight: 700;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: var(--text-muted);
     }
 
@@ -525,9 +581,9 @@
     }
     .eco-card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 1.5rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 1.6rem;
       box-shadow: var(--shadow-sm);
       transition: all 0.2s ease;
     }
@@ -538,19 +594,19 @@
     .eco-header {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 1.05rem;
-      font-weight: 700;
+      gap: 0.55rem;
+      font-size: 1.1rem;
+      font-weight: 800;
       color: var(--text-main);
-      margin-bottom: 1.1rem;
-      padding-bottom: 0.6rem;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.7rem;
       border-bottom: 1px solid var(--border);
     }
     .eco-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.75rem 0;
+      padding: 0.8rem 0;
       border-bottom: 1px dashed var(--border);
     }
     .eco-item:last-child {
@@ -561,12 +617,12 @@
       flex-direction: column;
     }
     .eco-item-name {
-      font-weight: 600;
-      font-size: 0.95rem;
+      font-weight: 700;
+      font-size: 0.98rem;
       color: var(--text-main);
     }
     .eco-item-desc {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
       margin-top: 0.15rem;
     }
@@ -574,48 +630,180 @@
       display: inline-flex;
       align-items: center;
       gap: 0.25rem;
-      background: var(--callout-bg);
-      color: var(--primary);
+      background: #E8F8DE;
+      color: #163300;
       text-decoration: none;
-      font-size: 0.78rem;
-      font-weight: 600;
-      padding: 0.35rem 0.75rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
       transition: all 0.15s ease;
     }
+    [data-theme="dark"] .eco-link-btn {
+      background: rgba(159, 232, 112, 0.16);
+      color: #9FE870;
+    }
     .eco-link-btn:hover {
-      background: var(--primary-light);
-      border-color: var(--primary);
+      background: #9FE870;
+      color: #163300;
     }
 
     /* Company Recent Tweets Box */
     .company-tweets-card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 1.5rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 1.6rem;
       margin-bottom: 2.5rem;
       box-shadow: var(--shadow-sm);
     }
     .tweets-header {
-      font-size: 1rem;
-      font-weight: 700;
+      font-size: 1.05rem;
+      font-weight: 800;
       color: var(--text-main);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
+      gap: 0.55rem;
+      margin-bottom: 1.1rem;
     }
     .tweet-bubble {
       background: var(--callout-bg);
-      border-left: 3px solid var(--primary);
-      padding: 0.75rem 1rem;
-      border-radius: 0 10px 10px 0;
-      font-size: 0.9rem;
+      border-left: 4px solid #9FE870;
+      padding: 0.85rem 1.15rem;
+      border-radius: 0 12px 12px 0;
+      font-size: 0.92rem;
       color: var(--text-secondary);
-      margin-bottom: 0.6rem;
-      line-height: 1.45;
+      margin-bottom: 0.65rem;
+      line-height: 1.5;
+    }
+
+    /* ==============================================================
+       WISE SEGMENTED FILTER BAR & IN-PAGE SEARCH
+       ============================================================== */
+    .wise-filter-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 0.9rem 1.25rem;
+      margin-bottom: 2.2rem;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 76px;
+      z-index: 50;
+    }
+    .wise-segmented-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--callout-bg);
+      padding: 0.3rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .wise-segment-btn {
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.84rem;
+      font-weight: 700;
+      font-family: var(--font);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+    .wise-segment-btn:hover {
+      color: var(--text-main);
+      background: rgba(22, 51, 0, 0.05);
+    }
+    [data-theme="dark"] .wise-segment-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .wise-segment-btn.active {
+      background: #163300;
+      color: #9FE870;
+      box-shadow: 0 2px 8px rgba(22, 51, 0, 0.2);
+    }
+    [data-theme="dark"] .wise-segment-btn.active {
+      background: #9FE870;
+      color: #163300;
+      box-shadow: 0 2px 8px rgba(159, 232, 112, 0.3);
+    }
+    .wise-segment-count {
+      background: rgba(255, 255, 255, 0.22);
+      color: inherit;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+    .wise-segment-btn:not(.active) .wise-segment-count {
+      background: var(--border);
+      color: var(--text-muted);
+    }
+
+    .wise-inline-search-box {
+      display: flex;
+      align-items: center;
+      background: var(--callout-bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 0.35rem 0.85rem;
+      min-width: 280px;
+      flex: 1;
+      max-width: 380px;
+      transition: all 0.2s ease;
+    }
+    .wise-inline-search-box:focus-within {
+      border-color: #163300;
+      background: var(--card-bg);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    [data-theme="dark"] .wise-inline-search-box:focus-within {
+      border-color: #9FE870;
+    }
+    .wise-inline-search-box .wise-search-icon {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-right: 0.4rem;
+    }
+    .wise-inline-search-box input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.86rem;
+      font-family: var(--font);
+      color: var(--text-main);
+      width: 100%;
+      font-weight: 500;
+    }
+    .wise-inline-search-box input::placeholder {
+      color: var(--text-muted);
+    }
+    .wise-clear-btn {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 2px;
+    }
+    .wise-clear-btn:hover {
+      color: var(--text-main);
     }
 
     /* Section Groups & Attribution */
@@ -625,26 +813,26 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 0.85rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.6rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1.5px solid var(--border);
     }
     .section-header {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.75rem;
     }
     .section-header h3 {
-      font-size: 1.35rem;
+      font-size: 1.45rem;
       font-weight: 800;
       color: var(--text-main);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
     }
     .section-badge {
-      font-size: 0.8rem;
-      padding: 0.2rem 0.65rem;
-      border-radius: 20px;
-      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-weight: 800;
     }
     .badge-exec { background: var(--badge-exec-bg); color: var(--badge-exec-text); }
     .badge-board { background: var(--badge-board-bg); color: var(--badge-board-text); }
@@ -652,56 +840,62 @@
     .section-attribution {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.5rem;
       flex-wrap: wrap;
     }
     .attribution-label {
-      font-size: 0.74rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.05em;
+      font-weight: 800;
+      letter-spacing: 0.06em;
       color: var(--text-muted);
       display: inline-flex;
       align-items: center;
-      gap: 0.2rem;
+      gap: 0.25rem;
     }
     .attribution-pill {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      background: var(--callout-bg);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      padding: 0.3rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 600;
+      background: #E8F8DE;
+      border: 1px solid rgba(22, 51, 0, 0.12);
+      color: #163300;
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.8rem;
+      font-weight: 700;
       text-decoration: none;
       transition: all 0.18s ease;
       box-shadow: var(--shadow-sm);
     }
+    [data-theme="dark"] .attribution-pill {
+      background: rgba(159, 232, 112, 0.18);
+      color: #9FE870;
+      border-color: rgba(159, 232, 112, 0.3);
+    }
     .attribution-pill:hover {
-      background: var(--primary-light);
-      border-color: var(--primary);
-      color: var(--primary);
+      background: #9FE870;
+      color: #163300;
       transform: translateY(-1px);
     }
     .attribution-pill .material-symbols-outlined {
       font-size: 0.95rem;
-      color: var(--primary);
     }
     .attr-card-link {
-      color: var(--primary);
+      color: #163300;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 0.8rem;
       display: inline-flex;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       max-width: 220px;
+    }
+    [data-theme="dark"] .attr-card-link {
+      color: #9FE870;
     }
     .attr-card-link:hover {
       text-decoration: underline;
@@ -709,193 +903,484 @@
     .company-sources-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
-      background: var(--callout-bg);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      padding: 0.25rem 0.65rem;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      gap: 0.35rem;
+      background: #E8F8DE;
+      color: #163300;
+      border: 1px solid rgba(22, 51, 0, 0.1);
+      padding: 0.3rem 0.85rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 700;
       margin-top: 0.35rem;
       text-decoration: none;
       transition: all 0.15s ease;
     }
+    [data-theme="dark"] .company-sources-badge {
+      background: rgba(159, 232, 112, 0.16);
+      color: #9FE870;
+      border-color: rgba(159, 232, 112, 0.28);
+    }
     .company-sources-badge:hover {
-      background: var(--primary-light);
-      border-color: var(--primary);
-      color: var(--primary);
+      background: #9FE870;
+      color: #163300;
+      transform: translateY(-1px);
     }
 
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
       gap: 1.5rem;
-      margin-bottom: 3rem;
+      margin-bottom: 3.5rem;
     }
 
-    /* Member Card */
+    /* ==============================================================
+       WISE MEMBER CARD
+       ============================================================== */
     .member-card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 1.5rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 1.6rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      position: relative;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .member-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
       box-shadow: var(--shadow-lg);
-      border-color: var(--primary);
+      border-color: #9FE870;
     }
     .member-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 0.85rem;
+      margin-bottom: 0.95rem;
     }
     .member-info h4 {
-      font-size: 1.15rem;
-      font-weight: 700;
+      font-size: 1.22rem;
+      font-weight: 800;
       color: var(--text-main);
-      letter-spacing: -0.015em;
+      letter-spacing: -0.02em;
     }
     .member-role {
       font-size: 0.92rem;
-      color: var(--primary);
-      font-weight: 600;
-      margin-top: 0.25rem;
+      color: #163300;
+      font-weight: 700;
+      margin-top: 0.3rem;
+    }
+    [data-theme="dark"] .member-role {
+      color: #9FE870;
     }
     
-    /* Stripe Monogram Avatars */
+    /* Wise Signature Monogram Avatar */
     .member-avatar {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #635bff 0%, #00d4ff 100%);
-      color: #ffffff;
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-pill);
+      background: #163300;
+      color: #9FE870;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
       font-size: 1.05rem;
       flex-shrink: 0;
-      box-shadow: 0 4px 10px rgba(99, 91, 255, 0.3);
+      box-shadow: 0 4px 10px rgba(22, 51, 0, 0.18);
+    }
+    [data-theme="dark"] .member-avatar {
+      background: #9FE870;
+      color: #163300;
+      box-shadow: 0 4px 10px rgba(159, 232, 112, 0.25);
     }
 
     .member-meta {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      margin: 0.9rem 0;
+      gap: 0.55rem;
+      margin: 1rem 0;
       font-size: 0.88rem;
     }
     .meta-row {
       display: flex;
       align-items: center;
-      gap: 0.55rem;
+      gap: 0.6rem;
       color: var(--text-secondary);
     }
     .meta-row .material-symbols-outlined {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       color: var(--text-muted);
+      flex-shrink: 0;
     }
     .email-link {
-      color: var(--primary);
+      color: #163300;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
+    }
+    [data-theme="dark"] .email-link {
+      color: #9FE870;
     }
     .email-link:hover { text-decoration: underline; }
 
     .twitter-link {
       color: var(--text-main);
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 700;
       display: inline-flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: 0.3rem;
       background: var(--callout-bg);
-      padding: 0.2rem 0.55rem;
-      border-radius: 7px;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-pill);
       border: 1px solid var(--border);
       transition: all 0.15s ease;
     }
     .twitter-link:hover { 
-      background: var(--primary-light);
-      border-color: var(--primary);
-      color: var(--primary);
+      background: #9FE870;
+      border-color: #9FE870;
+      color: #163300;
     }
 
     .member-bio {
       font-size: 0.88rem;
       color: var(--text-secondary);
-      line-height: 1.5;
-      margin-top: 0.75rem;
+      line-height: 1.55;
+      margin-top: 0.85rem;
       background: var(--callout-bg);
-      padding: 0.75rem 0.9rem;
-      border-radius: 10px;
-      border-left: 3px solid var(--primary);
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-sm);
+      border-left: 3.5px solid #9FE870;
     }
 
     /* Individual Recent Messages */
     .individual-tweets {
-      margin-top: 0.85rem;
+      margin-top: 0.95rem;
       border-top: 1px dashed var(--border);
-      padding-top: 0.75rem;
+      padding-top: 0.8rem;
     }
     .individual-tweets-title {
       font-size: 0.75rem;
       text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.05em;
+      font-weight: 800;
+      letter-spacing: 0.06em;
       color: var(--text-muted);
-      margin-bottom: 0.45rem;
+      margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.35rem;
     }
     .indiv-tweet {
       font-size: 0.82rem;
       color: var(--text-secondary);
       background: var(--callout-bg);
-      padding: 0.45rem 0.75rem;
-      border-radius: 8px;
-      margin-bottom: 0.4rem;
-      line-height: 1.4;
-      border-left: 2px solid var(--text-main);
+      padding: 0.5rem 0.85rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.45rem;
+      line-height: 1.45;
+      border-left: 2.5px solid #163300;
+    }
+    [data-theme="dark"] .indiv-tweet {
+      border-left-color: #9FE870;
     }
 
     .member-footer {
-      border-top: 1px solid var(--border);
-      padding-top: 0.85rem;
-      margin-top: 0.85rem;
+      border-top: 1.5px solid var(--border);
+      padding-top: 0.95rem;
+      margin-top: 0.95rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
+      font-weight: 600;
     }
     .tag {
       background: var(--callout-bg);
-      color: var(--text-secondary);
+      color: var(--text-main);
       border: 1px solid var(--border);
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
-      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-weight: 700;
+    }
+    .view-profile-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      color: #163300;
+      font-weight: 700;
+      font-size: 0.8rem;
+      opacity: 0.85;
+      transition: all 0.15s ease;
+    }
+    [data-theme="dark"] .view-profile-hint {
+      color: #9FE870;
+    }
+    .member-card:hover .view-profile-hint {
+      opacity: 1;
+      transform: translateX(2px);
+    }
+
+    .copy-pill-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 2px 7px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      margin-left: 6px;
+      transition: all 0.15s ease;
+    }
+    .copy-pill-btn:hover {
+      background: #9FE870;
+      border-color: #9FE870;
+      color: #163300;
     }
 
     .empty-state {
       text-align: center;
-      padding: 4.5rem 1rem;
+      padding: 5rem 1rem;
       color: var(--text-muted);
     }
     .empty-state .material-symbols-outlined {
-      font-size: 3.8rem;
+      font-size: 4rem;
       color: var(--border);
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    /* ==============================================================
+       WISE PROFILE MODAL / DRAWER
+       ============================================================== */
+    .wise-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 25, 7, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.22s ease;
+    }
+    .wise-modal-overlay.open {
+      display: flex;
+      opacity: 1;
+    }
+    .wise-modal-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 28px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-floating);
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .wise-modal-overlay.open .wise-modal-card {
+      transform: scale(1) translateY(0);
+    }
+    .wise-modal-header {
+      padding: 1.8rem 2rem 1.2rem 2rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 1.5px solid var(--border);
+    }
+    .wise-modal-top-profile {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .wise-modal-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-pill);
+      background: #163300;
+      color: #9FE870;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.45rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(22, 51, 0, 0.25);
+    }
+    [data-theme="dark"] .wise-modal-avatar {
+      background: #9FE870;
+      color: #163300;
+    }
+    .wise-modal-name {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.025em;
+    }
+    .wise-modal-role {
+      font-size: 1.05rem;
+      color: #163300;
+      font-weight: 700;
+      margin-top: 0.2rem;
+    }
+    [data-theme="dark"] .wise-modal-role {
+      color: #9FE870;
+    }
+    .wise-modal-close-btn {
+      background: var(--callout-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      flex-shrink: 0;
+    }
+    .wise-modal-close-btn:hover {
+      background: #9FE870;
+      color: #163300;
+      border-color: #9FE870;
+    }
+
+    .wise-modal-body {
+      padding: 1.8rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .wise-modal-actions-bar {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+    .wise-modal-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: #E8F8DE;
+      color: #163300;
+      border: 1px solid rgba(22, 51, 0, 0.12);
+      border-radius: var(--radius-pill);
+      padding: 0.55rem 1.15rem;
+      font-size: 0.84rem;
+      font-weight: 700;
+      font-family: var(--font);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    [data-theme="dark"] .wise-modal-action-btn {
+      background: rgba(159, 232, 112, 0.18);
+      color: #9FE870;
+      border-color: rgba(159, 232, 112, 0.3);
+    }
+    .wise-modal-action-btn:hover {
+      background: #9FE870;
+      color: #163300;
+      transform: translateY(-1px);
+    }
+    .wise-modal-action-btn.primary-action {
+      background: #9FE870;
+      color: #163300;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .wise-modal-action-btn.primary-action:hover {
+      background: var(--primary-hover);
+    }
+
+    .wise-modal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      background: var(--callout-bg);
+      padding: 1.25rem;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+    }
+    .modal-grid-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-grid-lbl {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .modal-grid-val {
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .wise-modal-bio-box {
+      background: var(--callout-bg);
+      border: 1px solid var(--border);
+      border-left: 4px solid #9FE870;
+      padding: 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.94rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    /* ==============================================================
+       WISE TOAST NOTIFICATION
+       ============================================================== */
+    .wise-toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      background: #163300;
+      color: #F4F5F2;
+      border: 1.5px solid #9FE870;
+      border-radius: var(--radius-pill);
+      padding: 0.75rem 1.6rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 12px 28px rgba(22, 51, 0, 0.4);
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    [data-theme="dark"] .wise-toast {
+      background: #152710;
+      color: #FFFFFF;
+      border-color: #9FE870;
+    }
+    .wise-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .wise-toast .material-symbols-outlined {
+      color: #9FE870;
+      font-size: 1.25rem;
     }
   </style>
 </head>
@@ -917,7 +1402,7 @@
       <span class="material-symbols-outlined theme-icon-sun">light_mode</span>
     </button>
     <a href="/admin.html" class="nav-btn">
-      <span class="material-symbols-outlined" style="font-size: 1.15rem; color: var(--primary);">admin_panel_settings</span>
+      <span class="material-symbols-outlined" style="font-size: 1.15rem;">admin_panel_settings</span>
       <span>Admin Operations</span>
     </a>
   </div>
@@ -927,19 +1412,20 @@
   <!-- Search Hero -->
   <div class="hero">
     <div class="hero-badge">
-      <span class="material-symbols-outlined" style="font-size: 1rem;">insights</span>
-      <span>Executive Intelligence Platform</span>
+      <span class="material-symbols-outlined" style="font-size: 1rem;">verified_user</span>
+      <span>Wise-Grade Executive Intelligence</span>
     </div>
     <h1>Real-Time Leadership & <span class="gradient-text">Board Governance</span></h1>
-    <p>Autonomous AI intelligence discovering executive teams, board committees, compensation benchmarks, verified emails, and strategic ecosystem graphs in seconds.</p>
+    <p>Autonomous AI discovering executive teams, board committees, compensation benchmarks, verified emails, and strategic ecosystem graphs in seconds.</p>
     
     <div class="search-box-wrapper">
       <form id="search-form" class="search-bar">
-        <span class="material-symbols-outlined" style="color: var(--text-muted); font-size: 1.4rem;">search</span>
+        <span class="material-symbols-outlined" style="color: var(--text-muted); font-size: 1.45rem;">search</span>
         <input type="text" id="search-input" placeholder="Search company name, domain, or executive..." autocomplete="off" />
+        <span class="search-kbd-hint" title="Press / to focus search">/</span>
         <button type="submit">
           <span>Search</span>
-          <span class="material-symbols-outlined" style="font-size: 1.15rem;">arrow_forward</span>
+          <span class="material-symbols-outlined" style="font-size: 1.2rem;">arrow_forward</span>
         </button>
       </form>
 
@@ -948,8 +1434,10 @@
         <span class="chip" onclick="doSearch('Spotify')">Spotify</span>
         <span class="chip" onclick="doSearch('Alphabet')">Alphabet</span>
         <span class="chip" onclick="doSearch('Stripe')">Stripe</span>
-        <span class="chip" onclick="doSearch('Microsoft')">Microsoft</span>
+        <span class="chip" onclick="doSearch('T-Mobile')">T-Mobile</span>
+        <span class="chip" onclick="doSearch('Movius')">Movius</span>
         <span class="chip" onclick="doSearch('NVIDIA')">NVIDIA</span>
+        <span class="chip" onclick="doSearch('Microsoft')">Microsoft</span>
       </div>
     </div>
   </div>
@@ -957,7 +1445,7 @@
   <!-- Loading State -->
   <div class="spinner-container" id="spinner">
     <div class="spinner"></div>
-    <p style="color: var(--text-muted); font-weight: 500; font-size: 0.95rem;">Researching organization, key partners, competitors, and leadership...</p>
+    <p style="color: var(--text-muted); font-weight: 600; font-size: 0.98rem;">Researching organization, key partners, competitors, and leadership...</p>
   </div>
 
   <!-- Results Section -->
@@ -973,9 +1461,9 @@
             <a href="#" id="banner-company-linkedin" class="company-linkedin-badge" target="_blank" rel="noopener" style="display:none;"></a>
             <a href="#" id="banner-company-twitter" class="company-twitter-badge" target="_blank" style="display:none;"></a>
             <a href="#" id="banner-company-source-link" class="company-sources-badge" target="_blank" rel="noopener" style="display:none;">
-              <span class="material-symbols-outlined" style="font-size:0.9rem;">policy</span>
+              <span class="material-symbols-outlined" style="font-size:0.95rem;">policy</span>
               <span id="banner-source-label">Governance Directory</span>
-              <span class="material-symbols-outlined" style="font-size:0.75rem;">open_in_new</span>
+              <span class="material-symbols-outlined" style="font-size:0.8rem;">open_in_new</span>
             </a>
           </div>
         </div>
@@ -991,7 +1479,7 @@
       <!-- Key Partners Card -->
       <div class="eco-card" id="partners-card" style="display:none;">
         <div class="eco-header">
-          <span class="material-symbols-outlined" style="color:#059669;">handshake</span>
+          <span class="material-symbols-outlined" style="color:#163300;">handshake</span>
           <span>Key Strategic Partners</span>
         </div>
         <div id="partners-list"></div>
@@ -1010,17 +1498,49 @@
     <!-- Company Tweets Section (if present) -->
     <div class="company-tweets-card" id="company-tweets-card" style="display:none;">
       <div class="tweets-header">
-        <span class="material-symbols-outlined" style="color:var(--primary);">chat</span>
+        <span class="material-symbols-outlined" style="color:#163300;">chat</span>
         <span>Latest Public Statements from <span id="company-tweets-handle"></span></span>
       </div>
       <div id="company-tweets-list"></div>
+    </div>
+
+    <!-- ==============================================================
+         WISE SEGMENTED FILTER & REAL-TIME SEARCH TOOLBAR
+         ============================================================== -->
+    <div class="wise-filter-toolbar" id="wise-filter-toolbar">
+      <div class="wise-segmented-group" id="wise-segmented-tabs">
+        <button type="button" class="wise-segment-btn active" data-filter="all" onclick="setMemberFilter('all')">
+          <span>All Profiles</span>
+          <span class="wise-segment-count" id="count-pill-all">0</span>
+        </button>
+        <button type="button" class="wise-segment-btn" data-filter="executives" onclick="setMemberFilter('executives')">
+          <span>Executive Team</span>
+          <span class="wise-segment-count" id="count-pill-exec">0</span>
+        </button>
+        <button type="button" class="wise-segment-btn" data-filter="board" onclick="setMemberFilter('board')">
+          <span>Board of Directors</span>
+          <span class="wise-segment-count" id="count-pill-board">0</span>
+        </button>
+        <button type="button" class="wise-segment-btn" data-filter="independent" onclick="setMemberFilter('independent')">
+          <span>Independent Directors</span>
+          <span class="wise-segment-count" id="count-pill-indep">0</span>
+        </button>
+      </div>
+
+      <div class="wise-inline-search-box">
+        <span class="material-symbols-outlined wise-search-icon">search</span>
+        <input type="text" id="member-filter-input" placeholder="Quick filter by name, title, committee..." oninput="handleInPageFilter(this.value)" />
+        <button type="button" id="member-filter-clear" class="wise-clear-btn" onclick="clearInPageFilter()" style="display:none;" title="Clear filter">
+          <span class="material-symbols-outlined" style="font-size:1.15rem;">close</span>
+        </button>
+      </div>
     </div>
 
     <!-- Executive Management Section -->
     <div id="executives-section" style="display: none;">
       <div class="section-header-row">
         <div class="section-header">
-          <span class="material-symbols-outlined" style="color: var(--primary);">badge</span>
+          <span class="material-symbols-outlined" style="color: #163300;">badge</span>
           <h3>Executive Management & C-Suite</h3>
           <span class="section-badge badge-exec" id="exec-count-badge">0</span>
         </div>
@@ -1033,7 +1553,7 @@
     <div id="board-section" style="display: none;">
       <div class="section-header-row">
         <div class="section-header">
-          <span class="material-symbols-outlined" style="color: var(--badge-board-text);">account_balance</span>
+          <span class="material-symbols-outlined" style="color: #163300;">account_balance</span>
           <h3>Board of Directors & Governance</h3>
           <span class="section-badge badge-board" id="board-count-badge">0</span>
         </div>
@@ -1046,9 +1566,76 @@
   <!-- Empty / Initial State -->
   <div class="empty-state" id="empty-state">
     <span class="material-symbols-outlined">manage_search</span>
-    <h3 style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 700;">Search any company or executive</h3>
+    <h3 style="font-size: 1.35rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 800;">Search any company or executive</h3>
     <p>Type an organization name above or click one of the quick suggestions to explore real-time leadership intelligence.</p>
   </div>
+</div>
+
+<!-- ==============================================================
+     WISE INTERACTIVE PROFILE MODAL DRAWER
+     ============================================================== -->
+<div id="wise-modal" class="wise-modal-overlay" onclick="handleModalBackdropClick(event)">
+  <div class="wise-modal-card">
+    <div class="wise-modal-header">
+      <div class="wise-modal-top-profile">
+        <div class="wise-modal-avatar" id="modal-avatar">??</div>
+        <div>
+          <div class="wise-modal-name" id="modal-name">Executive Name</div>
+          <div class="wise-modal-role" id="modal-role">Title & Role</div>
+        </div>
+      </div>
+      <button class="wise-modal-close-btn" onclick="closeMemberModal()" title="Close (Escape)">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="wise-modal-body">
+      <!-- Quick Action Toolbar -->
+      <div class="wise-modal-actions-bar" id="modal-actions-bar">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Governance & Overview Grid -->
+      <div class="wise-modal-grid">
+        <div class="modal-grid-item">
+          <span class="modal-grid-lbl">Organization</span>
+          <span class="modal-grid-val" id="modal-org">--</span>
+        </div>
+        <div class="modal-grid-item">
+          <span class="modal-grid-lbl">Classification</span>
+          <span class="modal-grid-val" id="modal-classification">--</span>
+        </div>
+        <div class="modal-grid-item" id="modal-tenure-item">
+          <span class="modal-grid-lbl">Tenure</span>
+          <span class="modal-grid-val" id="modal-tenure">--</span>
+        </div>
+        <div class="modal-grid-item" id="modal-committee-item">
+          <span class="modal-grid-lbl">Committee</span>
+          <span class="modal-grid-val" id="modal-committee">--</span>
+        </div>
+      </div>
+
+      <!-- Executive Bio -->
+      <div id="modal-bio-container">
+        <h5 style="font-size:0.82rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); font-weight:800; margin-bottom:0.4rem;">Executive Background</h5>
+        <div class="wise-modal-bio-box" id="modal-bio">--</div>
+      </div>
+
+      <!-- Recent Statements / Public Quotes -->
+      <div id="modal-tweets-container" style="display:none;">
+        <h5 style="font-size:0.82rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); font-weight:800; margin-bottom:0.4rem;">Recent Public Statements</h5>
+        <div id="modal-tweets-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==============================================================
+     WISE SLEEK FLOATING TOAST PILL
+     ============================================================== -->
+<div id="wise-toast" class="wise-toast">
+  <span class="material-symbols-outlined">check_circle</span>
+  <span id="wise-toast-message">Copied to clipboard!</span>
 </div>
 
 <script>
@@ -1070,10 +1657,27 @@
   const resultsArea = document.getElementById('results-area');
   const emptyState = document.getElementById('empty-state');
 
+  // Global State for Interactive Filtering & Modal
+  let currentResultsData = null;
+  let activeCategoryFilter = 'all'; // 'all', 'executives', 'board', 'independent'
+  let currentInPageSearch = '';
+  const memberIndexMap = new Map();
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const query = input.value.trim();
     if (query) doSearch(query);
+  });
+
+  // Global Keyboard Shortcuts (/ to search, Escape to close modal)
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeMemberModal();
+    } else if (e.key === '/' && document.activeElement !== input && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      input.focus();
+      input.select();
+    }
   });
 
   function cleanUrlDomain(url) {
@@ -1098,13 +1702,41 @@
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
-  function renderCard(member) {
+  function showToast(message) {
+    const toast = document.getElementById('wise-toast');
+    const msgEl = document.getElementById('wise-toast-message');
+    msgEl.textContent = message || 'Copied to clipboard!';
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2200);
+  }
+
+  function copyText(text, label) {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(label ? `Copied ${label} to clipboard!` : 'Copied to clipboard!');
+    }).catch(() => {
+      showToast('Copied to clipboard!');
+    });
+  }
+
+  function renderCard(member, index) {
     const isBoard = (member.group || '').toLowerCase().includes('board');
     const initials = getInitials(member.name);
+    const memberKey = member.id || `idx_${index}_${member.name}`;
+    memberIndexMap.set(memberKey, member);
     
-    // Email Row
+    // Email Row with Click-to-Copy
     const emailHtml = member.email && member.email !== 'N/A'
-      ? `<div class="meta-row"><span class="material-symbols-outlined">mail</span><a href="mailto:${member.email}" class="email-link">${member.email}</a></div>`
+      ? `<div class="meta-row">
+           <span class="material-symbols-outlined">mail</span>
+           <a href="mailto:${member.email}" class="email-link" onclick="event.stopPropagation();">${member.email}</a>
+           <button type="button" class="copy-pill-btn" onclick="event.stopPropagation(); copyText('${member.email}', 'email')">
+             <span class="material-symbols-outlined" style="font-size:0.75rem;">content_copy</span> Copy
+           </button>
+         </div>`
       : `<div class="meta-row" style="color:var(--text-muted);"><span class="material-symbols-outlined">mail_lock</span><span>Email not listed</span></div>`;
 
     // Twitter Handle Row (Strict Verified Only)
@@ -1112,9 +1744,9 @@
     const twitterHtml = twitterHandle
       ? `<div class="meta-row">
            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0; color:var(--text-main); margin-right:2px;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-           <a href="https://x.com/${twitterHandle.replace('@','')}" target="_blank" rel="noopener" class="twitter-link">
+           <a href="https://x.com/${twitterHandle.replace('@','')}" target="_blank" rel="noopener" class="twitter-link" onclick="event.stopPropagation();">
              <span>${twitterHandle}</span>
-             <span class="material-symbols-outlined" style="font-size:0.75rem; margin-left:2px; opacity:0.7;">open_in_new</span>
+             <span class="material-symbols-outlined" style="font-size:0.75rem; opacity:0.7;">open_in_new</span>
            </a>
          </div>`
       : '';
@@ -1132,9 +1764,9 @@
     const sourceUrl = member.source_url || '';
     const sourceHtml = sourceUrl
       ? `<div class="meta-row">
-           <span class="material-symbols-outlined" style="color:var(--primary); font-size:1.05rem;">verified</span>
-           <span style="font-size:0.78rem; color:var(--text-muted); font-weight:600; margin-right:2px;">Source:</span>
-           <a href="${sourceUrl}" target="_blank" rel="noopener" class="attr-card-link" title="${sourceUrl}">
+           <span class="material-symbols-outlined" style="color:#163300; font-size:1.1rem;">verified</span>
+           <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700; margin-right:2px;">Source:</span>
+           <a href="${sourceUrl}" target="_blank" rel="noopener" class="attr-card-link" title="${sourceUrl}" onclick="event.stopPropagation();">
              <span>${cleanUrlDomain(sourceUrl)}</span>
              <span class="material-symbols-outlined" style="font-size:0.75rem;">open_in_new</span>
            </a>
@@ -1147,7 +1779,7 @@
     let tweetsHtml = '';
     const recent = member.recent_tweets || [];
     if (recent.length > 0) {
-      const tweetItems = recent.slice(0, 3).map(t => `<div class="indiv-tweet">"${t}"</div>`).join('');
+      const tweetItems = recent.slice(0, 2).map(t => `<div class="indiv-tweet">"${t}"</div>`).join('');
       tweetsHtml = `
         <div class="individual-tweets">
           <div class="individual-tweets-title">
@@ -1160,7 +1792,7 @@
     }
 
     return `
-      <div class="member-card">
+      <div class="member-card" onclick="openMemberModal('${memberKey}')" title="Click to view full governance profile">
         <div>
           <div class="member-top">
             <div class="member-info">
@@ -1181,17 +1813,222 @@
         </div>
         <div class="member-footer">
           <span class="tag">${member.company_name || 'Organization'}</span>
-          <span>${isBoard ? (member.is_independent ? 'Independent Director' : 'Board Member') : 'Executive'}</span>
+          <span class="view-profile-hint">
+            <span>${isBoard ? (member.is_independent ? 'Independent Director' : 'Board Member') : 'Executive'}</span>
+            <span class="material-symbols-outlined" style="font-size:0.95rem;">chevron_right</span>
+          </span>
         </div>
       </div>
     `;
   }
 
+  // ==============================================================
+  // INTERACTIVE FILTERING & SEGMENTED TABS
+  // ==============================================================
+  function setMemberFilter(category) {
+    activeCategoryFilter = category;
+    document.querySelectorAll('.wise-segment-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.filter === category);
+    });
+    applyFilters();
+  }
+
+  function handleInPageFilter(query) {
+    currentInPageSearch = (query || '').trim().toLowerCase();
+    const clearBtn = document.getElementById('member-filter-clear');
+    if (clearBtn) {
+      clearBtn.style.display = currentInPageSearch ? 'flex' : 'none';
+    }
+    applyFilters();
+  }
+
+  function clearInPageFilter() {
+    const filterInput = document.getElementById('member-filter-input');
+    if (filterInput) filterInput.value = '';
+    handleInPageFilter('');
+  }
+
+  function matchesSearch(member, query) {
+    if (!query) return true;
+    const name = (member.name || '').toLowerCase();
+    const title = (member.title || '').toLowerCase();
+    const committee = (member.committee || '').toLowerCase();
+    const bio = (member.bio || '').toLowerCase();
+    const email = (member.email || '').toLowerCase();
+    return name.includes(query) || title.includes(query) || committee.includes(query) || bio.includes(query) || email.includes(query);
+  }
+
+  function applyFilters() {
+    if (!currentResultsData) return;
+
+    const execGrid = document.getElementById('executives-grid');
+    const execSection = document.getElementById('executives-section');
+    const boardGrid = document.getElementById('board-grid');
+    const boardSection = document.getElementById('board-section');
+
+    const showExec = activeCategoryFilter === 'all' || activeCategoryFilter === 'executives';
+    const showBoard = activeCategoryFilter === 'all' || activeCategoryFilter === 'board' || activeCategoryFilter === 'independent';
+
+    let filteredExecs = [];
+    if (showExec) {
+      filteredExecs = (currentResultsData.executives || []).filter(m => matchesSearch(m, currentInPageSearch));
+    }
+
+    let filteredBoard = [];
+    if (showBoard) {
+      filteredBoard = (currentResultsData.board_of_directors || []).filter(m => {
+        if (activeCategoryFilter === 'independent' && !m.is_independent) return false;
+        return matchesSearch(m, currentInPageSearch);
+      });
+    }
+
+    // Render Execs
+    if (filteredExecs.length > 0 && showExec) {
+      execGrid.innerHTML = filteredExecs.map((m, idx) => renderCard(m, `exec_${idx}`)).join('');
+      execSection.style.display = 'block';
+    } else {
+      execSection.style.display = 'none';
+    }
+
+    // Render Board
+    if (filteredBoard.length > 0 && showBoard) {
+      boardGrid.innerHTML = filteredBoard.map((m, idx) => renderCard(m, `board_${idx}`)).join('');
+      boardSection.style.display = 'block';
+    } else {
+      boardSection.style.display = 'none';
+    }
+  }
+
+  // ==============================================================
+  // INTERACTIVE PROFILE MODAL DRAWER
+  // ==============================================================
+  function openMemberModal(memberKey) {
+    const member = memberIndexMap.get(memberKey);
+    if (!member) return;
+
+    const modal = document.getElementById('wise-modal');
+    document.getElementById('modal-avatar').textContent = getInitials(member.name);
+    document.getElementById('modal-name').textContent = member.name;
+    document.getElementById('modal-role').textContent = member.title || 'Leadership Profile';
+    document.getElementById('modal-org').textContent = member.company_name || currentResultsData?.company_name || '--';
+
+    const isBoard = (member.group || '').toLowerCase().includes('board');
+    document.getElementById('modal-classification').textContent = isBoard 
+      ? (member.is_independent ? 'Independent Board Director' : 'Board Member')
+      : 'Executive Officer / C-Suite';
+
+    // Committee
+    const committeeItem = document.getElementById('modal-committee-item');
+    if (member.committee && member.committee !== 'N/A') {
+      document.getElementById('modal-committee').textContent = member.committee;
+      committeeItem.style.display = 'flex';
+    } else {
+      committeeItem.style.display = 'none';
+    }
+
+    // Tenure
+    const tenureItem = document.getElementById('modal-tenure-item');
+    if (member.tenure_years != null) {
+      document.getElementById('modal-tenure').textContent = `${member.tenure_years} years`;
+      tenureItem.style.display = 'flex';
+    } else {
+      tenureItem.style.display = 'none';
+    }
+
+    // Bio
+    const bioBox = document.getElementById('modal-bio');
+    bioBox.textContent = member.bio || `${member.name} serves as ${member.title} at ${member.company_name || 'the organization'}.`;
+
+    // Action Toolbar
+    const actionsBar = document.getElementById('modal-actions-bar');
+    let actionsHtml = `
+      <button type="button" class="wise-modal-action-btn primary-action" onclick="copyProfileSummary('${memberKey}')">
+        <span class="material-symbols-outlined" style="font-size:1.1rem;">share</span>
+        <span>Copy Profile Summary</span>
+      </button>
+    `;
+
+    if (member.email && member.email !== 'N/A') {
+      actionsHtml += `
+        <button type="button" class="wise-modal-action-btn" onclick="copyText('${member.email}', 'email')">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">content_copy</span>
+          <span>Copy Email (${member.email})</span>
+        </button>
+      `;
+    }
+
+    const twitterHandle = member.twitter_handle && member.twitter_handle !== 'N/A' && member.twitter_handle !== 'None' ? member.twitter_handle : '';
+    if (twitterHandle) {
+      actionsHtml += `
+        <a href="https://x.com/${twitterHandle.replace('@','')}" target="_blank" rel="noopener" class="wise-modal-action-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <span>${twitterHandle}</span>
+        </a>
+      `;
+    }
+
+    if (member.source_url) {
+      actionsHtml += `
+        <a href="${member.source_url}" target="_blank" rel="noopener" class="wise-modal-action-btn">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">verified</span>
+          <span>Verified Source</span>
+          <span class="material-symbols-outlined" style="font-size:0.8rem;">open_in_new</span>
+        </a>
+      `;
+    }
+    actionsBar.innerHTML = actionsHtml;
+
+    // Recent Statements
+    const tweetsContainer = document.getElementById('modal-tweets-container');
+    const tweetsList = document.getElementById('modal-tweets-list');
+    const recent = member.recent_tweets || [];
+    if (recent.length > 0) {
+      tweetsList.innerHTML = recent.map(t => `
+        <div class="indiv-tweet" style="padding:0.75rem 1rem; font-size:0.88rem; margin-bottom:0.6rem;">"${t}"</div>
+      `).join('');
+      tweetsContainer.style.display = 'block';
+    } else {
+      tweetsContainer.style.display = 'none';
+    }
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMemberModal() {
+    const modal = document.getElementById('wise-modal');
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function handleModalBackdropClick(e) {
+    if (e.target.id === 'wise-modal') {
+      closeMemberModal();
+    }
+  }
+
+  function copyProfileSummary(memberKey) {
+    const m = memberIndexMap.get(memberKey);
+    if (!m) return;
+    const summary = `${m.name} - ${m.title || 'Leadership'} (${m.company_name || 'Organization'})
+${m.group || 'Executive Team'} ${m.committee ? '| Committee: ' + m.committee : ''} ${m.tenure_years ? '| Tenure: ' + m.tenure_years + ' yrs' : ''}
+${m.email && m.email !== 'N/A' ? 'Email: ' + m.email : ''}
+${m.bio ? '\nBio: ' + m.bio : ''}
+${m.source_url ? '\nSource: ' + m.source_url : ''}`;
+
+    copyText(summary.trim(), 'profile summary');
+  }
+
+  // ==============================================================
+  // SEARCH EXECUTION & API QUERY
+  // ==============================================================
   async function doSearch(query) {
     input.value = query;
     spinner.style.display = 'block';
     resultsArea.style.display = 'none';
     emptyState.style.display = 'none';
+    clearInPageFilter();
+    memberIndexMap.clear();
 
     try {
       const resp = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
@@ -1201,19 +2038,30 @@
       if (!data.total_results || data.total_results === 0) {
         emptyState.innerHTML = `
           <span class="material-symbols-outlined">search_off</span>
-          <h3 style="font-size: 1.25rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 700;">No leadership records found for "${query}"</h3>
+          <h3 style="font-size: 1.35rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 800;">No leadership records found for "${query}"</h3>
           <p>Try searching another company or check the spelling.</p>
         `;
         emptyState.style.display = 'block';
         return;
       }
 
+      currentResultsData = data;
+
+      // Update Wise Segmented Counts
+      const totalExec = (data.executives || []).length;
+      const totalBoard = (data.board_of_directors || []).length;
+      const totalIndep = (data.board_of_directors || []).filter(b => b.is_independent).length;
+      document.getElementById('count-pill-all').textContent = data.total_results || (totalExec + totalBoard);
+      document.getElementById('count-pill-exec').textContent = totalExec;
+      document.getElementById('count-pill-board').textContent = totalBoard;
+      document.getElementById('count-pill-indep').textContent = totalIndep;
+
       // Display Company Banner & Logo
       const logoContainer = document.getElementById('logo-container');
       if (data.company_logo) {
         logoContainer.innerHTML = `<img src="${data.company_logo}" alt="Logo" class="company-logo-img" />`;
       } else {
-        logoContainer.innerHTML = `<div class="company-logo-placeholder"><span class="material-symbols-outlined" style="font-size:2.5rem;">apartment</span></div>`;
+        logoContainer.innerHTML = `<div class="company-logo-placeholder"><span class="material-symbols-outlined" style="font-size:2.8rem;">apartment</span></div>`;
       }
 
       document.getElementById('banner-company-name').textContent = data.company_name;
@@ -1225,7 +2073,7 @@
       const linkedinElem = document.getElementById('banner-company-linkedin');
       if (data.company_linkedin_url && data.company_linkedin_url !== 'N/A' && data.company_linkedin_url.includes('linkedin.com')) {
         linkedinElem.className = 'company-linkedin-badge';
-        linkedinElem.innerHTML = `<span style="font-weight:700;">in</span> <span>LinkedIn</span>`;
+        linkedinElem.innerHTML = `<span style="font-weight:800;">in</span> <span>LinkedIn</span>`;
         linkedinElem.href = data.company_linkedin_url;
         linkedinElem.style.display = 'inline-flex';
       } else {
@@ -1315,77 +2163,58 @@
         compTweetsCard.style.display = 'none';
       }
 
-      // Render Executives & Attributions
-      const execGrid = document.getElementById('executives-grid');
-      const execSection = document.getElementById('executives-section');
+      // Render Attributions for Execs & Board
       const execAttrContainer = document.getElementById('exec-attribution-container');
       document.getElementById('exec-count-badge').textContent = data.executives.length;
-      if (data.executives.length > 0) {
-        execGrid.innerHTML = data.executives.map(renderCard).join('');
-        execSection.style.display = 'block';
-
-        if (execAttrContainer) {
-          const teamUrls = (data.team_attributions || []).filter(u => u && u !== 'N/A');
-          if (teamUrls.length > 0) {
-            execAttrContainer.innerHTML = `
-              <span class="attribution-label"><span class="material-symbols-outlined" style="font-size:0.85rem;">source</span> Team Source:</span>
-              ${teamUrls.slice(0, 2).map(u => `
-                <a href="${u}" target="_blank" rel="noopener" class="attribution-pill" title="${u}">
-                  <span class="material-symbols-outlined">verified</span>
-                  <span>${cleanUrlDomain(u)}</span>
-                  <span class="material-symbols-outlined" style="font-size:0.75rem;">open_in_new</span>
-                </a>
-              `).join('')}
-            `;
-            execAttrContainer.style.display = 'inline-flex';
-          } else {
-            execAttrContainer.style.display = 'none';
-          }
+      if (execAttrContainer) {
+        const teamUrls = (data.team_attributions || []).filter(u => u && u !== 'N/A');
+        if (teamUrls.length > 0) {
+          execAttrContainer.innerHTML = `
+            <span class="attribution-label"><span class="material-symbols-outlined" style="font-size:0.85rem;">source</span> Team Source:</span>
+            ${teamUrls.slice(0, 2).map(u => `
+              <a href="${u}" target="_blank" rel="noopener" class="attribution-pill" title="${u}">
+                <span class="material-symbols-outlined">verified</span>
+                <span>${cleanUrlDomain(u)}</span>
+                <span class="material-symbols-outlined" style="font-size:0.75rem;">open_in_new</span>
+              </a>
+            `).join('')}
+          `;
+          execAttrContainer.style.display = 'inline-flex';
+        } else {
+          execAttrContainer.style.display = 'none';
         }
-      } else {
-        execSection.style.display = 'none';
-        if (execAttrContainer) execAttrContainer.style.display = 'none';
       }
 
-      // Render Board Members & Attributions
-      const boardGrid = document.getElementById('board-grid');
-      const boardSection = document.getElementById('board-section');
       const boardAttrContainer = document.getElementById('board-attribution-container');
       document.getElementById('board-count-badge').textContent = data.board_of_directors.length;
-      if (data.board_of_directors.length > 0) {
-        boardGrid.innerHTML = data.board_of_directors.map(renderCard).join('');
-        boardSection.style.display = 'block';
-
-        if (boardAttrContainer) {
-          const boardUrls = (data.board_attributions || []).filter(u => u && u !== 'N/A');
-          if (boardUrls.length > 0) {
-            boardAttrContainer.innerHTML = `
-              <span class="attribution-label"><span class="material-symbols-outlined" style="font-size:0.85rem;">source</span> Board Source:</span>
-              ${boardUrls.slice(0, 2).map(u => `
-                <a href="${u}" target="_blank" rel="noopener" class="attribution-pill" title="${u}">
-                  <span class="material-symbols-outlined">verified</span>
-                  <span>${cleanUrlDomain(u)}</span>
-                  <span class="material-symbols-outlined" style="font-size:0.75rem;">open_in_new</span>
-                </a>
-              `).join('')}
-            `;
-            boardAttrContainer.style.display = 'inline-flex';
-          } else {
-            boardAttrContainer.style.display = 'none';
-          }
+      if (boardAttrContainer) {
+        const boardUrls = (data.board_attributions || []).filter(u => u && u !== 'N/A');
+        if (boardUrls.length > 0) {
+          boardAttrContainer.innerHTML = `
+            <span class="attribution-label"><span class="material-symbols-outlined" style="font-size:0.85rem;">source</span> Board Source:</span>
+            ${boardUrls.slice(0, 2).map(u => `
+              <a href="${u}" target="_blank" rel="noopener" class="attribution-pill" title="${u}">
+                <span class="material-symbols-outlined">verified</span>
+                <span>${cleanUrlDomain(u)}</span>
+                <span class="material-symbols-outlined" style="font-size:0.75rem;">open_in_new</span>
+              </a>
+            `).join('')}
+          `;
+          boardAttrContainer.style.display = 'inline-flex';
+        } else {
+          boardAttrContainer.style.display = 'none';
         }
-      } else {
-        boardSection.style.display = 'none';
-        if (boardAttrContainer) boardAttrContainer.style.display = 'none';
       }
 
+      // Populate cards through applyFilters
+      applyFilters();
       resultsArea.style.display = 'block';
 
     } catch (err) {
       spinner.style.display = 'none';
       emptyState.innerHTML = `
         <span class="material-symbols-outlined" style="color: #ef4444;">error</span>
-        <h3 style="font-size: 1.25rem; color: #dc2626; margin-bottom: 0.5rem; font-weight: 700;">Error querying leadership data</h3>
+        <h3 style="font-size: 1.35rem; color: #dc2626; margin-bottom: 0.5rem; font-weight: 800;">Error querying leadership data</h3>
         <p>${err.message}</p>
       `;
       emptyState.style.display = 'block';
