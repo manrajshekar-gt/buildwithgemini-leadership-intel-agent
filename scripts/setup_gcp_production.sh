@@ -102,6 +102,24 @@ for ROLE in "${ROLES[@]}"; do
 done
 echo -e "${GREEN}[✓] IAM Permissions Granted to ${SA_NAME}.${NC}"
 
+# Configure default Compute & Cloud Build service account permissions for container builds
+PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)" 2>/dev/null || echo "")
+if [ -n "$PROJECT_NUMBER" ]; then
+    echo -e "${BLUE}[*] Granting Cloud Build storage and logging permissions to default service accounts...${NC}"
+    COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+    CLOUDBUILD_SA="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
+
+    for B_SA in "$COMPUTE_SA" "$CLOUDBUILD_SA"; do
+        for B_ROLE in "roles/storage.admin" "roles/logging.logWriter" "roles/artifactregistry.writer"; do
+            gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+                --member="serviceAccount:${B_SA}" \
+                --role="$B_ROLE" \
+                --condition=None --quiet >/dev/null 2>&1 || true
+        done
+    done
+    echo -e "${GREEN}[✓] Build permissions granted to ${COMPUTE_SA}.${NC}"
+fi
+
 # Generate Service Account Key
 KEY_DIR="$(dirname "$0")/../credentials"
 mkdir -p "$KEY_DIR"
